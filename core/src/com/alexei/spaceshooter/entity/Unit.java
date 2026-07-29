@@ -184,8 +184,18 @@ public class Unit extends Visual {
     }
 
     private void dropStars() {
-        for(int i=0;i<starCount;i++) {
-            SpaceShooter.items.add(new ItemStar(getCenterX()-ItemStar.STAR_SIZE_OUTER/2,getCenterY()-ItemStar.STAR_SIZE_OUTER/2,1));
+        // Boss handles its own drops in its override.
+        float rand = MathUtils.random(1f);
+        if (rand < 0.15f) { // 15% chance for weapon upgrade
+            SpaceShooter.items.add(new ItemWeaponUpgrade(getCenterX() - ItemWeaponUpgrade.ITEM_SIZE / 2, getCenterY() - ItemWeaponUpgrade.ITEM_SIZE / 2));
+        } else if (rand < 0.20f) { // 5% chance for HP
+            SpaceShooter.items.add(new ItemHP(getCenterX() - ItemHP.ITEM_SIZE / 2, getCenterY() - ItemHP.ITEM_SIZE / 2));
+        }
+        
+        if (MathUtils.randomBoolean(0.9f)) {
+            for(int i=0;i<starCount;i++) {
+                SpaceShooter.items.add(new ItemStar(getCenterX()-ItemStar.STAR_SIZE_OUTER/2,getCenterY()-ItemStar.STAR_SIZE_OUTER/2,1));
+            }
         }
     }
 

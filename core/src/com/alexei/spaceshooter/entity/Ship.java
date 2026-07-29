@@ -72,6 +72,10 @@ public class Ship extends Unit {
     public void receiveDamage(float damageAmount, Visual visual) {
         super.receiveDamage(damageAmount, visual);
 
+        if (damageAmount > 0) {
+            downgradeWeapon();
+        }
+
         if (audioManager != null) {
             // play alarm when health is below critical
             if (!this.isCriticalLifeActivated() && this.isCriticalHealth()) {
@@ -96,5 +100,24 @@ public class Ship extends Unit {
 
     public void setIsCriticalLifeActivated(boolean isCriticalLifeActivated) {
         this.isCriticalLifeActivated = isCriticalLifeActivated;
+    }
+
+    private int weaponLevel = 1;
+    public static final int MAX_WEAPON_LEVEL = 5; // Max level 5
+
+    public int getWeaponLevel() {
+        return weaponLevel;
+    }
+
+    public void upgradeWeapon() {
+        if (weaponLevel < MAX_WEAPON_LEVEL) {
+            weaponLevel++;
+        }
+    }
+
+    public void downgradeWeapon() {
+        if (weaponLevel > 1) {
+            weaponLevel--;
+        }
     }
 }

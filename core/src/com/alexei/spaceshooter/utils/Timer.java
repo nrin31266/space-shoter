@@ -56,5 +56,6 @@ public class Timer {
     public long getElapsedTime() { return elapsedTime >= durationMillis ? durationMillis : elapsedTime; }
     public long getDuration() { return durationMillis; }
     public void setDuration(long duration) {this.durationMillis = duration; }
+    public void setElapsedTime(long time) { this.elapsedTime = time; }
     public float getProgress() { return this.elapsedTime/(float)this.durationMillis; }
 }

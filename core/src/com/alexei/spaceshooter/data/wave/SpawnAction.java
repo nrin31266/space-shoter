@@ -17,6 +17,9 @@ public class SpawnAction {
     /** Number of enemies to spawn in this action */
     public int count;
 
+    /** Optional custom hover height percentage (e.g., 0.8 for 80%). If -1, uses default. */
+    public float hoverYPct = -1f;
+
     public SpawnAction() {
     }
 

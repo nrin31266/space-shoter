@@ -36,41 +36,39 @@ public class EnemyShipA extends Unit {
         super.setLife(MAX_LIFE);
         super.clearDeathSounds();
         super.addDeathSound(DEATH_SOUND);
-        // no weapons — pure kamikaze / formation unit
+        
+        super.addWeapon(new com.alexei.spaceshooter.weapon.WeaponEnemyLaser(this));
     }
 
-    /** Called by EnemyFactory right after creation to set screen-aware hover position. */
     public void setScreenDimensions(float screenWidth, float screenHeight) {
         this.screenWidth = screenWidth;
         this.hoverY      = screenHeight * 0.60f; // hover at 60% from bottom
         // randomise initial drift direction
         hoverDir = MathUtils.randomBoolean() ? 1f : -1f;
     }
+    
+    public void setHoverY(float hoverY) {
+        this.hoverY = hoverY;
+    }
+
+    private float stateTime = 0f;
 
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
+        stateTime += deltaTime / 1000f;
 
         switch (moveState) {
             case ENTERING:
                 // Once we reach hover altitude, switch to hover mode
                 if (hoverY > 0 && getY() <= hoverY) {
                     moveState = MoveState.HOVERING;
-                    // Stop vertical movement, start horizontal drift
-                    super.setVelocityVector(HOVER_SPEED * hoverDir / com.alexei.spaceshooter.SpaceShooter.FPS, 0);
                 }
                 break;
 
             case HOVERING:
-                // Reverse horizontal direction at screen edges (with some padding)
-                float padding = getWidth() + 20;
-                if (getX() <= padding && hoverDir < 0) {
-                    hoverDir = 1f;
-                    super.setVelocityVector(HOVER_SPEED * hoverDir / com.alexei.spaceshooter.SpaceShooter.FPS, 0);
-                } else if (getX() + getWidth() >= screenWidth - padding && hoverDir > 0) {
-                    hoverDir = -1f;
-                    super.setVelocityVector(HOVER_SPEED * hoverDir / com.alexei.spaceshooter.SpaceShooter.FPS, 0);
-                }
+                float driftSpeed = MathUtils.sin(stateTime * 1.5f) * (HOVER_SPEED * 0.4f) / com.alexei.spaceshooter.SpaceShooter.FPS;
+                super.setVelocityVector(driftSpeed, 0);
                 break;
         }
     }

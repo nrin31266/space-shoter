@@ -4,6 +4,7 @@ import com.alexei.spaceshooter.SpaceShooter;
 import com.alexei.spaceshooter.utils.SoundName;
 import com.alexei.spaceshooter.utils.Timer;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 
 /**
  * Created by Alex on 03/07/2015.
@@ -12,8 +13,8 @@ import com.badlogic.gdx.math.MathUtils;
  */
 public class Item extends Visual {
     public static final int PICK_UP_ANIMATION_DURATION = 250; // ms
-    private float SPEED = 200; // ms
-    public static final int VELOCITY_ANIMATION_DURATION = 1500; // ms
+    public float SPEED = 300f; // increased from 200 to 350 for faster drop
+    public static final int VELOCITY_ANIMATION_DURATION = 400; // reduced from 1000 to 400
     public static final float PICK_UP_ANIMATION_SCALE = 1f; // ms
     private boolean isMagnetizing = false;
     private SoundName pickUpSound = SoundName.Hit7;
@@ -30,6 +31,11 @@ public class Item extends Visual {
         super.setVelocity(MathUtils.random(0, 359), SPEED);
     }
 
+    private int bounceCount = 2; // Default 2 bounces
+    
+    protected float gravity = 1200f;
+    protected float terminalVelocity = -1200f;
+
     @Override
     public void update(float deltaTime) {
         if (pickedUp && pickUpTimer.isTimerElapsed()) return;
@@ -42,10 +48,28 @@ public class Item extends Visual {
             if (!velocityTimer.isTimerElapsed()) { // update item position until timer runs out, then item stops
                 super.update(deltaTime);
                 super.setSpeed((1-velocityTimer.getProgress()) * SPEED);
+                if (velocityTimer.isTimerElapsed()) {
+                    super.setVelocity(270, SPEED); // Initialize falling velocity
+                }
             }
             else {
-                super.setVelocity(270, SpaceShooter.GROUND_SCROLL_SPEED * 5);
                 super.update(deltaTime);
+                
+                if (getY() <= 0 && bounceCount > 0) {
+                    setY(0);
+                    Vector2 vel = getVelocity();
+                    vel.y = Math.abs(vel.y) * 0.6f; // Bounce up
+                    setVelocity(vel);
+                    bounceCount--;
+                }
+                
+                // apply gravity if it is bouncing or falling
+                Vector2 vel = getVelocity();
+                float velY_PPS = vel.y * com.alexei.spaceshooter.SpaceShooter.FPS;
+                velY_PPS -= gravity * (deltaTime / 1000f); 
+                if (velY_PPS < terminalVelocity) velY_PPS = terminalVelocity;
+                vel.y = velY_PPS / com.alexei.spaceshooter.SpaceShooter.FPS;
+                setVelocity(vel);
             }
         }
 
@@ -84,7 +108,8 @@ public class Item extends Visual {
 
     @Override
     public boolean isDead() {
-      return pickUpAnimationProgress() >= 1;
+        if (getY() < -100) return true; // Disappear when falling off screen
+        return pickUpAnimationProgress() >= 1;
     }
 
     protected boolean isPickUpAnimationRunning() { return (pickedUp && !pickUpTimer.isTimerElapsed()) ; }
@@ -108,5 +133,13 @@ public class Item extends Visual {
 
     public void setIsMagnetizing(boolean isMagnetizing) {
         this.isMagnetizing = isMagnetizing;
+    }
+    
+    public void setBounceCount(int count) {
+        this.bounceCount = count;
+    }
+    
+    public void setBaseSpeed(float speed) {
+        this.SPEED = speed;
     }
 }

@@ -16,13 +16,14 @@ public class AudioManager {
     private final HashMap<SoundType, ArrayList<SoundName>>    soundTypes = new HashMap<>();
     private final HashMap<SoundName, Music>                    musicMap   = new HashMap<>();
     private float volume = 1.0f; // 0.0f to 1.0f
+    private com.badlogic.gdx.Preferences prefs;
 
     /**
      * Minimum time (ms) that must elapse between two plays of the same sound.
      * Prevents audio clipping when weapons fire rapidly.
      */
-    private static final long DEFAULT_SOUND_MIN_INTERVAL_MS = 80L;
-    private static final long LASER_MIN_INTERVAL_MS         = 120L; // laser fires every 180ms; don't pile up
+    private static final long DEFAULT_SOUND_MIN_INTERVAL_MS = 150L;
+    private static final long LASER_MIN_INTERVAL_MS         = 200L; // laser fires every 180ms; don't pile up
 
     /** Tracks the last System.currentTimeMillis() each sound was played. */
     private final HashMap<SoundName, Long> lastPlayTime = new HashMap<>();
@@ -31,10 +32,22 @@ public class AudioManager {
     private final HashMap<SoundName, Long> soundMinIntervals = new HashMap<>();
 
     public AudioManager() {
+        initPrefs();
+    }
+
+    public void initPrefs() {
+        if (prefs == null) {
+            prefs = Gdx.app.getPreferences("SpaceShooter");
+            volume = prefs.getFloat("volume", 1.0f);
+        }
     }
 
     public void setVolume(float volume) {
         this.volume = MathUtils.clamp(volume, 0f, 1f);
+        if (prefs != null) {
+            prefs.putFloat("volume", this.volume);
+            prefs.flush();
+        }
         // Update all running music
         for (SoundName name : musicMap.keySet()) {
             Music m = musicMap.get(name);

@@ -48,25 +48,27 @@ public class EnemyShipD extends Unit {
         hoverDir = MathUtils.randomBoolean() ? 1f : -1f;
     }
 
+    public void setHoverY(float hoverY) {
+        this.hoverY = hoverY;
+    }
+
+    private float stateTime = 0f;
+
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
+        stateTime += deltaTime / 1000f;
+
         switch (moveState) {
             case ENTERING:
                 if (hoverY > 0 && getY() <= hoverY) {
                     moveState = MoveState.HOVERING;
-                    super.setVelocityVector(HOVER_SPEED * hoverDir / SpaceShooter.FPS, 0);
                 }
                 break;
+
             case HOVERING:
-                float pad = getWidth() + 15;
-                if (getX() <= pad && hoverDir < 0) {
-                    hoverDir = 1f;
-                    super.setVelocityVector(HOVER_SPEED * hoverDir / SpaceShooter.FPS, 0);
-                } else if (getX() + getWidth() >= screenWidth - pad && hoverDir > 0) {
-                    hoverDir = -1f;
-                    super.setVelocityVector(HOVER_SPEED * hoverDir / SpaceShooter.FPS, 0);
-                }
+                float driftSpeed = MathUtils.sin(stateTime * 1.5f) * (HOVER_SPEED * 0.4f) / com.alexei.spaceshooter.SpaceShooter.FPS;
+                super.setVelocityVector(driftSpeed, 0);
                 break;
         }
     }

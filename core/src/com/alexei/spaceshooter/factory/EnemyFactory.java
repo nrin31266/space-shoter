@@ -46,6 +46,18 @@ public class EnemyFactory {
             case "RANDOM":
                 enemies.addAll(createRandomFormation(action, screenWidth, screenHeight));
                 break;
+            case "INTERLEAVED_ROWS":
+                enemies.addAll(createInterleavedRowsFormation(action, screenWidth, screenHeight));
+                break;
+            case "BOSS":
+                enemies.addAll(createBossFormation(action, screenWidth, screenHeight));
+                break;
+            case "GRID":
+                enemies.addAll(createGridFormation(action, screenWidth, screenHeight));
+                break;
+            case "CHEVRON":
+                enemies.addAll(createChevronFormation(action, screenWidth, screenHeight));
+                break;
             default:
                 Gdx.app.error("[EnemyFactory]", "Unknown pattern: " + action.pattern);
                 enemies.addAll(createRandomFormation(action, screenWidth, screenHeight));
@@ -81,6 +93,12 @@ public class EnemyFactory {
                 enemy = d;
                 break;
             }
+            case "BOSS": {
+                com.alexei.spaceshooter.entity.EnemyBoss boss = new com.alexei.spaceshooter.entity.EnemyBoss();
+                boss.setScreenDimensions(screenWidth, screenHeight);
+                enemy = boss;
+                break;
+            }
             case "EnemyShipA":
             default: {
                 EnemyShipA a = new EnemyShipA();
@@ -114,7 +132,9 @@ public class EnemyFactory {
             float cx = slotWidth * i + slotWidth / 2f;
             float jitter = MathUtils.random(-slotWidth * 0.12f, slotWidth * 0.12f);
             float x = MathUtils.clamp(cx + jitter, 10f, screenWidth - 70f);
-            enemies.add(createEnemy(action.enemyType, x, spawnY, screenWidth, screenHeight));
+            Unit u = createEnemy(action.enemyType, x, spawnY, screenWidth, screenHeight);
+            applyHoverYPct(u, action, screenHeight);
+            enemies.add(u);
         }
 
         return enemies;
@@ -146,8 +166,10 @@ public class EnemyFactory {
 
             if (row == 0) {
                 // Apex: single enemy
-                enemies.add(createEnemy(action.enemyType, centerX - 30f, rowY,
-                        screenWidth, screenHeight));
+                Unit u = createEnemy(action.enemyType, centerX - 30f, rowY,
+                        screenWidth, screenHeight);
+                applyHoverYPct(u, action, screenHeight);
+                enemies.add(u);
                 remaining--;
             } else {
                 float spread = spreadPerRow * row;
@@ -155,12 +177,18 @@ public class EnemyFactory {
                 float rightX = MathUtils.clamp(centerX + spread, 10f, screenWidth - 70f);
 
                 if (remaining >= 2) {
-                    enemies.add(createEnemy(action.enemyType, leftX, rowY, screenWidth, screenHeight));
-                    enemies.add(createEnemy(action.enemyType, rightX, rowY, screenWidth, screenHeight));
+                    Unit u1 = createEnemy(action.enemyType, leftX, rowY, screenWidth, screenHeight);
+                    applyHoverYPct(u1, action, screenHeight);
+                    enemies.add(u1);
+                    Unit u2 = createEnemy(action.enemyType, rightX, rowY, screenWidth, screenHeight);
+                    applyHoverYPct(u2, action, screenHeight);
+                    enemies.add(u2);
                     remaining -= 2;
                 } else {
-                    enemies.add(createEnemy(action.enemyType, centerX - 30f, rowY,
-                            screenWidth, screenHeight));
+                    Unit u = createEnemy(action.enemyType, centerX - 30f, rowY,
+                            screenWidth, screenHeight);
+                    applyHoverYPct(u, action, screenHeight);
+                    enemies.add(u);
                     remaining--;
                 }
             }
@@ -185,10 +213,105 @@ public class EnemyFactory {
             float x = MathUtils.random(colLeft + 10f,
                     Math.min(colLeft + colWidth - 70f, screenWidth - 70f));
             float yOffset = MathUtils.random(0, screenHeight * 0.08f); // slight stagger
-            enemies.add(createEnemy(action.enemyType, x,
-                    screenHeight + SPAWN_Y_OFFSET + yOffset, screenWidth, screenHeight));
+            Unit u = createEnemy(action.enemyType, x,
+                    screenHeight + SPAWN_Y_OFFSET + yOffset, screenWidth, screenHeight);
+            applyHoverYPct(u, action, screenHeight);
+            enemies.add(u);
         }
 
         return enemies;
+    }
+    
+    private List<Unit> createBossFormation(SpawnAction action, float screenWidth, float screenHeight) {
+        List<Unit> enemies = new ArrayList<>();
+        float centerX = screenWidth / 2f;
+        float spawnY = screenHeight + SPAWN_Y_OFFSET;
+        Unit u = createEnemy("BOSS", centerX - 80f, spawnY, screenWidth, screenHeight);
+        if (action.hoverYPct != -1f && u instanceof com.alexei.spaceshooter.entity.EnemyBoss) {
+            // Note: EnemyBoss does not have setHoverY, so we ignore hoverYPct for it.
+        }
+        enemies.add(u);
+        return enemies;
+    }
+
+    private List<Unit> createInterleavedRowsFormation(SpawnAction action, float screenWidth, float screenHeight) {
+        List<Unit> enemies = new ArrayList<>();
+        int rows = 4;
+        int perRow = Math.max(1, action.count / rows);
+        float slotWidth = screenWidth / perRow;
+        for (int r = 0; r < rows; r++) {
+            float spawnY = screenHeight + SPAWN_Y_OFFSET + (r * screenHeight * 0.12f);
+            String typeForThisRow = (r % 2 == 0) ? action.enemyType : "EnemyShipA";
+            float rowOffsetX = (r % 2 == 0) ? 0 : slotWidth * 0.5f;
+            for (int c = 0; c < perRow; c++) {
+                float cx = (slotWidth * c) + (slotWidth / 2f) + rowOffsetX;
+                float x = MathUtils.clamp(cx - 30f, 10f, screenWidth - 70f);
+                Unit u = createEnemy(typeForThisRow, x, spawnY, screenWidth, screenHeight);
+                applyHoverYPct(u, action, screenHeight);
+                enemies.add(u);
+            }
+        }
+        return enemies;
+    }
+
+    private List<Unit> createGridFormation(SpawnAction action, float screenWidth, float screenHeight) {
+        List<Unit> enemies = new ArrayList<>();
+        int cols = (int) Math.ceil(Math.sqrt(action.count));
+        int rows = (int) Math.ceil((float) action.count / cols);
+        float slotWidth = screenWidth / cols;
+        int spawned = 0;
+        for (int r = 0; r < rows; r++) {
+            float spawnY = screenHeight + SPAWN_Y_OFFSET + (r * screenHeight * 0.1f);
+            for (int c = 0; c < cols; c++) {
+                if (spawned >= action.count) break;
+                float cx = (slotWidth * c) + (slotWidth / 2f);
+                float x = MathUtils.clamp(cx - 30f, 10f, screenWidth - 70f);
+                Unit u = createEnemy(action.enemyType, x, spawnY, screenWidth, screenHeight);
+                applyHoverYPct(u, action, screenHeight);
+                enemies.add(u);
+                spawned++;
+            }
+        }
+        return enemies;
+    }
+
+    private List<Unit> createChevronFormation(SpawnAction action, float screenWidth, float screenHeight) {
+        List<Unit> enemies = new ArrayList<>();
+        int half = action.count / 2;
+        float slotWidth = screenWidth / action.count;
+        for (int i = 0; i < action.count; i++) {
+            float cx = slotWidth * i + slotWidth / 2f;
+            float x = MathUtils.clamp(cx - 30f, 10f, screenWidth - 70f);
+            int distFromCenter = Math.abs(i - half);
+            float spawnY = screenHeight + SPAWN_Y_OFFSET + (distFromCenter * screenHeight * 0.08f);
+            Unit u = createEnemy(action.enemyType, x, spawnY, screenWidth, screenHeight);
+            applyHoverYPct(u, action, screenHeight);
+            enemies.add(u);
+        }
+        return enemies;
+    }
+    
+    private void applyHoverYPct(Unit enemy, SpawnAction action, float screenHeight) {
+        float spawnOffset = enemy.getY() - (screenHeight + SPAWN_Y_OFFSET);
+        float baseHover = screenHeight * 0.60f;
+        
+        if (action != null && action.hoverYPct != -1f) {
+            baseHover = screenHeight * action.hoverYPct;
+        } else {
+            if (enemy instanceof com.alexei.spaceshooter.entity.EnemyShipA) baseHover = screenHeight * 0.60f;
+            else if (enemy instanceof com.alexei.spaceshooter.entity.EnemyShipB) baseHover = screenHeight * 0.65f;
+            else if (enemy instanceof com.alexei.spaceshooter.entity.EnemyShipC) baseHover = screenHeight * 0.55f;
+            else if (enemy instanceof com.alexei.spaceshooter.entity.EnemyShipD) baseHover = screenHeight * 0.75f;
+        }
+        
+        float finalHover = baseHover + spawnOffset;
+        
+        // Safety clamp: ensure enemies never hover above the visible screen
+        finalHover = Math.min(finalHover, screenHeight - 120f);
+        
+        if (enemy instanceof com.alexei.spaceshooter.entity.EnemyShipA) ((com.alexei.spaceshooter.entity.EnemyShipA) enemy).setHoverY(finalHover);
+        else if (enemy instanceof com.alexei.spaceshooter.entity.EnemyShipB) ((com.alexei.spaceshooter.entity.EnemyShipB) enemy).setHoverY(finalHover);
+        else if (enemy instanceof com.alexei.spaceshooter.entity.EnemyShipC) ((com.alexei.spaceshooter.entity.EnemyShipC) enemy).setHoverY(finalHover);
+        else if (enemy instanceof com.alexei.spaceshooter.entity.EnemyShipD) ((com.alexei.spaceshooter.entity.EnemyShipD) enemy).setHoverY(finalHover);
     }
 }

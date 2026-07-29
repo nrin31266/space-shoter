@@ -110,6 +110,7 @@ public class GamePlayScreen implements Screen {
     private Label  scoreLabel;
     private Label  healthLabel;
     private Label  itemsLabel;
+    private Label  weaponLabel;
 
     // ─────────────────────────────────────────────────────────────────
     // Constructors
@@ -300,6 +301,11 @@ public class GamePlayScreen implements Screen {
         scoreLabel.setColor(new Color(0f, 1f, 0.65f, 1f));
         scoreLabel.setFontScale(1.0f);
         left.add(scoreLabel).left().row();
+        
+        weaponLabel = new Label("Wpn Lv: 1", uiSkin);
+        weaponLabel.setColor(new Color(0f, 1f, 1f, 1f));
+        weaponLabel.setFontScale(1.0f);
+        left.add(weaponLabel).left().padTop(8).row();
 
         hud.add(left).expandX().left();
 
@@ -602,7 +608,15 @@ public class GamePlayScreen implements Screen {
                 item.update(dt);
                 if (item.isDead()) { state.items.remove(i); continue; }
                 if (item.isColliding(ship) && !item.isPickedUp()) {
-                    item.pickUp(); state.scoreTracker.collectStar();
+                    item.pickUp(); 
+                    if (item instanceof com.alexei.spaceshooter.entity.ItemHP) {
+                        ship.addLife(1f);
+                        if (ship.getLife() > ship.getMaxLife()) ship.setLife(ship.getMaxLife());
+                    } else if (item instanceof com.alexei.spaceshooter.entity.ItemWeaponUpgrade) {
+                        ship.upgradeWeapon();
+                    } else {
+                        state.scoreTracker.collectStar();
+                    }
                 }
             }
 
@@ -687,7 +701,15 @@ public class GamePlayScreen implements Screen {
             item.update(dt);
             if (item.isDead()) { state.items.remove(i); continue; }
             if (item.isColliding(ship) && !item.isPickedUp()) {
-                item.pickUp(); state.scoreTracker.collectStar();
+                item.pickUp(); 
+                if (item instanceof com.alexei.spaceshooter.entity.ItemHP) {
+                    ship.addLife(1f);
+                    if (ship.getLife() > ship.getMaxLife()) ship.setLife(ship.getMaxLife());
+                } else if (item instanceof com.alexei.spaceshooter.entity.ItemWeaponUpgrade) {
+                    ship.upgradeWeapon();
+                } else {
+                    state.scoreTracker.collectStar();
+                }
             }
             float d2 = item.squareDistanceToCenter(ship);
             // 180 pixels radius = 32400
@@ -831,6 +853,7 @@ public class GamePlayScreen implements Screen {
         scoreLabel.setText("Score: " + state.scoreTracker.getTotalPoints());
         itemsLabel.setText("" + state.scoreTracker.getStarsCollected());
         healthLabel.setText("" + (int) ship.getLife());
+        weaponLabel.setText("Wpn Lv: " + ship.getWeaponLevel());
     }
 
     private void wireEnemyWeapons(Unit enemy) {

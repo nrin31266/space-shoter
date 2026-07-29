@@ -14,7 +14,7 @@ import com.badlogic.gdx.math.MathUtils;
  * Used by EnemyShipC.
  */
 public class WeaponSniperBeam extends Weapon {
-    private static final int WEAPON_FIRE_RATE = 2800; // ms between shots
+    private static final int WEAPON_FIRE_RATE = 2000; // ms between shots
     private static final float WEAPON_DAMAGE = 1f;
     private static final SoundName WEAPON_SOUND = SoundName.LaserShoot2;
     private static final float PROJECTILE_WIDTH = 6;

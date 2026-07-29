@@ -53,6 +53,10 @@ public abstract class Weapon {
             if (audioManager != null) {
                 audioManager.playSound(weaponSoundName);
             }
+            // Add variance so enemies don't sync up over time
+            float variance = fireRate * 0.25f;
+            int nextDuration = fireRate + (int)com.badlogic.gdx.math.MathUtils.random(-variance, variance);
+            timer.setDuration(nextDuration);
         }
     }
 
@@ -74,7 +78,12 @@ public abstract class Weapon {
     public float getDamage() { return damage; }
     public void setDamage(float damage) { this.damage = damage; }
     public int getFireRate() { return fireRate; }
-    public void setFireRate(int fireRate) { this.fireRate = fireRate; timer.setDuration(fireRate); timer.reset(); }
+    public void setFireRate(int fireRate) { 
+        this.fireRate = fireRate; 
+        timer.setDuration(fireRate); 
+        timer.reset(); 
+        timer.setElapsedTime(com.badlogic.gdx.math.MathUtils.random(0, fireRate));
+    }
     public void setUnit(Unit unit) { this.unit = unit; }
     public Unit getUnit() { return unit; }
     public void setWeaponSound(SoundName name) { this.weaponSoundName = name; }
