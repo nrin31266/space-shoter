@@ -69,10 +69,8 @@ public class Item extends Visual {
 
     public void magnetize(Visual toVisual) {
         isMagnetizing = true;
-        //float dir = MathUtils.radiansToDegrees * MathUtils.atan2(toVisual.getCenterY() - getCenterY(), toVisual.getCenterX() - getCenterX());
-        //setVelocity(dir, 120);
         setDirection(toVisual);
-        setSpeed(300);
+        setSpeed(750); // increased from 300 to 750 for faster suction
     }
 
     public void unmagnetize() {

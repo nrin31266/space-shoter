@@ -2,36 +2,36 @@ package com.alexei.spaceshooter.entity;
 
 import com.alexei.spaceshooter.SpaceShooter;
 import com.alexei.spaceshooter.utils.SoundName;
-import com.alexei.spaceshooter.weapon.WeaponEnergyBallA;
+import com.alexei.spaceshooter.weapon.WeaponSpreadShot;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 
 /**
- * EnemyShipB — Elite gunner.
+ * EnemyShipD — Tank.
  *
- * Heavier than ShipA. Enters from top, hovers higher (75% screen height),
- * fires energy balls at the player while drifting sideways.
+ * Large, slow entry. Hovers very high (80% screen height), fires 3-shot spread.
+ * Orange color, 8 HP, drops 3 stars. Appears from wave 4.
  */
-public class EnemyShipB extends Unit {
-    private static final float UNIT_WIDTH   = 70;
-    private static final float UNIT_HEIGHT  = 70;
-    private static final float ENTER_SPEED  = 260;
-    private static final float HOVER_SPEED  = 55;
-    private static final Color UNIT_COLOR   = Color.CHARTREUSE;
-    private static final float MAX_LIFE     = 5f;
+public class EnemyShipD extends Unit {
+    private static final float UNIT_WIDTH   = 90;
+    private static final float UNIT_HEIGHT  = 90;
+    private static final float ENTER_SPEED  = 170;
+    private static final float HOVER_SPEED  = 40;
+    private static final Color UNIT_COLOR   = Color.valueOf("FF7700FF");
+    private static final float MAX_LIFE     = 8f;
     private static final SoundName DEATH_SOUND = SoundName.Explode2;
-    private static final int STARS_COUNT = 2;
+    private static final int STARS_COUNT = 3;
 
     private enum MoveState { ENTERING, HOVERING }
     private MoveState moveState = MoveState.ENTERING;
 
-    private float hoverY       = -1;
-    private float screenWidth  = 1080;
-    private float hoverDir     = 1f;
+    private float hoverY      = -1;
+    private float screenWidth = 1080;
+    private float hoverDir    = 1f;
 
-    public EnemyShipB() {
+    public EnemyShipD() {
         super(0, 0, UNIT_WIDTH, UNIT_HEIGHT);
-        float speed = ENTER_SPEED + MathUtils.random(-ENTER_SPEED * 0.12f, ENTER_SPEED * 0.12f);
+        float speed = ENTER_SPEED + MathUtils.random(-ENTER_SPEED * 0.10f, ENTER_SPEED * 0.10f);
         super.setVelocity(270, speed);
         super.setColor(UNIT_COLOR);
         super.setMaxLife(MAX_LIFE);
@@ -39,20 +39,18 @@ public class EnemyShipB extends Unit {
         super.clearDeathSounds();
         super.addDeathSound(DEATH_SOUND);
         super.setStarCount(STARS_COUNT);
-        super.addWeapon(new WeaponEnergyBallA(this));
+        super.addWeapon(new WeaponSpreadShot(this));
     }
 
-    /** Called by EnemyFactory after creation. */
     public void setScreenDimensions(float screenWidth, float screenHeight) {
         this.screenWidth = screenWidth;
-        this.hoverY      = screenHeight * 0.70f; // hover higher than ShipA
+        this.hoverY      = screenHeight * 0.75f; // very high — tank stays near top
         hoverDir = MathUtils.randomBoolean() ? 1f : -1f;
     }
 
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
-
         switch (moveState) {
             case ENTERING:
                 if (hoverY > 0 && getY() <= hoverY) {
@@ -60,13 +58,12 @@ public class EnemyShipB extends Unit {
                     super.setVelocityVector(HOVER_SPEED * hoverDir / SpaceShooter.FPS, 0);
                 }
                 break;
-
             case HOVERING:
-                float padding = getWidth() + 20;
-                if (getX() <= padding && hoverDir < 0) {
+                float pad = getWidth() + 15;
+                if (getX() <= pad && hoverDir < 0) {
                     hoverDir = 1f;
                     super.setVelocityVector(HOVER_SPEED * hoverDir / SpaceShooter.FPS, 0);
-                } else if (getX() + getWidth() >= screenWidth - padding && hoverDir > 0) {
+                } else if (getX() + getWidth() >= screenWidth - pad && hoverDir > 0) {
                     hoverDir = -1f;
                     super.setVelocityVector(HOVER_SPEED * hoverDir / SpaceShooter.FPS, 0);
                 }

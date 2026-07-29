@@ -14,8 +14,8 @@ public class WeaponShipLaser extends Weapon {
     private static final int WEAPON_FIRE_RATE = 180;
     private static final float WEAPON_DAMAGE = 1;
     private static final SoundName WEAPON_SOUND = SoundName.LaserShoot2;
-    private static final float PROJECTILE_WIDTH = 10;
-    private static final float PROJECTILE_HEIGHT = 10;
+    private static final float PROJECTILE_WIDTH = 20; // Will be height when rotated 90 degrees
+    private static final float PROJECTILE_HEIGHT = 4; // Will be width when rotated 90 degrees
     private static final float PROJECTILE_DIRECTION = 90;
     private static final float PROJECTILE_SPEED = 1200;
     private static final Color PROJECTILE_COLOR = Color.YELLOW;

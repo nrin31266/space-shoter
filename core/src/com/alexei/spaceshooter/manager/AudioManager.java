@@ -12,24 +12,40 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class AudioManager {
-    private final HashMap<SoundName, Sound> sounds = new HashMap<>();
-    private final HashMap<SoundType, ArrayList<SoundName>> soundTypes = new HashMap<>();
-    private final HashMap<SoundName, Music> musicMap = new HashMap<>();
-    private boolean muted = false;
+    private final HashMap<SoundName, Sound>                    sounds     = new HashMap<>();
+    private final HashMap<SoundType, ArrayList<SoundName>>    soundTypes = new HashMap<>();
+    private final HashMap<SoundName, Music>                    musicMap   = new HashMap<>();
+    private float volume = 1.0f; // 0.0f to 1.0f
+
+    /**
+     * Minimum time (ms) that must elapse between two plays of the same sound.
+     * Prevents audio clipping when weapons fire rapidly.
+     */
+    private static final long DEFAULT_SOUND_MIN_INTERVAL_MS = 80L;
+    private static final long LASER_MIN_INTERVAL_MS         = 120L; // laser fires every 180ms; don't pile up
+
+    /** Tracks the last System.currentTimeMillis() each sound was played. */
+    private final HashMap<SoundName, Long> lastPlayTime = new HashMap<>();
+
+    /** Per-sound minimum interval overrides. */
+    private final HashMap<SoundName, Long> soundMinIntervals = new HashMap<>();
 
     public AudioManager() {
     }
 
-    public void setMuted(boolean muted) {
-        this.muted = muted;
-        if (muted) {
-            stopAllSounds();
-            stopAllMusic();
+    public void setVolume(float volume) {
+        this.volume = MathUtils.clamp(volume, 0f, 1f);
+        // Update all running music
+        for (SoundName name : musicMap.keySet()) {
+            Music m = musicMap.get(name);
+            if (m.isPlaying()) {
+                m.setVolume(this.volume * (name == SoundName.Ut ? 0.4f : 1f));
+            }
         }
     }
 
-    public boolean isMuted() {
-        return muted;
+    public float getVolume() {
+        return volume;
     }
 
     /**
@@ -58,12 +74,20 @@ public class AudioManager {
         addSound(assetManager, SoundName.Warning, folder + "/warning.mp3");
 
         // sound categories
-        ArrayList<SoundName> soundsHit = new ArrayList<>();
+        ArrayList<SoundName> soundsHit     = new ArrayList<>();
         ArrayList<SoundName> soundsExplode = new ArrayList<>();
         soundTypes.put(SoundType.Hit, soundsHit);
         soundTypes.put(SoundType.Explode, soundsExplode);
         soundsHit.add(SoundName.Hit7);
         soundsExplode.add(SoundName.Explode2);
+
+        // Per-sound throttle overrides (ms between plays)
+        // Laser weapons fire 5+ times/second; without throttle they create audio clipping.
+        soundMinIntervals.put(SoundName.LaserShoot2, LASER_MIN_INTERVAL_MS);
+        soundMinIntervals.put(SoundName.LaserShoot,  LASER_MIN_INTERVAL_MS);
+        soundMinIntervals.put(SoundName.Laser,        150L);  // enemy energy ball
+        soundMinIntervals.put(SoundName.Explode5,     60L);   // small explosion (EnemyShipA)
+        soundMinIntervals.put(SoundName.Explode2,     80L);   // medium explosion
     }
 
     /**
@@ -92,15 +116,21 @@ public class AudioManager {
     }
 
     public void playSound(SoundName soundName, boolean loop) {
-        if (muted) return;
-        if (soundName != null && sounds.containsKey(soundName)) {
-            Sound s = sounds.get(soundName);
-            if (loop) {
-                s.loop(1f);
-            } else {
-                s.play(1f);
-            }
-        }
+        if (volume <= 0f) return;
+        if (soundName == null || !sounds.containsKey(soundName)) return;
+
+        // Throttle: skip if this sound played too recently
+        long now      = System.currentTimeMillis();
+        long minGap   = soundMinIntervals.containsKey(soundName)
+                        ? soundMinIntervals.get(soundName)
+                        : DEFAULT_SOUND_MIN_INTERVAL_MS;
+        Long lastTime = lastPlayTime.get(soundName);
+        if (lastTime != null && (now - lastTime) < minGap) return; // too soon — skip
+
+        lastPlayTime.put(soundName, now);
+        Sound s = sounds.get(soundName);
+        if (loop) s.loop(0.75f * volume);
+        else      s.play(0.75f * volume);
     }
 
     public void stopSound(SoundName soundName) {
@@ -131,9 +161,11 @@ public class AudioManager {
     }
 
     public void playMusic(SoundName soundName) {
-        if (muted) return;
+        if (volume <= 0f) return;
         if (soundName != null && musicMap.containsKey(soundName)) {
-            musicMap.get(soundName).play();
+            Music m = musicMap.get(soundName);
+            m.setVolume(this.volume * (soundName == SoundName.Ut ? 0.4f : 1f));
+            m.play();
         }
     }
 

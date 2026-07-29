@@ -79,6 +79,20 @@ public class ScoreTracker {
         starsCollected = 0;
     }
 
+    /**
+     * Restore score state from a saved game.
+     * Note: enemiesKilled is NOT restored (tracked per-session),
+     * but score and stars are loaded from save.
+     */
+    public void loadState(long savedScore, long savedStars) {
+        // Derive enemiesKilled approximation from saved score
+        // SavedScore = kills * POINTS_PER_KILL + timePoints
+        // We set timePointsElapsed to 0 and derive kills from score
+        this.enemiesKilled = savedScore / POINTS_PER_KILL;
+        this.starsCollected = savedStars;
+        this.timePointsElapsed = 0;
+    }
+
     public long getStarsCollected() {
         return starsCollected;
     }

@@ -5,88 +5,73 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 
 /**
- * Created by Alex on 17/06/2015.
+ * EnemyShipA — Basic infantry enemy.
  *
- * The most basic enemy unit.
+ * Flies in from the top, decelerates and hovers at ~70% of screen height,
+ * then slowly drifts sideways until killed. Resembles the Chicken Invaders style.
  */
 public class EnemyShipA extends Unit {
-    private static final float UNIT_POSITION_X = 0;
-    private static final float UNIT_POSITION_Y = 0;
-    private static final float UNIT_WIDTH = 60;
+    private static final float UNIT_WIDTH  = 60;
     private static final float UNIT_HEIGHT = 60;
-    private static final float UNIT_DIRECTION = 270;
-    private static final float UNIT_SPEED = 350;
-    private static final Color UNIT_COLOR = Color.MAGENTA; //Color.valueOf("02FF00FF");
-    private static final float MAX_LIFE = 1f;
+    private static final float ENTER_SPEED = 380;     // speed while entering from top
+    private static final float HOVER_SPEED = 70;      // horizontal drift speed when hovering
+    private static final Color UNIT_COLOR  = Color.valueOf("5DBBFFFF"); // ice blue
+    private static final float MAX_LIFE    = 1f;
     private static final SoundName DEATH_SOUND = SoundName.Explode5;
 
+    private enum MoveState { ENTERING, HOVERING }
+    private MoveState moveState = MoveState.ENTERING;
+
+    private float hoverY       = -1;   // set externally by EnemyFactory
+    private float screenWidth  = 1080; // default; set externally
+    private float hoverDir     = 1f;   // +1 right, -1 left
+
     public EnemyShipA() {
-        super(UNIT_POSITION_X, UNIT_POSITION_Y, UNIT_WIDTH, UNIT_HEIGHT);
-        super.setVelocity(UNIT_DIRECTION, UNIT_SPEED + MathUtils.random(-UNIT_SPEED * 0.15f, UNIT_SPEED * 0.15f));
+        super(0, 0, UNIT_WIDTH, UNIT_HEIGHT);
+        // slight speed variation so rows don't arrive perfectly in sync
+        float speed = ENTER_SPEED + MathUtils.random(-ENTER_SPEED * 0.12f, ENTER_SPEED * 0.12f);
+        super.setVelocity(270, speed); // 270 = straight down
         super.setColor(UNIT_COLOR);
         super.setMaxLife(MAX_LIFE);
         super.setLife(MAX_LIFE);
-
         super.clearDeathSounds();
         super.addDeathSound(DEATH_SOUND);
-
-        // add weapons
-        // no weapons
+        // no weapons — pure kamikaze / formation unit
     }
 
-//    @Override
-//    public void render(ShapeRenderer sr) {
-//        super.render(sr);
-//
-//        // render damage points
-//        for (DamagePoint p : super.getDamagePoints()) {
-//            sr.setColor(Color.BLACK.cpy());
-//            sr.getColor().a = 0.25f;
-//
-//            sr.rect(position.x + p.pos.x, position.y + p.pos.y, p.dim.x, p.dim.y);
-//
-//        }
-//    }
-//
-//    @Override
-//    public void update(float deltaTime) {
-//        super.update(deltaTime);
-//
-//        // update all weapons
-//        //for(Weapon w : super.getWeapons()) {
-//        //    w.update();
-//        //}
-//    }
-//
-//
-//    public void doDamage(Unit toUnit) {
-//
-//    }
-//
-//    /**
-//     * Typically a call is first made to the Projectile.doDamage(enemyUnit) method,
-//     * which simply forwards the call to this method.
-//     * @param projectile The projectile that damage is being received from.
-//     */
-//    public void receiveDamage(Projectile projectile) {
-//        super.receiveDamage(projectile);
-//
-//        // generate a damage mark on the unit
-//        int spots = MathUtils.random(1,5);
-//        for (int i=0;i<spots;i++) {
-//            int dx = MathUtils.random(0, 15);
-//            int dy = MathUtils.random(0, 5);
-//            int xsize = MathUtils.random(10, 20);
-//            int ysize = MathUtils.random(10, 20);
-//            super.getDamagePoints().add(new Unit.DamagePoint(new Vector2(projectile.getX() - position.x + dx, dy), new Vector2(xsize,ysize)));
-//        }
-//    }
-//
-//    /***
-//     * Typically this is called when the player's ship collides with an enemy unit
-//     * @param fromUnit The enemy unit which collided with the player's ship
-//     */
-//    public void receiveDamage(Unit fromUnit) {
-//        super.receiveDamage(fromUnit);
-//    }
+    /** Called by EnemyFactory right after creation to set screen-aware hover position. */
+    public void setScreenDimensions(float screenWidth, float screenHeight) {
+        this.screenWidth = screenWidth;
+        this.hoverY      = screenHeight * 0.60f; // hover at 60% from bottom
+        // randomise initial drift direction
+        hoverDir = MathUtils.randomBoolean() ? 1f : -1f;
+    }
+
+    @Override
+    public void update(float deltaTime) {
+        super.update(deltaTime);
+
+        switch (moveState) {
+            case ENTERING:
+                // Once we reach hover altitude, switch to hover mode
+                if (hoverY > 0 && getY() <= hoverY) {
+                    moveState = MoveState.HOVERING;
+                    // Stop vertical movement, start horizontal drift
+                    super.setVelocityVector(HOVER_SPEED * hoverDir / com.alexei.spaceshooter.SpaceShooter.FPS, 0);
+                }
+                break;
+
+            case HOVERING:
+                // Reverse horizontal direction at screen edges (with some padding)
+                float padding = getWidth() + 20;
+                if (getX() <= padding && hoverDir < 0) {
+                    hoverDir = 1f;
+                    super.setVelocityVector(HOVER_SPEED * hoverDir / com.alexei.spaceshooter.SpaceShooter.FPS, 0);
+                } else if (getX() + getWidth() >= screenWidth - padding && hoverDir > 0) {
+                    hoverDir = -1f;
+                    super.setVelocityVector(HOVER_SPEED * hoverDir / com.alexei.spaceshooter.SpaceShooter.FPS, 0);
+                }
+                break;
+        }
+    }
 }

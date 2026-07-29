@@ -7,7 +7,6 @@ import com.alexei.spaceshooter.entity.Ship;
 import com.alexei.spaceshooter.entity.Unit;
 import com.alexei.spaceshooter.entity.Visual;
 import com.alexei.spaceshooter.utils.ScoreTracker;
-import com.alexei.spaceshooter.utils.Timer;
 
 import java.util.ArrayList;
 
@@ -36,7 +35,9 @@ public class GameState {
 
     // enemies
     public ArrayList<Unit> enemies = new ArrayList<>();
-    public Timer enemySpawnTimer;
+
+    // wave tracking (managed by WaveManager)
+    public int currentWaveId = 1;
 
     // projectiles
     public ArrayList<Projectile> projectiles = new ArrayList<>();
@@ -67,8 +68,8 @@ public class GameState {
         starfield2 = new Starfield((int) screenWidth, (int) screenHeight,
                 STAR_SCROLL_ANGLE_2, STAR_SCROLL_SPEED_2, STAR_COUNT_2, MIN_STAR_SIZE_2, MAX_STAR_SIZE_2);
         ship = new Ship();
-        enemySpawnTimer = new Timer(800, 0);
         scoreTracker = new ScoreTracker();
+        currentWaveId = 1;
     }
 
     public void reset() {
@@ -79,7 +80,7 @@ public class GameState {
         gameSpeed = 1f;
         screenTouched = false;
         scoreTracker.reset();
-        enemySpawnTimer = new Timer(800, 0);
+        currentWaveId = 1;
     }
 
     public void addVisualEffect(Visual effect) {

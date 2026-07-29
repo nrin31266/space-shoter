@@ -1,0 +1,54 @@
+{
+  "waves": [
+    {
+      "waveId": 1,
+      "actions": [
+        { "delay": 0.5, "enemyType": "EnemyShipA", "pattern": "LINE",   "count": 8 },
+        { "delay": 4.0, "enemyType": "EnemyShipA", "pattern": "V_SHAPE","count": 7 }
+      ]
+    },
+    {
+      "waveId": 2,
+      "actions": [
+        { "delay": 0.5, "enemyType": "EnemyShipA", "pattern": "LINE",   "count": 9 },
+        { "delay": 4.0, "enemyType": "EnemyShipB", "pattern": "LINE",   "count": 4 },
+        { "delay": 8.0,"enemyType": "EnemyShipA", "pattern": "V_SHAPE","count": 7 }
+      ]
+    },
+    {
+      "waveId": 3,
+      "actions": [
+        { "delay": 0.5, "enemyType": "EnemyShipA", "pattern": "LINE",   "count": 9 },
+        { "delay": 6.0, "enemyType": "EnemyShipB", "pattern": "V_SHAPE","count": 5 },
+        { "delay": 12.0,"enemyType": "EnemyShipC", "pattern": "LINE",   "count": 6 }
+      ]
+    },
+    {
+      "waveId": 4,
+      "actions": [
+        { "delay": 0.5, "enemyType": "EnemyShipC", "pattern": "LINE",   "count": 8 },
+        { "delay": 7.0, "enemyType": "EnemyShipD", "pattern": "RANDOM", "count": 3 },
+        { "delay": 14.0,"enemyType": "EnemyShipB", "pattern": "V_SHAPE","count": 6 }
+      ]
+    },
+    {
+      "waveId": 5,
+      "actions": [
+        { "delay": 0.5, "enemyType": "EnemyShipA", "pattern": "LINE",   "count": 10 },
+        { "delay": 6.0, "enemyType": "EnemyShipC", "pattern": "V_SHAPE","count": 7  },
+        { "delay": 12.0,"enemyType": "EnemyShipD", "pattern": "LINE",   "count": 4  },
+        { "delay": 18.0,"enemyType": "EnemyShipB", "pattern": "RANDOM", "count": 6  }
+      ]
+    },
+    {
+      "waveId": 6,
+      "actions": [
+        { "delay": 0.5, "enemyType": "EnemyShipD", "pattern": "LINE",   "count": 4  },
+        { "delay": 5.0, "enemyType": "EnemyShipC", "pattern": "LINE",   "count": 8  },
+        { "delay": 10.0,"enemyType": "EnemyShipB", "pattern": "V_SHAPE","count": 7  },
+        { "delay": 16.0,"enemyType": "EnemyShipA", "pattern": "RANDOM", "count": 10 },
+        { "delay": 22.0,"enemyType": "EnemyShipD", "pattern": "RANDOM", "count": 5  }
+      ]
+    }
+  ]
+}

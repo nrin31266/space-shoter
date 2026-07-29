@@ -24,6 +24,8 @@ public abstract class Weapon {
     private Unit unit;
     private SoundName weaponSoundName = null;
     private AudioManager audioManager;
+    /** When false, weapon will not fire even if timer elapses. Used for touch-to-shoot. */
+    private boolean enabled = true;
 
     public Weapon() {
         timer = new Timer(0, 0);
@@ -39,6 +41,11 @@ public abstract class Weapon {
      * @param projectiles the list to add fired projectiles to
      */
     public void update(float deltaTime, ArrayList<Projectile> projectiles) {
+        if (!enabled) {
+            // Still advance timer so weapon doesn't fire a burst when re-enabled
+            timer.update(deltaTime);
+            return;
+        }
         timer.update(deltaTime);
 
         if (timer.isTimerElapsed()) {
@@ -47,6 +54,15 @@ public abstract class Weapon {
                 audioManager.playSound(weaponSoundName);
             }
         }
+    }
+
+    /** Enable or disable this weapon. When disabled, it does not fire. */
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
     }
 
     /***
