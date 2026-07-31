@@ -6,7 +6,7 @@ import com.alexei.spaceshooter.utils.SoundName;
 import com.badlogic.gdx.graphics.Color;
 
 public class WeaponEnemyLaser extends Weapon {
-    private static final int WEAPON_FIRE_RATE = 6000;
+    private static final int WEAPON_FIRE_RATE = 8000; // ms — ShipA fires slowly (straight down, not aimed)
     private static final float WEAPON_DAMAGE = 1;
     private static final SoundName WEAPON_SOUND = SoundName.Laser;
     private static final float PROJECTILE_WIDTH = 12; 

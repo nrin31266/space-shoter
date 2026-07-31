@@ -20,6 +20,13 @@ public class SpawnAction {
     /** Optional custom hover height percentage (e.g., 0.8 for 80%). If -1, uses default. */
     public float hoverYPct = -1f;
 
+    /**
+     * Optional secondary enemy type used by INTERLEAVED_ROWS pattern for odd-numbered rows.
+     * If null, INTERLEAVED_ROWS defaults to "EnemyShipA" for odd rows (legacy behaviour).
+     * Set this in JSON to mix two enemy types explicitly, e.g. "secondaryEnemyType": "EnemyShipC".
+     */
+    public String secondaryEnemyType = null;
+
     public SpawnAction() {
     }
 

@@ -12,7 +12,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
  * Used by EnemyShipD (Tank).
  */
 public class WeaponSpreadShot extends Weapon {
-    private static final int WEAPON_FIRE_RATE = 1800; // ms between shots
+    private static final int WEAPON_FIRE_RATE = 3000; // ms — ShipD tank & Boss spread shot
     private static final float WEAPON_DAMAGE = 1f;
     private static final SoundName WEAPON_SOUND = SoundName.Laser;
     private static final float PROJECTILE_SPEED = 500;

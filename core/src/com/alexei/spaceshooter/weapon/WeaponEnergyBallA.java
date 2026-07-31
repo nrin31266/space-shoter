@@ -13,7 +13,7 @@ import com.badlogic.gdx.math.MathUtils;
  * Created by Alex on 29/06/2015.
  */
 public class WeaponEnergyBallA extends Weapon {
-    private static final int WEAPON_FIRE_RATE = 5000;
+    private static final int WEAPON_FIRE_RATE = 8000; // ms — ShipB homing energy ball
     private static final float WEAPON_DAMAGE = 1;
     private static final SoundName WEAPON_SOUND = SoundName.Laser;
     private static final float PROJECTILE_WIDTH = 20;

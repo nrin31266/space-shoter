@@ -22,6 +22,8 @@ public class EnemyBoss extends Unit {
     private float hoverY       = -1;   
     private float screenWidth  = 1080; 
     private float hoverDir     = 1f;   
+    /** N1 fix: prevent double-drop when multiple projectiles kill the boss in the same frame. */
+    private boolean hasDropped = false;
 
     public EnemyBoss() {
         super(0, 0, UNIT_WIDTH, UNIT_HEIGHT);
@@ -75,8 +77,12 @@ public class EnemyBoss extends Unit {
     @Override
     public void receiveDamage(float damageAmount, Visual visual) {
         super.receiveDamage(damageAmount, visual);
-        if (getLife() <= 0) {
-            // Guarantee weapon upgrade drop
+        if (getLife() <= 0 && !hasDropped) {
+            // N1 fix: guard ensures items drop exactly once even if multiple projectiles
+            // hit the boss in the same frame (all of them call receiveDamage before the
+            // enemy list is pruned by collision detection).
+            hasDropped = true;
+            // Guarantee weapon upgrade + HP drop on boss kill
             SpaceShooter.items.add(new ItemWeaponUpgrade(getCenterX() - ItemWeaponUpgrade.ITEM_SIZE / 2, getCenterY() - ItemWeaponUpgrade.ITEM_SIZE / 2));
             SpaceShooter.items.add(new ItemHP(getCenterX() - ItemHP.ITEM_SIZE / 2, getCenterY() - ItemHP.ITEM_SIZE / 2));
         }

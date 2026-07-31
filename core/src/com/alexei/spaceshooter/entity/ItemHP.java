@@ -1,78 +1,83 @@
 package com.alexei.spaceshooter.entity;
 
 import com.alexei.spaceshooter.utils.SoundName;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 
+/**
+ * HP pickup item.
+ * Visual: red ring (proper hollow ring) with a thick red "+" cross centred inside.
+ */
 public class ItemHP extends Item {
-    public static final float ITEM_SIZE = 24;
-    public static final Color ITEM_COLOR = Color.valueOf("ff3b3b"); // bright red
+    public static final float ITEM_SIZE = 18f;
+    public static final Color ITEM_COLOR = Color.valueOf("ff2233");
     public static final SoundName PICK_UP_SOUND = SoundName.Hit7;
 
-    private static TextureRegion textureRegion;
-    private final int rotationSpeed = MathUtils.random(30, 90);
+    // Ring geometry
+    private static final float RING_OUTER  = 22f; // outer radius of the ring
+    private static final float RING_INNER  = 16f; // inner radius (hollow centre)
+    private static final int   SEGMENTS    = 64;  // more = smoother circle
 
     public ItemHP(float x, float y) {
         super(x, y, ITEM_SIZE, ITEM_SIZE);
         super.setColor(ITEM_COLOR);
         super.setOrientInDirectionOfVelocity(false);
-        super.setOrientation(MathUtils.random(0, 359));
+        super.setOrientation(0);
         super.setPickUpSound(PICK_UP_SOUND);
-        
-        super.setBounceCount(0); // HP falls straight off
-        super.setBaseSpeed(150); // Very slow initial scatter
-        super.setVelocity(MathUtils.random(0, 359), 150); // Re-apply scatter speed
-        this.gravity = 300f;
-        this.terminalVelocity = -350f; // Very slow fall speed
-        
-        if (textureRegion == null) {
-            textureRegion = createTexture();
-        }
+
+        super.setBounceCount(0);
+        super.setBaseSpeed(120);
+        super.setVelocity(MathUtils.random(0, 359), 120);
+        this.gravity = 280f;
+        this.terminalVelocity = -320f;
     }
 
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
-        float d = deltaTime / 1000f * rotationSpeed;
-        setOrientation(getOrientation() + d);
     }
 
     @Override
     public void render(ShapeRenderer sr, SpriteBatch batch) {
         float scale = getPickUpAnimationScale();
-        if (scale == 0) scale = 1;
+        if (scale == 0) scale = 1f;
 
-        float texW = textureRegion.getRegionWidth();
-        float texH = textureRegion.getRegionHeight();
-        float w = texW * scale;
-        float h = texH * scale;
+        float cx = getCenterX();
+        float cy = getCenterY();
+        float ro  = RING_OUTER * scale;
+        float ri  = RING_INNER * scale;
 
-        batch.setColor(ITEM_COLOR);
-        batch.draw(textureRegion,
-                getCenterX() - w / 2f, getCenterY() - h / 2f,
-                w / 2f, h / 2f,
-                w, h,
-                1f, 1f,
-                getOrientation());
-    }
+        // GamePlayScreen calls item.render() with batch open, sr ended.
+        batch.end();
 
-    private static TextureRegion createTexture() {
-        int size = 40;
-        Pixmap pixmap = new Pixmap(size, size, Pixmap.Format.RGBA8888);
-        pixmap.setColor(ITEM_COLOR);
-        // Draw a plus shape
-        int w = 10;
-        pixmap.fillRectangle(size/2 - w/2, 5, w, size - 10);
-        pixmap.fillRectangle(5, size/2 - w/2, size - 10, w);
-        
-        Texture texture = new Texture(pixmap);
-        pixmap.dispose();
-        texture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-        return new TextureRegion(texture);
+        // Enable blending for smooth alpha edges
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
+        sr.begin(ShapeRenderer.ShapeType.Filled);
+
+        // ── Ring: outer filled circle then punch hole with background colour ──
+        sr.setColor(1f, 0.13f, 0.20f, 1f);
+        sr.circle(cx, cy, ro, SEGMENTS);          // full red disc
+
+        sr.setColor(0f, 0f, 0f, 0f);              // transparent — poke hole
+        // We can't truly punch holes with ShapeRenderer, so instead we
+        // overdraw the centre with the scene background (near-black space).
+        sr.setColor(0.04f, 0.04f, 0.08f, 1f);    // match space bg colour
+        sr.circle(cx, cy, ri, SEGMENTS);           // hollow centre
+
+        // ── Thick red "+" cross ──
+        float arm = ri * 0.78f;   // half-length of each arm (stays inside ring)
+        float thk = ri * 0.48f;   // arm thickness
+        sr.setColor(1f, 0.13f, 0.20f, 1f);
+        sr.rect(cx - thk / 2f, cy - arm, thk, arm * 2f); // vertical
+        sr.rect(cx - arm,      cy - thk / 2f, arm * 2f, thk); // horizontal
+
+        sr.end();
+        batch.begin();
     }
 }

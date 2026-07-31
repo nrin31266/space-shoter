@@ -170,7 +170,7 @@ public class GamePlayScreen implements Screen {
         Ship ship = state.ship;
         ship.setX((sw - ship.getWidth()) / 2f);
         ship.setY(sh * 0.12f);
-        ship.setLife(ship.getMaxLife());
+        ship.setLife(Ship.INITIAL_LIFE);
 
         if (continueFromSave) {
             SaveManager.SaveData saveData = saveManager.load();
@@ -183,6 +183,16 @@ public class GamePlayScreen implements Screen {
         } else {
             saveManager.clear();
             state.currentWaveId = startWaveId;
+        }
+
+        // Apply DebugConfig if enabled
+        if (com.alexei.spaceshooter.utils.DebugConfig.ENABLE_DEBUG) {
+            if (!continueFromSave) {
+                startWaveId = com.alexei.spaceshooter.utils.DebugConfig.DEBUG_START_WAVE;
+                state.currentWaveId = com.alexei.spaceshooter.utils.DebugConfig.DEBUG_START_WAVE;
+            }
+            ship.setLife(com.alexei.spaceshooter.utils.DebugConfig.DEBUG_START_HP);
+            ship.setWeaponLevel(com.alexei.spaceshooter.utils.DebugConfig.DEBUG_START_WEAPON_LEVEL);
         }
 
         for (Weapon w : ship.getWeapons()) w.setAudioManager(audioManager);
@@ -459,7 +469,14 @@ public class GamePlayScreen implements Screen {
         Ship ship = state.ship;
         ship.setX((sw - ship.getWidth()) / 2f);
         ship.setY(sh * 0.12f);
-        ship.setLife(ship.getMaxLife());
+        ship.setLife(Ship.INITIAL_LIFE);
+
+        if (com.alexei.spaceshooter.utils.DebugConfig.ENABLE_DEBUG) {
+            startWaveId = com.alexei.spaceshooter.utils.DebugConfig.DEBUG_START_WAVE;
+            state.currentWaveId = com.alexei.spaceshooter.utils.DebugConfig.DEBUG_START_WAVE;
+            ship.setLife(com.alexei.spaceshooter.utils.DebugConfig.DEBUG_START_HP);
+            ship.setWeaponLevel(com.alexei.spaceshooter.utils.DebugConfig.DEBUG_START_WEAPON_LEVEL);
+        }
 
         for (Weapon w : ship.getWeapons()) w.setAudioManager(audioManager);
 
@@ -610,8 +627,7 @@ public class GamePlayScreen implements Screen {
                 if (item.isColliding(ship) && !item.isPickedUp()) {
                     item.pickUp(); 
                     if (item instanceof com.alexei.spaceshooter.entity.ItemHP) {
-                        ship.addLife(1f);
-                        if (ship.getLife() > ship.getMaxLife()) ship.setLife(ship.getMaxLife());
+                        ship.addLife(1f); // clamps to maxLife internally (N8)
                     } else if (item instanceof com.alexei.spaceshooter.entity.ItemWeaponUpgrade) {
                         ship.upgradeWeapon();
                     } else {
@@ -703,8 +719,7 @@ public class GamePlayScreen implements Screen {
             if (item.isColliding(ship) && !item.isPickedUp()) {
                 item.pickUp(); 
                 if (item instanceof com.alexei.spaceshooter.entity.ItemHP) {
-                    ship.addLife(1f);
-                    if (ship.getLife() > ship.getMaxLife()) ship.setLife(ship.getMaxLife());
+                    ship.addLife(1f); // clamps to maxLife internally (N8)
                 } else if (item instanceof com.alexei.spaceshooter.entity.ItemWeaponUpgrade) {
                     ship.upgradeWeapon();
                 } else {

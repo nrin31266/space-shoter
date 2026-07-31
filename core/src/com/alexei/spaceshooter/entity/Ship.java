@@ -19,7 +19,8 @@ public class Ship extends Unit {
     private static final float UNIT_POSITION_Y = 0;
     private static final float UNIT_WIDTH = 80;
     private static final float UNIT_HEIGHT = 80;
-    private static final float MAX_LIFE = 5f;
+    public static final float INITIAL_LIFE = 5f;
+    public static final float MAX_LIFE = 10f;
     private static final Color COLOR = Color.MAROON;
     private static final SoundName DEATH_SOUND = SoundName.EndGame;
     private static final SoundName DAMAGE_SOUND = SoundName.GetDamage;
@@ -30,7 +31,7 @@ public class Ship extends Unit {
     public Ship() {
         super(UNIT_POSITION_X, UNIT_POSITION_Y, UNIT_WIDTH, UNIT_HEIGHT);
         super.setMaxLife(MAX_LIFE);
-        super.setLife(MAX_LIFE);
+        super.setLife(INITIAL_LIFE);
         super.setColor(COLOR);
 
         super.clearSounds();
@@ -46,14 +47,8 @@ public class Ship extends Unit {
         this.audioManager = audioManager;
     }
 
-    @Override
-    public void render(ShapeRenderer sr, SpriteBatch batch) {
-        super.render(sr, batch);
-    }
-
-    @Override
-    public void update(float deltaTime) {
-        super.update(deltaTime);
+    public void setWeaponLevel(int level) {
+        this.weaponLevel = com.badlogic.gdx.math.MathUtils.clamp(level, 1, MAX_WEAPON_LEVEL);
     }
 
     @Override

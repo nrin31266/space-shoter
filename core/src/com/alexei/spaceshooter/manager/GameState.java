@@ -51,13 +51,8 @@ public class GameState {
     // score
     public ScoreTracker scoreTracker = new ScoreTracker();
 
-    // game speed (slow-motion)
-    public float gameSpeed = 1f;
-    public static final float SLOW_MO_GAME_SPEED_LIMIT = 0.2f;
-    public static final int SLOW_DOWN_PERIOD = 300;
-
-    // input state (only relevant during Playing)
-    public boolean screenTouched = false;
+    // game speed (slow-motion feature was removed in Phase 3 — constants below are deleted)
+    // L1: gameSpeed, SLOW_MO_GAME_SPEED_LIMIT, SLOW_DOWN_PERIOD removed as dead code.
 
     public GameState() {
     }
@@ -77,8 +72,6 @@ public class GameState {
         projectiles.clear();
         items.clear();
         visualEffects.clear();
-        gameSpeed = 1f;
-        screenTouched = false;
         scoreTracker.reset();
         currentWaveId = 1;
     }

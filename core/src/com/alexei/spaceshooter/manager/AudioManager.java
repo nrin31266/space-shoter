@@ -19,6 +19,14 @@ public class AudioManager {
     private com.badlogic.gdx.Preferences prefs;
 
     /**
+     * Whether background music is muted. Completely independent of the volume slider.
+     * Toggled via setMusicMuted(). Persisted in Preferences under key "musicMuted".
+     * Sound effects (SFX) are NOT affected by this flag.
+     */
+    private boolean isMusicMuted = false;
+    private static final String PREF_MUSIC_MUTED = "musicMuted";
+
+    /**
      * Minimum time (ms) that must elapse between two plays of the same sound.
      * Prevents audio clipping when weapons fire rapidly.
      */
@@ -39,6 +47,7 @@ public class AudioManager {
         if (prefs == null) {
             prefs = Gdx.app.getPreferences("SpaceShooter");
             volume = prefs.getFloat("volume", 1.0f);
+            isMusicMuted = prefs.getBoolean(PREF_MUSIC_MUTED, false);
         }
     }
 
@@ -96,11 +105,18 @@ public class AudioManager {
 
         // Per-sound throttle overrides (ms between plays)
         // Laser weapons fire 5+ times/second; without throttle they create audio clipping.
-        soundMinIntervals.put(SoundName.LaserShoot2, LASER_MIN_INTERVAL_MS);
+        // Intervals are set generously to prevent simultaneous instance pileup across
+        // multiple enemies firing the same sound in the same frame.
+        soundMinIntervals.put(SoundName.LaserShoot2, 250L);  // sniper beam (ShipC)
         soundMinIntervals.put(SoundName.LaserShoot,  LASER_MIN_INTERVAL_MS);
-        soundMinIntervals.put(SoundName.Laser,        150L);  // enemy energy ball
-        soundMinIntervals.put(SoundName.Explode5,     60L);   // small explosion (EnemyShipA)
-        soundMinIntervals.put(SoundName.Explode2,     80L);   // medium explosion
+        soundMinIntervals.put(SoundName.Laser,        350L);  // enemy energy ball & spread (ShipB/D/Boss) — many enemies fire simultaneously
+        soundMinIntervals.put(SoundName.Explode5,     150L);  // small explosion (EnemyShipA) — many can die at once
+        soundMinIntervals.put(SoundName.Explode2,     180L);  // medium explosion
+        soundMinIntervals.put(SoundName.Hit7,         120L);  // item pick-up
+        soundMinIntervals.put(SoundName.Explode,      200L);  // generic explosion
+        soundMinIntervals.put(SoundName.Explode3,     180L);
+        soundMinIntervals.put(SoundName.Explode4,     180L);
+        soundMinIntervals.put(SoundName.Explode8,     180L);
     }
 
     /**
@@ -175,6 +191,7 @@ public class AudioManager {
 
     public void playMusic(SoundName soundName) {
         if (volume <= 0f) return;
+        if (isMusicMuted) return; // Part B: honour music mute flag regardless of volume
         if (soundName != null && musicMap.containsKey(soundName)) {
             Music m = musicMap.get(soundName);
             m.setVolume(this.volume * (soundName == SoundName.Ut ? 0.4f : 1f));
@@ -192,6 +209,32 @@ public class AudioManager {
         for (Music m : musicMap.values()) {
             m.stop();
         }
+    }
+
+    // ─── Music Mute API (Part B) ──────────────────────────────────────
+
+    /**
+     * Toggle background music on or off. Completely independent of the volume slider.
+     * When muting, immediately stops any playing music track.
+     * When unmuting, does NOT auto-restart music — caller must call playMusic() if needed.
+     * State is persisted in Preferences under key "musicMuted".
+     *
+     * @param muted true to silence music, false to allow music
+     */
+    public void setMusicMuted(boolean muted) {
+        this.isMusicMuted = muted;
+        if (prefs != null) {
+            prefs.putBoolean(PREF_MUSIC_MUTED, muted);
+            prefs.flush();
+        }
+        if (muted) {
+            stopAllMusic();
+        }
+    }
+
+    /** @return true if background music is currently muted. */
+    public boolean isMusicMuted() {
+        return isMusicMuted;
     }
 
     public void dispose() {

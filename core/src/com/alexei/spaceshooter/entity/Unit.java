@@ -185,6 +185,12 @@ public class Unit extends Visual {
 
     private void dropStars() {
         // Boss handles its own drops in its override.
+        // N3: guard against SpaceShooter.items being null (not yet wired by GamePlayScreen).
+        if (com.alexei.spaceshooter.SpaceShooter.items == null) {
+            com.badlogic.gdx.Gdx.app.error("[Unit]", "dropStars called but SpaceShooter.items is null — skipping item drop");
+            return;
+        }
+
         float rand = MathUtils.random(1f);
         if (rand < 0.15f) { // 15% chance for weapon upgrade
             SpaceShooter.items.add(new ItemWeaponUpgrade(getCenterX() - ItemWeaponUpgrade.ITEM_SIZE / 2, getCenterY() - ItemWeaponUpgrade.ITEM_SIZE / 2));
@@ -262,10 +268,13 @@ public class Unit extends Visual {
     }
 
     /***
-     * Add life to the unit. The amount of life is bounded by unit's maxLife.
-     * @param life the amount of life to ad to the unit
+     * Add life to the unit. The result is clamped to [0, maxLife] so callers
+     * never need to clamp manually. (N8 fix: previously callers had to clamp themselves.)
+     * @param life the amount of life to add (positive to heal, negative to damage)
      */
-    public void addLife(float life) { this.life += life; }
+    public void addLife(float life) {
+        this.life = MathUtils.clamp(this.life + life, 0f, maxLife);
+    }
 
 
     /***

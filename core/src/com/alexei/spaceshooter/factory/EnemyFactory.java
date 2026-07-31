@@ -36,6 +36,13 @@ public class EnemyFactory {
         Gdx.app.log("[EnemyFactory]",
                 "Spawn " + action.enemyType + " count=" + action.count + " pattern=" + action.pattern);
 
+        // N4: guard against null / missing pattern field in JSON
+        if (action.pattern == null) {
+            Gdx.app.error("[EnemyFactory]", "action.pattern is null — falling back to RANDOM");
+            enemies.addAll(createRandomFormation(action, screenWidth, screenHeight));
+            return enemies;
+        }
+
         switch (action.pattern.toUpperCase()) {
             case "LINE":
                 enemies.addAll(createLineFormation(action, screenWidth, screenHeight));
@@ -222,26 +229,61 @@ public class EnemyFactory {
         return enemies;
     }
     
+    /**
+     * BOSS — spawns exactly action.count boss units spread evenly across the screen width.
+     * Multiple bosses are staggered in Y so they don't enter at the exact same instant.
+     *
+     * BUG #1 fix: previously this always created exactly 1 boss regardless of action.count.
+     * Now it loops action.count times and places each boss equidistant across screen width.
+     */
     private List<Unit> createBossFormation(SpawnAction action, float screenWidth, float screenHeight) {
         List<Unit> enemies = new ArrayList<>();
-        float centerX = screenWidth / 2f;
+        int bossCount = Math.max(1, action.count);
         float spawnY = screenHeight + SPAWN_Y_OFFSET;
-        Unit u = createEnemy("BOSS", centerX - 80f, spawnY, screenWidth, screenHeight);
-        if (action.hoverYPct != -1f && u instanceof com.alexei.spaceshooter.entity.EnemyBoss) {
-            // Note: EnemyBoss does not have setHoverY, so we ignore hoverYPct for it.
+
+        // Distribute bosses evenly: split screen into bossCount slots, center each boss in its slot.
+        // Boss width is 250px — slot width must accommodate it without overlap.
+        float slotWidth = screenWidth / bossCount;
+        for (int i = 0; i < bossCount; i++) {
+            float cx = slotWidth * i + slotWidth / 2f;
+            // Clamp so the boss (250px wide) stays on screen
+            float x = MathUtils.clamp(cx - 125f, 10f, screenWidth - 260f);
+            // Stagger Y slightly so bosses don't arrive simultaneously (cosmetic, helps audio too)
+            float yStagger = i * (screenHeight * 0.05f);
+            Unit u = createEnemy("BOSS", x, spawnY + yStagger, screenWidth, screenHeight);
+            // Note: EnemyBoss does not expose setHoverY — it uses a fixed 75% hover defined
+            // in setScreenDimensions(). hoverYPct in BOSS actions is therefore ignored.
+            enemies.add(u);
         }
-        enemies.add(u);
         return enemies;
     }
 
+    /**
+     * INTERLEAVED_ROWS — 4 rows, even rows = primaryEnemyType, odd rows = secondaryEnemyType.
+     *
+     * BUG #2 fix: the secondaryEnemyType for odd rows is now read from action.secondaryEnemyType
+     * (optional JSON field). If absent/null, falls back to "EnemyShipA" (legacy behaviour).
+     *
+     * N5 fix: previously, if count was not divisible by 4, the remainder was silently discarded
+     * (e.g., count=25 → perRow=6 → 24 spawned). Now we distribute the remainder across the
+     * first (count % rows) rows so that exactly count enemies are always spawned.
+     */
     private List<Unit> createInterleavedRowsFormation(SpawnAction action, float screenWidth, float screenHeight) {
         List<Unit> enemies = new ArrayList<>();
         int rows = 4;
-        int perRow = Math.max(1, action.count / rows);
-        float slotWidth = screenWidth / perRow;
+        int basePerRow = Math.max(1, action.count / rows);
+        int remainder  = action.count % rows; // extra enemies distributed to first N rows
+
+        // Determine the type for odd rows: use secondaryEnemyType if provided, else "EnemyShipA".
+        String secondaryType = (action.secondaryEnemyType != null && !action.secondaryEnemyType.isEmpty())
+                ? action.secondaryEnemyType
+                : "EnemyShipA";
+
         for (int r = 0; r < rows; r++) {
+            int perRow = basePerRow + (r < remainder ? 1 : 0); // distribute remainder to first rows
+            float slotWidth = screenWidth / perRow;
             float spawnY = screenHeight + SPAWN_Y_OFFSET + (r * screenHeight * 0.12f);
-            String typeForThisRow = (r % 2 == 0) ? action.enemyType : "EnemyShipA";
+            String typeForThisRow = (r % 2 == 0) ? action.enemyType : secondaryType;
             float rowOffsetX = (r % 2 == 0) ? 0 : slotWidth * 0.5f;
             for (int c = 0; c < perRow; c++) {
                 float cx = (slotWidth * c) + (slotWidth / 2f) + rowOffsetX;
@@ -291,6 +333,15 @@ public class EnemyFactory {
         return enemies;
     }
     
+    /**
+     * Apply the JSON-specified hover Y position to an enemy unit.
+     *
+     * BUG #3 fix: added lower-bound clamp at 35% screen height.
+     * Rationale: anything below 35% of screen height (measured from bottom) means the enemy
+     * would hover very close to the player's starting area (~12% sh), giving the player almost
+     * no reaction time. 35% keeps a comfortable buffer while still allowing low values like
+     * the hoverYPct=0.45 used in waves 5/9/12/14 to work as intended.
+     */
     private void applyHoverYPct(Unit enemy, SpawnAction action, float screenHeight) {
         float spawnOffset = enemy.getY() - (screenHeight + SPAWN_Y_OFFSET);
         float baseHover = screenHeight * 0.60f;
@@ -306,8 +357,11 @@ public class EnemyFactory {
         
         float finalHover = baseHover + spawnOffset;
         
-        // Safety clamp: ensure enemies never hover above the visible screen
+        // Safety clamp upper bound: never hover above visible top of screen.
         finalHover = Math.min(finalHover, screenHeight - 120f);
+        // Safety clamp lower bound (BUG #3): never hover below 35% screen height.
+        // This prevents enemies from hovering dangerously close to the player spawn area.
+        finalHover = Math.max(finalHover, screenHeight * 0.35f);
         
         if (enemy instanceof com.alexei.spaceshooter.entity.EnemyShipA) ((com.alexei.spaceshooter.entity.EnemyShipA) enemy).setHoverY(finalHover);
         else if (enemy instanceof com.alexei.spaceshooter.entity.EnemyShipB) ((com.alexei.spaceshooter.entity.EnemyShipB) enemy).setHoverY(finalHover);

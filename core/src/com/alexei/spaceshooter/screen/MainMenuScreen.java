@@ -242,9 +242,47 @@ public class MainMenuScreen implements Screen {
                 volumeLabel.setText("Volume: " + (int)(vol * 100f) + "%");
             }
         });
-        dialog.getContentTable().add(volumeSlider).width(600).padBottom(40).row();
+        dialog.getContentTable().add(volumeSlider).width(600).padBottom(30).row();
 
-        // Close
+        // ─── Music Mute Toggle (Part B) ───────────────────────────────
+        addDialogDivider(dialog, new Color(0.5f, 0.3f, 0.9f, 0.4f));
+
+        // Current state read once at dialog-open time
+        final boolean musicCurrentlyMuted = audioManager.isMusicMuted();
+        // \uf001 = FontAwesome music note; \uf026 = volume-off (muted)
+        String musicIcon  = musicCurrentlyMuted ? "\uf026" : "\uf001";
+        String musicBtnLabel = musicCurrentlyMuted ? "Music: OFF" : "Music: ON";
+
+        final Button musicToggleBtn = CustomUI.createButton(musicIcon, musicBtnLabel, musicCurrentlyMuted);
+        musicToggleBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                boolean nowMuted = !audioManager.isMusicMuted();
+                audioManager.setMusicMuted(nowMuted);
+                if (!nowMuted) {
+                    // Unmuting: restart menu music that was stopped by setMusicMuted(true)
+                    audioManager.playMusic(SoundName.Ut);
+                }
+                
+                // Update button style & labels in-place (no dialog reload flicker)
+                musicToggleBtn.setStyle(CustomUI.getSkin().get(nowMuted ? "danger" : "default", Button.ButtonStyle.class));
+                if (musicToggleBtn.getChildren().size >= 2) {
+                    if (musicToggleBtn.getChildren().get(0) instanceof Label) {
+                        Label iconLbl = (Label) musicToggleBtn.getChildren().get(0);
+                        iconLbl.setText(nowMuted ? "\uf026" : "\uf001");
+                        iconLbl.setColor(nowMuted ? new Color(1f, 0.4f, 0.4f, 1f) : new Color(0f, 0.9f, 1f, 1f));
+                    }
+                    if (musicToggleBtn.getChildren().get(1) instanceof Label) {
+                        Label textLbl = (Label) musicToggleBtn.getChildren().get(1);
+                        textLbl.setText(nowMuted ? "Music: OFF" : "Music: ON");
+                        textLbl.setColor(nowMuted ? new Color(1f, 0.4f, 0.4f, 1f) : new Color(0f, 0.9f, 1f, 1f));
+                    }
+                }
+            }
+        });
+        dialog.getContentTable().add(musicToggleBtn).width(600).height(130).padTop(10).padBottom(25).row();
+
+        // Close — \uf00d is FontAwesome × (times/close icon)
         Button closeBtn = CustomUI.createButton("\uf00d", "Close", false);
         closeBtn.addListener(new ClickListener() {
             @Override
@@ -252,7 +290,7 @@ public class MainMenuScreen implements Screen {
                 dialog.hide();
             }
         });
-        dialog.getContentTable().add(closeBtn).width(400).height(120).padTop(20).row();
+        dialog.getContentTable().add(closeBtn).width(400).height(120).padTop(10).row();
 
         dialog.show(stage, Actions.sequence(Actions.alpha(0f), Actions.alpha(1f, 0.2f)));
         dialog.pack();

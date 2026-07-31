@@ -1,83 +1,82 @@
 package com.alexei.spaceshooter.entity;
 
 import com.alexei.spaceshooter.utils.SoundName;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 
+/**
+ * Weapon-upgrade pickup item.
+ * Visual: blue ring (proper hollow ring) with a solid blue triangle centred inside.
+ */
 public class ItemWeaponUpgrade extends Item {
-    public static final float ITEM_SIZE = 26;
-    public static final Color ITEM_COLOR = Color.valueOf("00ffff"); // cyan
+    public static final float ITEM_SIZE = 18f;
+    public static final Color ITEM_COLOR = Color.valueOf("0077ff");
     public static final SoundName PICK_UP_SOUND = SoundName.Hit7;
 
-    private static TextureRegion textureRegion;
-    private final int rotationSpeed = MathUtils.random(60, 120);
+    private static final float RING_OUTER  = 22f;
+    private static final float RING_INNER  = 16f;
+    private static final int   SEGMENTS    = 64;
 
     public ItemWeaponUpgrade(float x, float y) {
         super(x, y, ITEM_SIZE, ITEM_SIZE);
         super.setColor(ITEM_COLOR);
         super.setOrientInDirectionOfVelocity(false);
-        super.setOrientation(MathUtils.random(0, 359));
+        super.setOrientation(0);
         super.setPickUpSound(PICK_UP_SOUND);
-        
-        super.setBounceCount(0); // Upgrade falls straight off
-        super.setBaseSpeed(150); // Very slow initial scatter
-        super.setVelocity(MathUtils.random(0, 359), 150); // Re-apply scatter speed
-        this.gravity = 300f;
-        this.terminalVelocity = -350f; // Very slow fall speed
-        
-        if (textureRegion == null) {
-            textureRegion = createTexture();
-        }
+
+        super.setBounceCount(0);
+        super.setBaseSpeed(120);
+        super.setVelocity(MathUtils.random(0, 359), 120);
+        this.gravity = 280f;
+        this.terminalVelocity = -320f;
     }
 
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
-        float d = deltaTime / 1000f * rotationSpeed;
-        setOrientation(getOrientation() + d);
     }
 
     @Override
     public void render(ShapeRenderer sr, SpriteBatch batch) {
         float scale = getPickUpAnimationScale();
-        if (scale == 0) scale = 1;
+        if (scale == 0) scale = 1f;
 
-        float texW = textureRegion.getRegionWidth();
-        float texH = textureRegion.getRegionHeight();
-        float w = texW * scale;
-        float h = texH * scale;
+        float cx = getCenterX();
+        float cy = getCenterY();
+        float ro  = RING_OUTER * scale;
+        float ri  = RING_INNER * scale;
 
-        batch.setColor(ITEM_COLOR);
-        batch.draw(textureRegion,
-                getCenterX() - w / 2f, getCenterY() - h / 2f,
-                w / 2f, h / 2f,
-                w, h,
-                1f, 1f,
-                getOrientation());
-    }
+        // GamePlayScreen calls item.render() with batch open, sr ended.
+        batch.end();
 
-    private static TextureRegion createTexture() {
-        int size = 40;
-        Pixmap pixmap = new Pixmap(size, size, Pixmap.Format.RGBA8888);
-        
-        // Draw an upward pointing double chevron
-        pixmap.setColor(ITEM_COLOR);
-        pixmap.fillTriangle(size/2, 2, 5, 20, size - 5, 20);
-        pixmap.fillTriangle(size/2, 20, 5, 38, size - 5, 38);
-        
-        // Inner yellow for contrast
-        pixmap.setColor(Color.YELLOW);
-        pixmap.fillTriangle(size/2, 6, 12, 18, size - 12, 18);
-        pixmap.fillTriangle(size/2, 24, 12, 36, size - 12, 36);
-        
-        Texture texture = new Texture(pixmap);
-        pixmap.dispose();
-        texture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-        return new TextureRegion(texture);
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
+        sr.begin(ShapeRenderer.ShapeType.Filled);
+
+        // ── Ring: full blue disc, then overdraw centre with bg colour ──
+        sr.setColor(0f, 0.47f, 1f, 1f);
+        sr.circle(cx, cy, ro, SEGMENTS);
+
+        sr.setColor(0.04f, 0.04f, 0.08f, 1f); // match space bg
+        sr.circle(cx, cy, ri, SEGMENTS);
+
+        // ── Blue triangle pointing up (fits inside hollow centre) ──
+        float half = ri * 0.82f;
+        float triH = ri * 1.45f;
+        float baseY = cy - triH * 0.42f; // shift slightly downward for visual balance
+        sr.setColor(0f, 0.47f, 1f, 1f);
+        sr.triangle(
+            cx - half, baseY,
+            cx + half, baseY,
+            cx,        baseY + triH
+        );
+
+        sr.end();
+        batch.begin();
     }
 }
