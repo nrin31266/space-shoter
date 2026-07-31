@@ -1,85 +1,92 @@
 # ARCHITECTURE.md — Space Shooter (LibGDX)
 
 > Nguồn sự thật duy nhất về kiến trúc & trạng thái refactor. Cập nhật khi có thay đổi cấu trúc lớn.
-> Cập nhật lần cuối: 07/2026, đã đối chiếu với source thật (EnemyFactory.java, WaveManager.java).
+> Cập nhật lần cuối: 08/2026, mở rộng Phase 4 (20 waves, 6 loại quái, 3 loại đạn độc lập, 7 cấp độ, Stockpile Option A, Save Schema mới).
 
 ---
 
 ## 1. Tổng quan
-Game bắn súng không gian 2D, LibGDX, OOP. Đã trải qua 3 phase refactor:
+Game bắn súng không gian 2D, LibGDX, OOP. Đã trải qua 4 phase refactor & mở rộng:
 - **Phase 1**: Phá God Class `SpaceShooter.java`, chuyển sang Screen-based (`MainGame extends Game`).
-- **Phase 2**: Scene2D UI (Loading %, MainMenu, HUD, GameOver popup).
-- **Phase 3**: Data-driven Wave System (JSON) + Pause Menu, xóa slow-motion.
+- **Phase 2**: Scene2D UI (Loading %, MainMenu, HUD, GameOver popup, Settings Dialog).
+- **Phase 3**: Data-driven Wave System (JSON 15 wave) + Pause Menu, xóa slow-motion.
+- **Phase 4 (08/2026)**: Mở rộng 20 Wave, 6 loại quái (bổ sung `ShipE`, `ShipF`), 3 hệ vũ khí (Plasma Laser, Explosive Blaster, Homing Lightning) với 7 cấp độ tiến trình, cơ chế Bảo vệ Stockpile (Option A), Boss Health Bar, Vòng Khiên Neon Shield Aura, Nổ bung 20 Sao diệt Boss, High Score & Total Stars Tiếng Anh tích luỹ trên Main Menu, và Save/Load tương thích ngược. Tham khảo thêm tại [SYSTEM.md](file:///home/nrin31266/IdeaProjects/space-shooter/SYSTEM.md).
 
-Trạng thái: 35+ file `.java`, 7 package, 0 lỗi biên dịch (tính đến 07/2026).
+Trạng thái: 40+ file `.java`, 7 package, 0 lỗi biên dịch.
 
 ## 2. Class Hierarchy
 
 Visual.java → position, velocity, size, color, direction, speed. AABB collision. static list hiệu ứng toàn cục.
-└─ Unit.java → life, maxLife, List<Weapon>, flash/damagePoints khi trúng đạn.
-├─ Ship.java → player. Rung (vibration), cảnh báo máu thấp (alarm).
-├─ EnemyShipA/B/C/D → quái, xem WAVE_SYSTEM.md mục "Bảng thông số enemy".
-└─ EnemyBoss → boss, spawn qua pattern "BOSS" trong EnemyFactory.
+└─ Unit.java → life, maxLife, List<Weapon>, isDenseAction, pityWeaponType, flash/damagePoints khi trúng đạn.
+   ├─ Ship.java → player. Quản lý 3 track vũ khí, 7 level, stockpile (Option A, bất tử 1.5s), HP (5 ban đầu, 10 max).
+   ├─ EnemyShipA/B/C/D → quái thường / tank / sniper.
+   ├─ EnemyShipE (Mới) → Fast Striker (Size 52x52, Base HP 3.0, Tím `#AA00FF`, bắn `WeaponDoublePulse`).
+   ├─ EnemyShipF (Mới) → Heavy Dragoon (Size 85x85, Base HP 12.0, Vàng `#FFD700`, bắn `WeaponRingBurst`).
+   └─ EnemyBoss → trùm, spawn qua pattern "BOSS" trong EnemyFactory.
 └─ Projectile.java → đạn bay, hỗ trợ isHoming.
-Item.java / ItemStar.java → vật thu thập, vẽ bằng Pixmap texture cache (KHÔNG còn dùng EarClippingTriangulator).
+Item.java / ItemStar.java → vật thu thập.
+├─ ItemHP.java → hồi 1 HP (vòng tròn viền đỏ, dấu `+` đỏ).
+├─ ItemWeaponUpgrade.java → nâng cấp Plasma Laser (vòng cyan, tam giác xanh).
+├─ ItemWeaponUpgradeExplosive.java (Mới) → nâng cấp Explosive Blaster (vòng cam-đỏ, thoi cam).
+└─ ItemWeaponUpgradeHoming.java (Mới) → nâng cấp Homing Lightning (vòng tím, sao tím).
 
 
-## 3. Package structure
+## 3. Package Structure
 
 com.alexei.spaceshooter/
 ├── MainGame.java (entry point, AssetManager)
-├── SpaceShooter.java (static bridge — nợ kỹ thuật giữ lại có chủ đích, xem mục 5)
+├── SpaceShooter.java (static bridge cho items, audio, enemies)
 ├── Starfield.java (parallax 2 lớp, object pooling)
 ├── screen/ LoadingScreen, MainMenuScreen, GamePlayScreen
 ├── manager/ AudioManager, GameState, WaveManager, SaveManager
 ├── factory/ EnemyFactory, WeaponFactory
 ├── data/wave/ WaveConfig, WaveData, SpawnAction
-    │  `SpawnAction` fields: `delay`, `enemyType`, `pattern`, `count`, `hoverYPct`(-1=default),
-    │  `secondaryEnemyType`(null=default, dùng cho INTERLEAVED_ROWS hàng lẻ — xem WAVE_SYSTEM.md mục 3)
-├── entity/ Visual, Unit, Ship, EnemyShipA-D, EnemyBoss, Projectile, ProjectileRocket, Item, ItemStar
-├── weapon/ Weapon, WeaponShipLaser, WeaponShipRocket, WeaponEnergyBallA
+├── entity/ Visual, Unit, Ship, EnemyShipA-F, EnemyBoss, Projectile, Item, ItemStar, ItemHP, ItemWeaponUpgrade, ItemWeaponUpgradeExplosive, ItemWeaponUpgradeHoming
+├── weapon/ Weapon, WeaponShipLaser, WeaponExplosiveBlaster, WeaponHomingLightning, WeaponShipRocket, WeaponEnemyLaser, WeaponEnergyBallA, WeaponSpreadShot, WeaponDoublePulse, WeaponRingBurst
 ├── effect/ Effect, EffectExplosion, EffectFlash, EffectSparks, Particle, ParticleEmitter
-└── utils/ Utils, Timer, TouchData, ScoreTracker, SoundName, SoundType, DebugConfig
+└── utils/ Utils, Timer, TouchData, ScoreTracker, SoundName, SoundType, DebugConfig, CustomUI, FontUtil
 
-Đã xóa: `GameModeManager.java`.
 
-## 4. Screen Flow
+## 4. Screen Flow & Game State Machine
 
-LoadingScreen → MainMenuScreen → GamePlayScreen → (Game Over) → MainMenuScreen (loop)
+LoadingScreen → MainMenuScreen → GamePlayScreen → (Game Over / Endless Loop) → MainMenuScreen
 
-- **GamePlayScreen** state machine: `INTRO → PLAYING → WAVE_TRANSITION → PLAYING → ... → GAME_OVER`.
-- **INTRO** (~3.5s): "GET READY!" overlay → `waveManager.startWave(1)` tại 2.8s → chuyển PLAYING tại 3.5s.
-- **PLAYING**: `waveManager.update(deltaTime, screenW, screenH)` mỗi frame trả về `List<Unit>` cần thêm vào `GameState.enemies`. GamePlayScreen tự kiểm tra `isWaveFinished() && enemies.isEmpty() && totalEnemiesSpawned>0` rồi gọi `markWaveCleared()`.
-- Touch-to-shoot: player chỉ bắn khi đang chạm màn hình, kể cả lúc GET READY / WAVE CLEAR. Nhả tay → `Weapon.setEnabled(false)`.
-- **Slow-motion: ĐÃ XÓA** (Phase 3) — game luôn chạy tốc độ thực. Dead code (`gameSpeed`, `SLOW_MO_GAME_SPEED_LIMIT`, `SLOW_DOWN_PERIOD`, `screenTouched`) đã dọn khỏi `GameState.java` (L1 fix 07/2026).
-- **Hết wave 15**: game loop về wave 1 (`GamePlayScreen` tự quyết định: `int nextId = hasMoreWaves() ? currentWaveId+1 : 1`). Không có màn hình "ALL WAVES COMPLETE" — behaviour có chủ đích (N2 behaviour, không phải bug).
-- **Continue từ save**: khi `continueFromSave=true`, `GamePlayScreen` gọi `launchWave(id, false)` → bỏ qua màn hình wave announcement. Behaviour có chủ đích (N7 behaviour, không phải bug).
+- **GamePlayScreen**:
+  - State machine: `INTRO → PLAYING → WAVE_TRANSITION → PLAYING → ... → GAME_OVER / ENDLESS LOOP`.
+  - **Endless Loop Mode**: Khi hoàn thành Wave 20, game tự động loop về Wave 1 kèm tăng biến `waveLoopCount`. HP quái tiếp tục tăng theo `effectiveWaveId = (waveLoopCount * 20) + waveId` bằng công thức hàm mũ.
+  - **Boss HP Bar**: Thanh HP trùm cố định mép trên UI hiển thị % tổng HP các Boss đang sống (ví dụ `BOSS x3 (75%)`).
+  - **Pity System**: Tại đợt quái cuối các wave trước Boss (Wave 4, 9, 14, 18, 19), 1 quái được gắn `pityWeaponType` đảm bảo rơi 1 Item nâng cấp thuộc track vũ khí người chơi đang cầm.
 
-## 5. Nợ kỹ thuật đã biết (có chủ đích, chưa dọn)
-- `SpaceShooter.java` giữ lại làm **static bridge**: `acquireTarget()`, `isTargetDead()`, `playSound()`, `playMusic()`, hằng số `GROUND_SCROLL_SPEED`, list `items` — tất cả delegate sang instance thật do `GamePlayScreen.show()` set (`setActiveEnemiesList`, `setStaticAudioManager`, `setActiveItemsList`). Không dùng thêm static field mới ngoài các bridge này.
-- `Ship` đã xóa hết static field cũ (`position/size/center/ship`), nhận `AudioManager` qua setter.
-- `ProjectileRocket` dùng `getTarget()` (instance), `WeaponEnergyBallA` dùng `setTarget(Visual)` được `GamePlayScreen` gọi mỗi frame.
-- `Weapon.update(deltaTime, projectiles)` nhận list từ ngoài — không còn `static projectiles`.
+## 5. Vũ khí & Tiến Trình 7 Cấp (Global Shared Level)
 
-## 6. Item / Vũ khí / Âm thanh (Không liên quan wave — xem WAVE_SYSTEM.md cho phần wave)
-- **Weapon Level 1-5** (max 5), tia laser đồng bộ màu Vàng:
-  | Lv | Số tia | Fire delay |
-  |----|--------|-----------|
-  | 1 | 1 | 200ms |
-  | 2 | 1 | 120ms |
-  | 3 | 3 | 200ms |
-  | 4 | 3 | 120ms |
-  | 5 | 5 | 120ms |
-- **Item physics**: Ngôi Sao (điểm) rơi nhanh + nảy; Item HP/Nâng cấp đạn rơi êm (gravity riêng, dễ nhặt). Icon nâng cấp đạn: Double Chevron viền Cyan lõi Vàng.
-- **Player HP Cap** (07/2026): Máu ban đầu = 5 HP (`Ship.INITIAL_LIFE = 5f`), Cap máu tối đa = 10 HP (`Ship.MAX_LIFE = 10f`). Nhặt Item HP sẽ hồi máu vượt mức ban đầu lên tối đa 10 HP.
-- **Audio fix (07/2026)**: Cả 2 file nhạc nền `ut.mp3` và `action_music.mp3` trước đó có `max_volume = 0.0 dBFS` (peak clipping). Đã re-encode bằng ffmpeg với `-filter:a volume=-3dB -q:a 2` → peak hiện ở ~ -3 dBFS, cho headroom tránh clipping khi Android mixer cộng thêm gain. File gốc được backup tại `*.mp3.bak`. Throttle SFX vẫn giữ (giảm tải instance đồng thời).
-- **Item design (07/2026)**: `ItemHP` và `ItemWeaponUpgrade` được vẽ lại hoàn toàn bằng `ShapeRenderer` (không dùng Pixmap/Texture nữa). Size nhỏ hơn (18px). `ItemHP`: vòng tròn đỏ-hồng có viền glow + dấu `+` trắng. `ItemWeaponUpgrade`: vòng tròn cyan có viền glow + mũi tên `↑` trắng. Không còn xáy vòng tràn, bắt đầu cố định (orientation=0).
-- **Audio throttling**: limit giữa các lần phát cùng `SoundName` — xem `AudioManager.soundMinIntervals`. `Laser` = 350ms; `Explode5` = 150ms; `Explode2/3/4/8` = 180ms.
-- **Music Mute** (Part B, 07/2026): `AudioManager` có flag `isMusicMuted` (boolean) lưu vào `Preferences` key `"musicMuted"`. Hoàn toàn **độc lập với volume slider** (key `"volume"`). Toggle button mượt mà in-place trong `MainMenuScreen.showSettingsDialog()`.
-- **Central Debug Config** (07/2026): `DebugConfig.java` nằm trong `utils/`. Đặt `ENABLE_DEBUG = true` để tùy chỉnh `DEBUG_START_WAVE`, `DEBUG_START_HP`, `DEBUG_START_WEAPON_LEVEL` cho việc test nhanh.
-- Fix đã xác nhận: đồng bộ velocity quái với `deltaTime` (hết bay lệch màn hình khi FPS trồi sụt); clamp `hoverY` hai chiều (BUG #3 fix) để đội hình không tràn mép ngoài (xem `applyHoverYPct` trong WAVE_SYSTEM.md).
+| Track | Loại Vũ Khí | Item Đại Diện | Màu Đạn | Đặc Điểm Cân Bằng (Lv 1->7) |
+|---|---|---|---|---|
+| **0** | **Plasma Laser** | ItemWeaponUpgrade (Cyan Triangle) | Vàng Kim (`#FFD700`) | Bắn 1-7 tia mảnh dồn dập (65ms ở Lv 7), sát thương mỗi tia nhỏ (0.5f) |
+| **1** | **Explosive Blaster** | ItemWeaponUpgradeExplosive (Orange Diamond) | Cam Neon (`#FF6600`) | Bắn 1-3 quả cầu plasma lớn (22-29px), sát thương rất cao (2.5f-4.2f), góc xoè siêu nhẹ (max 8°) |
+| **2** | **Homing Lightning** | ItemWeaponUpgradeHoming (Purple Star) | Tím Neon (`#CC00FF`) | Bắn 2-5 phi tiêu sét tím size 15px tự bẻ cong đuổi quái |
 
-## 7. Việc cần làm tiếp
-- [ ] Pity system: guaranteed weapon upgrade drop trước wave có BOSS — hiện chưa có.
-- [ ] Health bar cho Boss: player không có UI để biết HP boss còn bao nhiêu.
-- [ ] LibGDX Sound instance limit: AudioManager chỉ throttle theo thời gian (150ms/âm), không giới hạn số instance chạy đồng thời — có thể gây distort trong wave lớn (L2, để sau).
+- **Endless Wave Loop**: Đánh hết Wave 20 tự động quay về Wave 1 với độ khó/máu quái tăng tiến liên tục.
+- **Neon Shield Aura**: Khi trúng đạn, tàu phát sáng **Vòng Khiên Neon Shield Aura (Vàng & Cyan)** nhấp nháy 1.5s bảo vệ tàu.
+- **Stockpile Damage Rule**: Trúng đạn **LUÔN TRỪ HP**; 1 Stockpile charge tiêu tốn để bảo vệ đạn không bị rớt cấp từ Lv 7.
+- **Boss Radial Star Burst**: Tiêu diệt Boss kích hoạt **Nổ bung 20 Sao toả tròn 360°** văng xa siêu ấn tượng.
+- **Global Shared Weapon Level & Stockpile**: Level đạn (1-7) và Stockpile (0-3) được dùng chung cho tất cả các loại vũ khí. Nhặt bất kỳ Item nâng cấp đạn nào đều tăng 1 Level chung và chuyển sang loại vũ khí đó.
+- **Single Active Weapon Enforcer**: `Ship.java` chỉ đăng ký duy nhất 1 vũ khí active vào danh sách khai hoả (`getWeapons().clear()`), loại bỏ hoàn toàn hiện tượng bắn gộp 3 loại đạn.
+- **Anti-Aliased Neon Rendering**: Tất cả các loại đạn (quái + player) được vẽ bằng 4 lớp anti-aliased neon glow rực rỡ với `GL_BLEND` và lõi trắng siêu nét.
+
+- **HP Scaling Hàm Mũ**: $\text{HP}_{\text{wave}} = \text{HP}_{\text{base}} \times (1 + \text{growthRate})^{(\text{waveId} - \text{firstWave})}$.
+- **Cycle Skip Probability (20%)**: Quái xuất hiện từ action có `count > 20` (`isDenseAction == true`) có 20% xác suất bỏ qua lượt bắn ở mỗi chu kỳ để tản mát tường đạn.
+
+## 6. Save/Load System (Schema Mới & Backward Compatibility)
+Sử dụng `Preferences("space-shooter-save")` lưu trữ:
+- `savedWave`, `score`, `life`, `stars`
+- `activeWeaponType` (0, 1, 2)
+- `weaponLevel_0`, `weaponLevel_1`, `weaponLevel_2` (1-7)
+- `stockpile_0`, `stockpile_1`, `stockpile_2` (0-3)
+- `maxLife` (10f)
+
+*Tự động fallback giá trị mặc định cho file save từ bản cũ mà không gây crash app.*
+
+## 7. Central Debug Config (DebugConfig.java)
+- Bật `ENABLE_DEBUG = true` để tùy chỉnh `DEBUG_START_WAVE` (1-20), `DEBUG_START_HP`, `DEBUG_START_WEAPON_TYPE` (0-2), `DEBUG_START_WEAPON_LEVEL` (1-7).
+- Tùy chỉnh tỉ lệ rơi vật phẩm: `DROP_RATE_WEAPON_UPGRADE` (15%), `DROP_RATE_HP` (5%), `DROP_RATE_STAR` (90%).
+- Bật `DEBUG_TEST_SINGLE_ENEMY = true` để playtest riêng `EnemyShipE` hoặc `EnemyShipF` với số lượng ít (3-5 con) và HP nhân 5x.

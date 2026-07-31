@@ -12,6 +12,7 @@ import com.alexei.spaceshooter.manager.SaveManager;
 import com.alexei.spaceshooter.manager.WaveManager;
 import com.alexei.spaceshooter.utils.*;
 import com.alexei.spaceshooter.weapon.*;
+import java.util.List;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
@@ -111,6 +112,7 @@ public class GamePlayScreen implements Screen {
     private Label  healthLabel;
     private Label  itemsLabel;
     private Label  weaponLabel;
+    private Label  waveLabel;
 
     // ─────────────────────────────────────────────────────────────────
     // Constructors
@@ -149,7 +151,7 @@ public class GamePlayScreen implements Screen {
 
         hudFont = FontUtil.generateRoboto(60);
         hudFont.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-        hudFont.getData().setScale(0.5f);
+        hudFont.getData().setScale(0.45f);
 
         overlayFont = FontUtil.generateRoboto(60);
         overlayFont.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
@@ -175,7 +177,11 @@ public class GamePlayScreen implements Screen {
         if (continueFromSave) {
             SaveManager.SaveData saveData = saveManager.load();
             if (saveData != null) {
+                if (saveData.maxLife > 0) ship.setMaxLife(saveData.maxLife);
                 ship.setLife(saveData.life);
+                ship.setActiveWeaponType(saveData.activeWeaponType);
+                ship.setWeaponLevel(saveData.weaponLevel0);
+                ship.setStockpile(saveData.stockpile0);
                 state.scoreTracker.loadState(saveData.score, saveData.stars);
                 startWaveId = saveData.savedWave;
                 state.currentWaveId = saveData.savedWave;
@@ -190,9 +196,15 @@ public class GamePlayScreen implements Screen {
             if (!continueFromSave) {
                 startWaveId = com.alexei.spaceshooter.utils.DebugConfig.DEBUG_START_WAVE;
                 state.currentWaveId = com.alexei.spaceshooter.utils.DebugConfig.DEBUG_START_WAVE;
+                waveLoopCount = com.alexei.spaceshooter.utils.DebugConfig.DEBUG_START_WAVE_LOOP_COUNT;
             }
             ship.setLife(com.alexei.spaceshooter.utils.DebugConfig.DEBUG_START_HP);
+            ship.setActiveWeaponType(com.alexei.spaceshooter.utils.DebugConfig.DEBUG_START_WEAPON_TYPE);
             ship.setWeaponLevel(com.alexei.spaceshooter.utils.DebugConfig.DEBUG_START_WEAPON_LEVEL);
+
+            if (com.alexei.spaceshooter.utils.DebugConfig.DEBUG_TEST_SINGLE_ENEMY) {
+                startSingleEnemyTestMode(sw, sh);
+            }
         }
 
         for (Weapon w : ship.getWeapons()) w.setAudioManager(audioManager);
@@ -256,16 +268,20 @@ public class GamePlayScreen implements Screen {
      * Helper: calls waveManager.startWave() and shows announcement overlay.
      * @param showAnnounce  true = show "WAVE X" text
      */
+    private int waveLoopCount = 0;
+
     private void launchWave(int waveId, boolean showAnnounce) {
         state.currentWaveId = waveId;
+        int effectiveWaveId = (waveLoopCount * 20) + waveId;
         waveManager.reset();
-        waveManager.startWave(waveId);
+        waveManager.startWave(waveId, effectiveWaveId);
         pendingNextWave = false;
+        showWaveClear = false;
         if (showAnnounce) {
             showWaveAnnouncement = true;
             waveAnnouncementTimer = 0f;
         }
-        Gdx.app.log("[GamePlay]", "Launched Wave " + waveId);
+        Gdx.app.log("[GamePlay]", "Launched Wave " + waveId + " (Loop " + waveLoopCount + ", Effective " + effectiveWaveId + ")");
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -283,39 +299,44 @@ public class GamePlayScreen implements Screen {
     private void buildHUD() {
         Table hud = new Table();
         hud.setFillParent(true);
-        hud.top().pad(20);
+        hud.top().pad(14);
 
         Table left = new Table().left();
 
         Table hpTable = new Table();
         Label hpIcon = new Label("\uf004 ", uiSkin, "icon");
         hpIcon.setColor(new Color(1f, 0.3f, 0.35f, 1f));
-        hpIcon.setFontScale(1.0f);
-        healthLabel = new Label("5", uiSkin);
+        hpIcon.setFontScale(0.70f);
+        healthLabel = new Label("5/10", uiSkin);
         healthLabel.setColor(new Color(1f, 0.3f, 0.35f, 1f));
-        healthLabel.setFontScale(1.0f);
-        hpTable.add(hpIcon).padRight(5); hpTable.add(healthLabel);
-        left.add(hpTable).left().padBottom(12).row();
+        healthLabel.setFontScale(0.70f);
+        hpTable.add(hpIcon).padRight(2); hpTable.add(healthLabel);
+        left.add(hpTable).left().padBottom(2).row();
 
         Table starTable = new Table();
         Label starIcon = new Label("\uf005 ", uiSkin, "icon");
         starIcon.setColor(new Color(1f, 0.88f, 0f, 1f));
-        starIcon.setFontScale(1.0f);
+        starIcon.setFontScale(0.70f);
         itemsLabel = new Label("0", uiSkin);
         itemsLabel.setColor(new Color(1f, 0.88f, 0f, 1f));
-        itemsLabel.setFontScale(1.0f);
-        starTable.add(starIcon).padRight(5); starTable.add(itemsLabel);
-        left.add(starTable).left().padBottom(8).row();
+        itemsLabel.setFontScale(0.70f);
+        starTable.add(starIcon).padRight(2); starTable.add(itemsLabel);
+        left.add(starTable).left().padBottom(2).row();
 
         scoreLabel = new Label("Score: 0", uiSkin);
         scoreLabel.setColor(new Color(0f, 1f, 0.65f, 1f));
-        scoreLabel.setFontScale(1.0f);
-        left.add(scoreLabel).left().row();
+        scoreLabel.setFontScale(0.70f);
+        left.add(scoreLabel).left().padBottom(2).row();
         
-        weaponLabel = new Label("Wpn Lv: 1", uiSkin);
+        weaponLabel = new Label("LASER Lv: 1", uiSkin);
         weaponLabel.setColor(new Color(0f, 1f, 1f, 1f));
-        weaponLabel.setFontScale(1.0f);
-        left.add(weaponLabel).left().padTop(8).row();
+        weaponLabel.setFontScale(0.70f);
+        left.add(weaponLabel).left().padBottom(2).row();
+
+        waveLabel = new Label("WAVE: 1/20", uiSkin);
+        waveLabel.setColor(new Color(1f, 0.85f, 0.1f, 1f));
+        waveLabel.setFontScale(0.70f);
+        left.add(waveLabel).left().row();
 
         hud.add(left).expandX().left();
 
@@ -325,11 +346,7 @@ public class GamePlayScreen implements Screen {
         pauseBtn.addListener(new ClickListener() {
             @Override public void clicked(InputEvent event, float x, float y) {
                 isPaused = true;
-                Ship s = state.ship;
-                saveManager.save(state.currentWaveId,
-                        state.scoreTracker.getTotalPoints(),
-                        s.getLife(),
-                        state.scoreTracker.getStarsCollected());
+                saveCurrentGame();
             }
         });
         hud.add(pauseBtn).size(110, 100).right().top();
@@ -400,6 +417,7 @@ public class GamePlayScreen implements Screen {
         Button menuBtn = dangerBtn("<  Menu");
         menuBtn.addListener(new ClickListener() {
             @Override public void clicked(InputEvent event, float x, float y) {
+                saveCurrentGame();
                 game.setScreen(new MainMenuScreen(game, audioManager));
             }
         });
@@ -414,6 +432,9 @@ public class GamePlayScreen implements Screen {
         long score  = state.scoreTracker.getTotalPoints();
         long killed = state.scoreTracker.getEnemiesKilled();
         long stars  = state.scoreTracker.getStarsCollected();
+
+        // Commit stats ONLY when game session ends (player death on Game Over)
+        saveManager.commitGameStats(score, stars);
 
         VisDialog d = createBaseDialog();
         d.getContentTable().add(dialogTitle("GAME OVER", new Color(1f, 0.25f, 0.25f, 1f)))
@@ -550,10 +571,7 @@ public class GamePlayScreen implements Screen {
             audioManager.stopSound(SoundName.Alarm);
             audioManager.stopAllMusic();
             isGameOver = true;
-            saveManager.save(state.currentWaveId,
-                    state.scoreTracker.getTotalPoints(),
-                    ship.getLife(),
-                    state.scoreTracker.getStarsCollected());
+            saveCurrentGame();
             shapeRenderer.end();
             return;
         }
@@ -627,9 +645,13 @@ public class GamePlayScreen implements Screen {
                 if (item.isColliding(ship) && !item.isPickedUp()) {
                     item.pickUp(); 
                     if (item instanceof com.alexei.spaceshooter.entity.ItemHP) {
-                        ship.addLife(1f); // clamps to maxLife internally (N8)
+                        ship.addLife(1f);
+                    } else if (item instanceof com.alexei.spaceshooter.entity.ItemWeaponUpgradeExplosive) {
+                        ship.upgradeWeaponType(com.alexei.spaceshooter.entity.Ship.WEAPON_TYPE_EXPLOSIVE);
+                    } else if (item instanceof com.alexei.spaceshooter.entity.ItemWeaponUpgradeHoming) {
+                        ship.upgradeWeaponType(com.alexei.spaceshooter.entity.Ship.WEAPON_TYPE_HOMING);
                     } else if (item instanceof com.alexei.spaceshooter.entity.ItemWeaponUpgrade) {
-                        ship.upgradeWeapon();
+                        ship.upgradeWeaponType(com.alexei.spaceshooter.entity.Ship.WEAPON_TYPE_PLASMA);
                     } else {
                         state.scoreTracker.collectStar();
                     }
@@ -641,8 +663,12 @@ public class GamePlayScreen implements Screen {
             }
 
             if (nextWaveDelay <= 0f) {
-                // Launch next wave
-                int nextId = waveManager.hasMoreWaves() ? state.currentWaveId + 1 : 1;
+                // Launch next wave (endless loop back to wave 1 after completing wave 20)
+                boolean hasMore = waveManager.hasMoreWaves();
+                int nextId = hasMore ? state.currentWaveId + 1 : 1;
+                if (!hasMore) {
+                    waveLoopCount++;
+                }
                 launchWave(nextId, true);
                 pendingNextWave = false;
             }
@@ -719,19 +745,42 @@ public class GamePlayScreen implements Screen {
             if (item.isColliding(ship) && !item.isPickedUp()) {
                 item.pickUp(); 
                 if (item instanceof com.alexei.spaceshooter.entity.ItemHP) {
-                    ship.addLife(1f); // clamps to maxLife internally (N8)
+                    ship.addLife(1f);
+                } else if (item instanceof com.alexei.spaceshooter.entity.ItemWeaponUpgradeExplosive) {
+                    ship.upgradeWeaponType(com.alexei.spaceshooter.entity.Ship.WEAPON_TYPE_EXPLOSIVE);
+                } else if (item instanceof com.alexei.spaceshooter.entity.ItemWeaponUpgradeHoming) {
+                    ship.upgradeWeaponType(com.alexei.spaceshooter.entity.Ship.WEAPON_TYPE_HOMING);
                 } else if (item instanceof com.alexei.spaceshooter.entity.ItemWeaponUpgrade) {
-                    ship.upgradeWeapon();
+                    ship.upgradeWeaponType(com.alexei.spaceshooter.entity.Ship.WEAPON_TYPE_PLASMA);
                 } else {
                     state.scoreTracker.collectStar();
                 }
             }
-            float d2 = item.squareDistanceToCenter(ship);
-            // 180 pixels radius = 32400
-            if (d2 <= 32400) {
-                if (item.isMagnetizing()) item.setDirection(ship);
-                else item.magnetize(ship);
-            } else if (item.isMagnetizing()) item.unmagnetize();
+            // Magnetization Rules:
+            // - Stars (ItemStar): magnetize from 300px away (d2 <= 90000) at fast 1200f speed.
+            // - HP Items (ItemHP): magnetize ONLY when VERY CLOSE within 90px (d2 <= 8100) ("cho sát mới hút được máu").
+            // - Weapon Upgrades (PLASMA, EXPLOSIVE, HOMING): NEVER magnetized so players can dodge them!
+            if (item instanceof com.alexei.spaceshooter.entity.ItemStar) {
+                float d2 = item.squareDistanceToCenter(ship);
+                if (d2 <= 90000) {
+                    if (item.isMagnetizing()) item.setDirection(ship);
+                    else item.magnetize(ship);
+                    item.setSpeed(1200f);
+                } else if (item.isMagnetizing()) {
+                    item.unmagnetize();
+                }
+            } else if (item instanceof com.alexei.spaceshooter.entity.ItemHP) {
+                float d2 = item.squareDistanceToCenter(ship);
+                if (d2 <= 8100) { // 90px radius
+                    if (item.isMagnetizing()) item.setDirection(ship);
+                    else item.magnetize(ship);
+                    item.setSpeed(800f);
+                } else if (item.isMagnetizing()) {
+                    item.unmagnetize();
+                }
+            } else {
+                if (item.isMagnetizing()) item.unmagnetize();
+            }
         }
 
         doCollisionDetection();
@@ -743,19 +792,11 @@ public class GamePlayScreen implements Screen {
                 && !pendingNextWave) {
 
             waveManager.markWaveCleared();
-            saveManager.save(state.currentWaveId,
-                    state.scoreTracker.getTotalPoints(),
-                    ship.getLife(),
-                    state.scoreTracker.getStarsCollected());
-
-            // Show "WAVE CLEAR!" overlay
+            saveCurrentGame();
             showWaveClear  = true;
             waveClearTimer = 0f;
-
-            // Schedule next wave after delay
             pendingNextWave = true;
             nextWaveDelay   = NEXT_WAVE_DELAY;
-
             Gdx.app.log("[GamePlay]", "Wave " + state.currentWaveId + " cleared!");
         }
 
@@ -778,7 +819,9 @@ public class GamePlayScreen implements Screen {
 
         shapeRenderer.end();
 
-        // Overlays
+        // Overlays & Boss Health Bar
+        renderBossHealthBar(sw, sh);
+
         batch.begin();
         if (showWaveAnnouncement) renderWaveAnnouncement(sw, sh);
         if (showWaveClear)        renderWaveClear(sw, sh);
@@ -789,45 +832,73 @@ public class GamePlayScreen implements Screen {
         uiStage.draw();
     }
 
-    // ─────────────────────────────────────────────────────────────────
-    // Overlay renders
-    // ─────────────────────────────────────────────────────────────────
+    private void renderBossHealthBar(float sw, float sh) {
+        float totalHp = 0f;
+        float totalMaxHp = 0f;
+        int bossCount = 0;
 
-    /**
-     * Intro overlay shown when a New Game starts.
-     * Shows "SPACE SHOOTER" title + "GET READY!" while the ship sits at the bottom
-     * and the starfield scrolls.
-     */
+        for (Unit enemy : state.enemies) {
+            if (enemy instanceof com.alexei.spaceshooter.entity.EnemyBoss && !enemy.isDead()) {
+                totalHp += enemy.getLife();
+                totalMaxHp += enemy.getMaxLife();
+                bossCount++;
+            }
+        }
+
+        if (bossCount == 0 || totalMaxHp <= 0) return;
+
+        float pct = MathUtils.clamp(totalHp / totalMaxHp, 0f, 1f);
+
+        float barW = sw * 0.70f;
+        float barH = 16f;
+        float barX = (sw - barW) / 2f;
+        float barY = sh - 75f;
+
+        shapeRenderer.begin(com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(0.1f, 0.1f, 0.1f, 0.8f);
+        shapeRenderer.rect(barX - 4, barY - 4, barW + 8, barH + 8);
+        shapeRenderer.setColor(0.3f, 0.0f, 0.1f, 1.0f);
+        shapeRenderer.rect(barX, barY, barW, barH);
+        shapeRenderer.setColor(1.0f, 0.1f, 0.3f, 1.0f);
+        shapeRenderer.rect(barX, barY, barW * pct, barH);
+        shapeRenderer.end();
+
+        batch.begin();
+        String label = (bossCount > 1)
+                ? "BOSS x" + bossCount + " (" + (int)(pct * 100) + "%)"
+                : "BOSS (" + (int)(pct * 100) + "%)";
+        hudFont.setColor(Color.WHITE);
+        GlyphLayout gl = new GlyphLayout(hudFont, label);
+        hudFont.draw(batch, label, (sw - gl.width) / 2f, barY + barH + 18f);
+        batch.end();
+    }
+
+
+
     private void renderIntroOverlay(float sw, float sh) {
         float progress = MathUtils.clamp(introTimer / INTRO_DURATION, 0f, 1f);
 
-        // Fade out near the end
         float alpha;
         if (progress < 0.2f) alpha = progress / 0.2f;
         else if (progress > 0.8f) alpha = 1f - (progress - 0.8f) / 0.2f;
         else alpha = 1f;
 
-        // "GET READY!" pulse
-        float pulse = (MathUtils.sin(introTimer * 4f) + 1f) / 2f; // 0..1
+        float pulse = (MathUtils.sin(introTimer * 4f) + 1f) / 2f;
 
         overlayFont.setColor(new Color(0f, 0.92f, 1f, alpha));
         String title = "GET READY!";
         GlyphLayout gl = new GlyphLayout(overlayFont, title);
-        // Shadow
         overlayFont.setColor(0f, 0f, 0f, alpha * 0.5f);
         overlayFont.draw(batch, title, (sw - gl.width) / 2f + 3, sh * 0.60f - 3);
-        // Main
         overlayFont.setColor(new Color(0f, 0.92f, 1f, alpha * (0.8f + pulse * 0.2f)));
         overlayFont.draw(batch, title, (sw - gl.width) / 2f, sh * 0.60f);
 
-        // Sub-text: "TAP AND HOLD TO SHOOT"
         hudFont.setColor(new Color(1f, 1f, 1f, alpha * 0.7f));
         String sub = "HOLD SCREEN TO SHOOT  •  DRAG TO MOVE";
         GlyphLayout sl = new GlyphLayout(hudFont, sub);
         hudFont.draw(batch, sub, (sw - sl.width) / 2f, sh * 0.50f);
     }
 
-    /** "WAVE X" slide-in — no dark background, text only */
     private void renderWaveAnnouncement(float sw, float sh) {
         float progress = MathUtils.clamp(waveAnnouncementTimer / WAVE_ANNOUNCE_DURATION, 0f, 1f);
         float alpha;
@@ -839,15 +910,12 @@ public class GamePlayScreen implements Screen {
 
         String txt = "WAVE " + state.currentWaveId;
         GlyphLayout gl = new GlyphLayout(overlayFont, txt);
-        // Shadow
         overlayFont.setColor(0f, 0f, 0f, alpha * 0.6f);
         overlayFont.draw(batch, txt, (sw - gl.width) / 2f + 3, slideY - 3);
-        // Text
         overlayFont.setColor(new Color(0f, 0.92f, 1f, alpha));
         overlayFont.draw(batch, txt, (sw - gl.width) / 2f, slideY);
     }
 
-    /** "WAVE CLEAR!" brief text — shown during between-wave delay */
     private void renderWaveClear(float sw, float sh) {
         float progress = MathUtils.clamp(waveClearTimer / WAVE_CLEAR_DURATION, 0f, 1f);
         float alpha;
@@ -867,8 +935,56 @@ public class GamePlayScreen implements Screen {
         Ship ship = state.ship;
         scoreLabel.setText("Score: " + state.scoreTracker.getTotalPoints());
         itemsLabel.setText("" + state.scoreTracker.getStarsCollected());
-        healthLabel.setText("" + (int) ship.getLife());
-        weaponLabel.setText("Wpn Lv: " + ship.getWeaponLevel());
+        healthLabel.setText((int) ship.getLife() + "/" + (int) ship.getMaxLife());
+
+        String wpnTypeStr = (ship.getActiveWeaponType() == Ship.WEAPON_TYPE_PLASMA) ? "LASER" :
+                (ship.getActiveWeaponType() == Ship.WEAPON_TYPE_EXPLOSIVE) ? "BLAST" : "HOMING";
+        int stock = ship.getStockpile();
+        String stockStr = (stock > 0) ? " [" + stock + "★]" : "";
+        weaponLabel.setText(wpnTypeStr + " Lv:" + ship.getWeaponLevel() + stockStr);
+
+        if (waveLabel != null) {
+            String loopStr = (waveLoopCount > 0) ? " (L" + (waveLoopCount + 1) + ")" : "";
+            waveLabel.setText("WAVE: " + state.currentWaveId + "/20" + loopStr);
+        }
+    }
+
+    private void saveCurrentGame() {
+        Ship s = state.ship;
+        saveManager.save(
+                state.currentWaveId,
+                state.scoreTracker.getTotalPoints(),
+                s.getLife(),
+                state.scoreTracker.getStarsCollected(),
+                s.getActiveWeaponType(),
+                s.getWeaponLevel(0),
+                s.getWeaponLevel(1),
+                s.getWeaponLevel(2),
+                s.getStockpile(0),
+                s.getStockpile(1),
+                s.getStockpile(2),
+                s.getMaxLife()
+        );
+    }
+
+    private void startSingleEnemyTestMode(float sw, float sh) {
+        String enemyType = com.alexei.spaceshooter.utils.DebugConfig.DEBUG_TEST_ENEMY_TYPE;
+        int count = com.alexei.spaceshooter.utils.DebugConfig.DEBUG_TEST_ENEMY_COUNT;
+        float hpMult = com.alexei.spaceshooter.utils.DebugConfig.DEBUG_TEST_HP_MULTIPLIER;
+
+        com.alexei.spaceshooter.data.wave.SpawnAction action = new com.alexei.spaceshooter.data.wave.SpawnAction();
+        action.enemyType = enemyType;
+        action.pattern = "GRID";
+        action.count = count;
+        action.hoverYPct = 0.55f;
+
+        List<Unit> testEnemies = enemyFactory.createFromAction(action, sw, sh, state.currentWaveId);
+        for (Unit u : testEnemies) {
+            u.setMaxLife(u.getMaxLife() * hpMult);
+            u.setLife(u.getMaxLife());
+            wireEnemyWeapons(u);
+        }
+        state.enemies.addAll(testEnemies);
     }
 
     private void wireEnemyWeapons(Unit enemy) {

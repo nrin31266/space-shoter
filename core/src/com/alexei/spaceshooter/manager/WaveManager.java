@@ -32,6 +32,7 @@ public class WaveManager {
     private WaveConfig waveConfig;
 
     private int currentWaveId = 0;
+    private int effectiveWaveId = 0;
     private float elapsedTime = 0f;
     private int currentActionIndex = 0;
 
@@ -43,6 +44,9 @@ public class WaveManager {
 
     /** Flag: all actions have been triggered */
     private boolean allActionsTriggered = false;
+
+    private int activePlayerWeaponType = 0;
+    public void setActivePlayerWeaponType(int type) { this.activePlayerWeaponType = type; }
 
     /** Flag: wave is fully cleared (all enemies dead after all actions triggered) */
     private boolean waveCleared = false;
@@ -67,6 +71,10 @@ public class WaveManager {
      * Start a specific wave by ID.
      */
     public void startWave(int waveId) {
+        startWave(waveId, waveId);
+    }
+
+    public void startWave(int waveId, int effectiveWaveId) {
         if (waveConfig == null) {
             Gdx.app.error("[WaveManager]", "Cannot start wave — no config loaded");
             return;
@@ -78,7 +86,8 @@ public class WaveManager {
             return;
         }
 
-        currentWaveId = waveId;
+        this.currentWaveId = waveId;
+        this.effectiveWaveId = effectiveWaveId;
         elapsedTime = 0f;
         currentActionIndex = 0;
         allActionsTriggered = false;
@@ -87,8 +96,7 @@ public class WaveManager {
         currentActions = new ArrayList<>(data.actions);
         processedActions.clear();
 
-        Gdx.app.log("[WaveManager]", "Start Wave " + waveId +
-                " (" + currentActions.size() + " actions)");
+        Gdx.app.log("[WaveManager]", "Start Wave " + waveId + " (Effective " + effectiveWaveId + ", " + currentActions.size() + " actions)");
     }
 
     /**
@@ -113,8 +121,17 @@ public class WaveManager {
         while (currentActionIndex < currentActions.size()) {
             SpawnAction action = currentActions.get(currentActionIndex);
             if (elapsedTime >= action.delay) {
-                // Trigger this action
-                List<Unit> spawned = enemyFactory.createFromAction(action, screenWidth, screenHeight);
+                // Trigger this action with HP scaling by effectiveWaveId
+                List<Unit> spawned = enemyFactory.createFromAction(action, screenWidth, screenHeight, effectiveWaveId > 0 ? effectiveWaveId : currentWaveId);
+                
+                // Pity System (Section 6.2): Guaranteed Upgrade Drop on final action of waves 4, 9, 14, 18, 19
+                boolean isPityWave = (currentWaveId == 4 || currentWaveId == 9 || currentWaveId == 14 || currentWaveId == 18 || currentWaveId == 19);
+                boolean isLastAction = (currentActionIndex == currentActions.size() - 1);
+                if (isPityWave && isLastAction && !spawned.isEmpty() && activePlayerWeaponType >= 0) {
+                    spawned.get(0).setPityWeaponType(activePlayerWeaponType);
+                    Gdx.app.log("[WaveManager]", "Pity Drop assigned for player weapon track " + activePlayerWeaponType);
+                }
+
                 newEnemies.addAll(spawned);
                 totalEnemiesSpawned += spawned.size();
                 processedActions.add(action);

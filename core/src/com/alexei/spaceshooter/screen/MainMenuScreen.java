@@ -158,12 +158,28 @@ public class MainMenuScreen implements Screen {
 
         Label subtitle = new Label("DEFEND THE GALAXY", CustomUI.getSkin());
         subtitle.setAlignment(Align.center);
-        subtitle.setFontScale(1.5f);
+        subtitle.setFontScale(1.3f);
         subtitle.setColor(new Color(0.4f, 0.6f, 0.9f, 0.8f));
-        root.add(subtitle).padBottom(10).row();
+        root.add(subtitle).padBottom(15).row();
+
+        SaveManager smStats = new SaveManager();
+        long highScore  = smStats.getHighScore();
+        long totalStars = smStats.getTotalStars();
+
+        Label highScoreLabel = new Label("HIGH SCORE: " + highScore, CustomUI.getSkin());
+        highScoreLabel.setAlignment(Align.center);
+        highScoreLabel.setFontScale(0.85f);
+        highScoreLabel.setColor(new Color(1f, 0.88f, 0.1f, 0.95f));
+        root.add(highScoreLabel).padBottom(6).row();
+
+        Label totalStarsLabel = new Label("TOTAL STARS: " + totalStars, CustomUI.getSkin());
+        totalStarsLabel.setAlignment(Align.center);
+        totalStarsLabel.setFontScale(0.85f);
+        totalStarsLabel.setColor(new Color(0f, 0.92f, 1f, 0.95f));
+        root.add(totalStarsLabel).padBottom(20).row();
 
         // Spacer
-        root.add().height(200).row();
+        root.add().height(100).row();
 
         // ─── NEW GAME Button ──────────────────────────────────────
         Button newGameBtn = CustomUI.createButton("\uf04b", "NEW GAME", false);

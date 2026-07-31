@@ -31,6 +31,13 @@ public class Item extends Visual {
         super.setVelocity(MathUtils.random(0, 359), SPEED);
     }
 
+    public void setScatterVelocity(float angleDeg, float speed) {
+        this.SPEED = speed;
+        super.setVelocity(angleDeg, speed);
+        velocityTimer.reset();
+        velocityTimer.setDuration(600);
+    }
+
     private int bounceCount = 2; // Default 2 bounces
     
     protected float gravity = 1200f;

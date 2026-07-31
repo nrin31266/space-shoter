@@ -49,6 +49,14 @@ public abstract class Weapon {
         timer.update(deltaTime);
 
         if (timer.isTimerElapsed()) {
+            // Cycle Skip Probability (Section 3.1): 20% skip chance for dense actions (>20 count)
+            if (unit != null && unit.isDenseAction() && com.badlogic.gdx.math.MathUtils.random() < 0.20f) {
+                float variance = fireRate * 0.25f;
+                int nextDuration = fireRate + (int)com.badlogic.gdx.math.MathUtils.random(-variance, variance);
+                timer.setDuration(nextDuration);
+                return;
+            }
+
             projectiles.addAll(Arrays.asList(fire()));
             if (audioManager != null) {
                 audioManager.playSound(weaponSoundName);

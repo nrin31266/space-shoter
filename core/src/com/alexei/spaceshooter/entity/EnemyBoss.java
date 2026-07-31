@@ -78,13 +78,37 @@ public class EnemyBoss extends Unit {
     public void receiveDamage(float damageAmount, Visual visual) {
         super.receiveDamage(damageAmount, visual);
         if (getLife() <= 0 && !hasDropped) {
-            // N1 fix: guard ensures items drop exactly once even if multiple projectiles
-            // hit the boss in the same frame (all of them call receiveDamage before the
-            // enemy list is pruned by collision detection).
             hasDropped = true;
-            // Guarantee weapon upgrade + HP drop on boss kill
-            SpaceShooter.items.add(new ItemWeaponUpgrade(getCenterX() - ItemWeaponUpgrade.ITEM_SIZE / 2, getCenterY() - ItemWeaponUpgrade.ITEM_SIZE / 2));
-            SpaceShooter.items.add(new ItemHP(getCenterX() - ItemHP.ITEM_SIZE / 2, getCenterY() - ItemHP.ITEM_SIZE / 2));
+
+            float cx = getCenterX();
+            float cy = getCenterY();
+
+            // 1. Radial Star Burst: Scatter 20 stars outward in 360° explosion
+            int starCount = 20;
+            for (int i = 0; i < starCount; i++) {
+                float angle = (i * (360f / starCount)) + MathUtils.random(-10f, 10f);
+                float speed = MathUtils.random(450f, 750f);
+                ItemStar star = new ItemStar(cx - ItemStar.STAR_SIZE_OUTER / 2f, cy - ItemStar.STAR_SIZE_OUTER / 2f, 1);
+                star.setScatterVelocity(angle, speed);
+                SpaceShooter.items.add(star);
+            }
+
+            // 2. Scatter Weapon Upgrades & HP Items in diagonal directions
+            ItemWeaponUpgrade w1 = new ItemWeaponUpgrade(cx - ItemWeaponUpgrade.ITEM_SIZE / 2f, cy - ItemWeaponUpgrade.ITEM_SIZE / 2f);
+            w1.setScatterVelocity(45f, 500f);
+            SpaceShooter.items.add(w1);
+
+            ItemWeaponUpgradeExplosive w2 = new ItemWeaponUpgradeExplosive(cx - ItemWeaponUpgradeExplosive.ITEM_SIZE / 2f, cy - ItemWeaponUpgradeExplosive.ITEM_SIZE / 2f);
+            w2.setScatterVelocity(135f, 500f);
+            SpaceShooter.items.add(w2);
+
+            ItemHP hp1 = new ItemHP(cx - ItemHP.ITEM_SIZE / 2f, cy - ItemHP.ITEM_SIZE / 2f);
+            hp1.setScatterVelocity(225f, 500f);
+            SpaceShooter.items.add(hp1);
+
+            ItemHP hp2 = new ItemHP(cx - ItemHP.ITEM_SIZE / 2f, cy - ItemHP.ITEM_SIZE / 2f);
+            hp2.setScatterVelocity(315f, 500f);
+            SpaceShooter.items.add(hp2);
         }
     }
 }

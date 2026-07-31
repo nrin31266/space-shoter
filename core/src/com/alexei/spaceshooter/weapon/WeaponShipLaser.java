@@ -1,45 +1,46 @@
 package com.alexei.spaceshooter.weapon;
 
 import com.alexei.spaceshooter.entity.Projectile;
+import com.alexei.spaceshooter.entity.Ship;
 import com.alexei.spaceshooter.entity.Unit;
 import com.alexei.spaceshooter.utils.SoundName;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 /**
- * Created by Alex on 18/06/2015.
- *
- * Represents the main weapon on the player's ship.
+ * Main Plasma Laser weapon (Track 0).
+ * Features classic thin, sleek yellow/gold laser beams (up to 7 beams at Level 7) with low individual damage.
  */
 public class WeaponShipLaser extends Weapon {
-    private static final int WEAPON_FIRE_RATE = 200; // Default slow fire rate
-    private static final float WEAPON_DAMAGE = 1;
     private static final SoundName WEAPON_SOUND = SoundName.LaserShoot2;
-    private static final float PROJECTILE_WIDTH = 20; // Will be height when rotated 90 degrees
-    private static final float PROJECTILE_HEIGHT = 5; // Slightly thicker
-    private static final float PROJECTILE_DIRECTION = 90;
-    private static final float PROJECTILE_SPEED = 1400; // Faster bullets
-    private static final Color PROJECTILE_COLOR = Color.YELLOW; // Default yellow color
+    private static final float PROJECTILE_SPEED = 1500f;
+    private static final Color PROJECTILE_COLOR = Color.valueOf("FFD700"); // Classic Gold-Yellow
 
     public WeaponShipLaser(Unit unit) {
         super.setUnit(unit);
-        super.setFireRate(WEAPON_FIRE_RATE);
-        super.setDamage(WEAPON_DAMAGE);
+        super.setFireRate(150);
+        super.setDamage(0.8f);
         super.setWeaponSound(WEAPON_SOUND);
     }
     
     @Override
     public void update(float deltaTime, java.util.ArrayList<Projectile> projectiles) {
         Unit unit = getUnit();
-        if (unit instanceof com.alexei.spaceshooter.entity.Ship) {
-            int level = ((com.alexei.spaceshooter.entity.Ship) unit).getWeaponLevel();
-            int targetFireRate = 200;
+        if (unit instanceof Ship) {
+            int level = ((Ship) unit).getWeaponLevel();
+            int targetFireRate;
             switch (level) {
-                case 1: targetFireRate = 200; break; // 1 beam, slow
-                case 2: targetFireRate = 120; break; // 1 beam, fast
-                case 3: targetFireRate = 200; break; // 3 beams, slow
-                case 4: targetFireRate = 120; break; // 3 beams, fast
-                case 5:
-                default: targetFireRate = 120; break; // 5 beams, fast
+                case 1: targetFireRate = 150; break;
+                case 2: targetFireRate = 130; break;
+                case 3: targetFireRate = 110; break;
+                case 4: targetFireRate = 95; break;
+                case 5: targetFireRate = 85; break;
+                case 6: targetFireRate = 75; break;
+                case 7:
+                default: targetFireRate = 65; break;
             }
             if (getFireRate() != targetFireRate) {
                 setFireRate(targetFireRate);
@@ -54,27 +55,58 @@ public class WeaponShipLaser extends Weapon {
         if (unit == null) throw new NullPointerException("The weapon is not associated with any unit.");
 
         int level = 1;
-        if (unit instanceof com.alexei.spaceshooter.entity.Ship) {
-            level = ((com.alexei.spaceshooter.entity.Ship) unit).getWeaponLevel();
+        if (unit instanceof Ship) {
+            level = ((Ship) unit).getWeaponLevel();
         }
 
-        Projectile[] projectiles;
-        if (level == 1 || level == 2) {
-            projectiles = new Projectile[1];
-            projectiles[0] = new Projectile(unit.getCenterX(), unit.getTop(), PROJECTILE_WIDTH, PROJECTILE_HEIGHT, PROJECTILE_DIRECTION, PROJECTILE_SPEED, PROJECTILE_COLOR, getDamage(), true);
-        } else if (level == 3 || level == 4) {
-            projectiles = new Projectile[3];
-            projectiles[0] = new Projectile(unit.getCenterX(), unit.getTop(), PROJECTILE_WIDTH, PROJECTILE_HEIGHT, PROJECTILE_DIRECTION, PROJECTILE_SPEED, PROJECTILE_COLOR, getDamage(), true);
-            projectiles[1] = new Projectile(unit.getCenterX() - 20, unit.getTop(), PROJECTILE_WIDTH, PROJECTILE_HEIGHT, PROJECTILE_DIRECTION + 8, PROJECTILE_SPEED, PROJECTILE_COLOR, getDamage(), true);
-            projectiles[2] = new Projectile(unit.getCenterX() + 20, unit.getTop(), PROJECTILE_WIDTH, PROJECTILE_HEIGHT, PROJECTILE_DIRECTION - 8, PROJECTILE_SPEED, PROJECTILE_COLOR, getDamage(), true);
-        } else {
-            // Level 5 (max)
-            projectiles = new Projectile[5];
-            projectiles[0] = new Projectile(unit.getCenterX(), unit.getTop(), PROJECTILE_WIDTH, PROJECTILE_HEIGHT, PROJECTILE_DIRECTION, PROJECTILE_SPEED, PROJECTILE_COLOR, getDamage(), true);
-            projectiles[1] = new Projectile(unit.getCenterX() - 20, unit.getTop(), PROJECTILE_WIDTH, PROJECTILE_HEIGHT, PROJECTILE_DIRECTION + 8, PROJECTILE_SPEED, PROJECTILE_COLOR, getDamage(), true);
-            projectiles[2] = new Projectile(unit.getCenterX() + 20, unit.getTop(), PROJECTILE_WIDTH, PROJECTILE_HEIGHT, PROJECTILE_DIRECTION - 8, PROJECTILE_SPEED, PROJECTILE_COLOR, getDamage(), true);
-            projectiles[3] = new Projectile(unit.getCenterX() - 40, unit.getTop(), PROJECTILE_WIDTH, PROJECTILE_HEIGHT, PROJECTILE_DIRECTION + 16, PROJECTILE_SPEED, PROJECTILE_COLOR, getDamage(), true);
-            projectiles[4] = new Projectile(unit.getCenterX() + 40, unit.getTop(), PROJECTILE_WIDTH, PROJECTILE_HEIGHT, PROJECTILE_DIRECTION - 16, PROJECTILE_SPEED, PROJECTILE_COLOR, getDamage(), true);
+        int count;
+        float damage;
+        float totalSpread;
+
+        switch (level) {
+            case 1: count = 1; damage = 0.8f; totalSpread = 0f; break;
+            case 2: count = 2; damage = 0.7f; totalSpread = 6f; break;
+            case 3: count = 3; damage = 0.6f; totalSpread = 10f; break;
+            case 4: count = 4; damage = 0.55f; totalSpread = 12f; break;
+            case 5: count = 5; damage = 0.5f; totalSpread = 14f; break;
+            case 6: count = 6; damage = 0.5f; totalSpread = 16f; break;
+            case 7:
+            default: count = 7; damage = 0.5f; totalSpread = 18f; break;
+        }
+
+        Projectile[] projectiles = new Projectile[count];
+        float baseDir = 90f;
+
+        for (int i = 0; i < count; i++) {
+            float dir = baseDir;
+            if (count > 1) {
+                dir = baseDir + (i - (count - 1) / 2f) * (totalSpread / (count - 1));
+            }
+            float xOffset = (i - (count - 1) / 2f) * 6f;
+            projectiles[i] = new Projectile(
+                    unit.getCenterX() + xOffset, unit.getTop(),
+                    6f, 24f,
+                    dir, PROJECTILE_SPEED,
+                    PROJECTILE_COLOR, damage, true) {
+                @Override
+                public void render(ShapeRenderer sr, SpriteBatch batch) {
+                    Gdx.gl.glEnable(GL20.GL_BLEND);
+                    Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
+                    float cx = getCenterX();
+                    float cy = getCenterY();
+                    float w  = getWidth();
+                    float h  = getHeight();
+
+                    // Thin Gold/Yellow Laser Beam
+                    sr.setColor(1f, 0.85f, 0.1f, 0.40f);
+                    sr.rect(cx - w, cy - h * 0.5f, w * 2f, h);
+                    sr.setColor(PROJECTILE_COLOR);
+                    sr.rect(cx - w * 0.5f, cy - h * 0.5f, w, h);
+                    sr.setColor(Color.WHITE);
+                    sr.rect(cx - w * 0.25f, cy - h * 0.4f, w * 0.5f, h * 0.8f);
+                }
+            };
         }
         return projectiles;
     }

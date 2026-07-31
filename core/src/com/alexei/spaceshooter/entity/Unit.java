@@ -40,6 +40,10 @@ public class Unit extends Visual {
 
 
     private int starCount = 1; // the amount of stars this unit drops when destroyed
+    private boolean isDenseAction = false; // set to true when spawned in action with count > 20
+
+    public boolean isDenseAction() { return isDenseAction; }
+    public void setDenseAction(boolean isDenseAction) { this.isDenseAction = isDenseAction; }
 
     public Unit(float x, float y, float width, float height) {
         super(x, y, width, height);
@@ -183,6 +187,10 @@ public class Unit extends Visual {
         }
     }
 
+    private int pityWeaponType = -1;
+    public void setPityWeaponType(int weaponType) { this.pityWeaponType = weaponType; }
+    public int getPityWeaponType() { return pityWeaponType; }
+
     private void dropStars() {
         // Boss handles its own drops in its override.
         // N3: guard against SpaceShooter.items being null (not yet wired by GamePlayScreen).
@@ -191,16 +199,41 @@ public class Unit extends Visual {
             return;
         }
 
-        float rand = MathUtils.random(1f);
-        if (rand < 0.15f) { // 15% chance for weapon upgrade
-            SpaceShooter.items.add(new ItemWeaponUpgrade(getCenterX() - ItemWeaponUpgrade.ITEM_SIZE / 2, getCenterY() - ItemWeaponUpgrade.ITEM_SIZE / 2));
-        } else if (rand < 0.20f) { // 5% chance for HP
-            SpaceShooter.items.add(new ItemHP(getCenterX() - ItemHP.ITEM_SIZE / 2, getCenterY() - ItemHP.ITEM_SIZE / 2));
+        if (pityWeaponType >= 0) {
+            // Guaranteed Pity Drop for player's current weapon track!
+            switch (pityWeaponType) {
+                case 1:
+                    SpaceShooter.items.add(new ItemWeaponUpgradeExplosive(getCenterX() - ItemWeaponUpgradeExplosive.ITEM_SIZE / 2, getCenterY() - ItemWeaponUpgradeExplosive.ITEM_SIZE / 2));
+                    break;
+                case 2:
+                    SpaceShooter.items.add(new ItemWeaponUpgradeHoming(getCenterX() - ItemWeaponUpgradeHoming.ITEM_SIZE / 2, getCenterY() - ItemWeaponUpgradeHoming.ITEM_SIZE / 2));
+                    break;
+                case 0:
+                default:
+                    SpaceShooter.items.add(new ItemWeaponUpgrade(getCenterX() - ItemWeaponUpgrade.ITEM_SIZE / 2, getCenterY() - ItemWeaponUpgrade.ITEM_SIZE / 2));
+                    break;
+            }
+        } else {
+            float rand = MathUtils.random(1f);
+            float weaponRate = com.alexei.spaceshooter.utils.DebugConfig.DROP_RATE_WEAPON_UPGRADE;
+            float hpRate     = com.alexei.spaceshooter.utils.DebugConfig.DROP_RATE_HP;
+            if (rand < weaponRate) {
+                int pick = MathUtils.random(0, 2);
+                if (pick == 1) {
+                    SpaceShooter.items.add(new ItemWeaponUpgradeExplosive(getCenterX() - ItemWeaponUpgradeExplosive.ITEM_SIZE / 2, getCenterY() - ItemWeaponUpgradeExplosive.ITEM_SIZE / 2));
+                } else if (pick == 2) {
+                    SpaceShooter.items.add(new ItemWeaponUpgradeHoming(getCenterX() - ItemWeaponUpgradeHoming.ITEM_SIZE / 2, getCenterY() - ItemWeaponUpgradeHoming.ITEM_SIZE / 2));
+                } else {
+                    SpaceShooter.items.add(new ItemWeaponUpgrade(getCenterX() - ItemWeaponUpgrade.ITEM_SIZE / 2, getCenterY() - ItemWeaponUpgrade.ITEM_SIZE / 2));
+                }
+            } else if (rand < weaponRate + hpRate) {
+                SpaceShooter.items.add(new ItemHP(getCenterX() - ItemHP.ITEM_SIZE / 2, getCenterY() - ItemHP.ITEM_SIZE / 2));
+            }
         }
-        
-        if (MathUtils.randomBoolean(0.9f)) {
-            for(int i=0;i<starCount;i++) {
-                SpaceShooter.items.add(new ItemStar(getCenterX()-ItemStar.STAR_SIZE_OUTER/2,getCenterY()-ItemStar.STAR_SIZE_OUTER/2,1));
+
+        if (MathUtils.random(1f) < com.alexei.spaceshooter.utils.DebugConfig.DROP_RATE_STAR) {
+            for (int i = 0; i < starCount; i++) {
+                SpaceShooter.items.add(new ItemStar(getCenterX() - ItemStar.STAR_SIZE_OUTER / 2, getCenterY() - ItemStar.STAR_SIZE_OUTER / 2, 1));
             }
         }
     }

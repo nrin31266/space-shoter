@@ -32,6 +32,10 @@ public class SpaceShooter {
         activeEnemiesRef = list;
     }
 
+    public static ArrayList<Unit> getActiveEnemiesList() {
+        return activeEnemiesRef;
+    }
+
     public static Visual acquireTarget() {
         if (activeEnemiesRef == null || activeEnemiesRef.isEmpty()) return null;
         return activeEnemiesRef.get(MathUtils.random(0, activeEnemiesRef.size() - 1));
