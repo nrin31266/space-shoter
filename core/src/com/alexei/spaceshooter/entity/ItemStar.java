@@ -1,6 +1,7 @@
 package com.alexei.spaceshooter.entity;
 
 import com.alexei.spaceshooter.utils.SoundName;
+import com.alexei.spaceshooter.utils.TextureRegistry;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -45,21 +46,22 @@ public class ItemStar extends Item {
 
     @Override
     public void render(ShapeRenderer sr, SpriteBatch batch) {
+        if (batch == null || !batch.isDrawing()) return;
         float scale = getPickUpAnimationScale();
         if (scale == 0) scale = 1;
 
-        float texW = starTextureRegion.getRegionWidth();
-        float texH = starTextureRegion.getRegionHeight();
-        float w = texW * scale * multiplier;
-        float h = texH * scale * multiplier;
+        TextureRegion region = (TextureRegistry.itemStar != null) ? TextureRegistry.itemStar : starTextureRegion;
+        float w = getWidth() * scale;
+        float h = getHeight() * scale;
 
         batch.setColor(STAR_COLOR);
-        batch.draw(starTextureRegion,
+        batch.draw(region,
                 getCenterX() - w / 2f, getCenterY() - h / 2f,
                 w / 2f, h / 2f,
                 w, h,
                 1f, 1f,
                 getOrientation());
+        batch.setColor(Color.WHITE);
     }
 
     /**

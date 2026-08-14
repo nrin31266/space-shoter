@@ -1,6 +1,7 @@
 package com.alexei.spaceshooter.entity;
 
 import com.alexei.spaceshooter.utils.SoundName;
+import com.alexei.spaceshooter.utils.TextureRegistry;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -40,34 +41,36 @@ public class ItemWeaponUpgradeExplosive extends Item {
         float scale = getPickUpAnimationScale();
         if (scale == 0) scale = 1f;
 
-        float cx = getCenterX();
-        float cy = getCenterY();
-        float ro  = RING_OUTER * scale;
-        float ri  = RING_INNER * scale;
+        float w = getWidth() * scale * 2.2f;
+        float h = getHeight() * scale * 2.2f;
 
-        batch.end();
+        if (batch != null && batch.isDrawing() && TextureRegistry.itemUpgrade != null) {
+            batch.setColor(ITEM_COLOR);
+            batch.draw(TextureRegistry.itemUpgrade,
+                    getCenterX() - w / 2f, getCenterY() - h / 2f,
+                    w / 2f, h / 2f,
+                    w, h,
+                    1f, 1f,
+                    0f);
+            batch.setColor(Color.WHITE);
+        } else if (sr != null && sr.isDrawing()) {
+            float cx = getCenterX();
+            float cy = getCenterY();
+            float ro  = RING_OUTER * scale;
+            float ri  = RING_INNER * scale;
 
-        Gdx.gl.glEnable(GL20.GL_BLEND);
-        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+            // Orange-red ring
+            sr.setColor(1f, 0.35f, 0f, 1f);
+            sr.circle(cx, cy, ro, SEGMENTS);
 
-        sr.begin(ShapeRenderer.ShapeType.Filled);
+            sr.setColor(0.04f, 0.04f, 0.08f, 1f);
+            sr.circle(cx, cy, ri, SEGMENTS);
 
-        // Orange-red ring
-        sr.setColor(1f, 0.35f, 0f, 1f);
-        sr.circle(cx, cy, ro, SEGMENTS);
-
-        sr.setColor(0.04f, 0.04f, 0.08f, 1f);
-        sr.circle(cx, cy, ri, SEGMENTS);
-
-        // Diamond icon inside (4 points: top, right, bottom, left)
-        float sz = ri * 0.75f;
-        sr.setColor(1f, 0.45f, 0f, 1f);
-        // Top triangle
-        sr.triangle(cx - sz, cy, cx + sz, cy, cx, cy + sz);
-        // Bottom triangle
-        sr.triangle(cx - sz, cy, cx + sz, cy, cx, cy - sz);
-
-        sr.end();
-        batch.begin();
+            // Diamond icon inside
+            float sz = ri * 0.75f;
+            sr.setColor(1f, 0.45f, 0f, 1f);
+            sr.triangle(cx - sz, cy, cx + sz, cy, cx, cy + sz);
+            sr.triangle(cx - sz, cy, cx + sz, cy, cx, cy - sz);
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.alexei.spaceshooter.entity;
 
 import com.alexei.spaceshooter.SpaceShooter;
 import com.alexei.spaceshooter.utils.SoundName;
+import com.alexei.spaceshooter.utils.TextureRegistry;
 import com.alexei.spaceshooter.weapon.WeaponSpreadShot;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
@@ -39,6 +40,13 @@ public class EnemyShipD extends Unit {
         super.clearDeathSounds();
         super.addDeathSound(DEATH_SOUND);
         super.setStarCount(STARS_COUNT);
+        // Apply enemy sprite
+        if (TextureRegistry.enemyD != null) {
+            this.setTextureRegion(TextureRegistry.enemyD.getTexture());
+            setOrientInDirectionOfVelocity(false);
+            setOrientation(180f);
+        }
+
         super.addWeapon(new WeaponSpreadShot(this));
     }
 

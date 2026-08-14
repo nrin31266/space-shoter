@@ -2,14 +2,15 @@ package com.alexei.spaceshooter.entity;
 
 import com.alexei.spaceshooter.SpaceShooter;
 import com.alexei.spaceshooter.utils.SoundName;
+import com.alexei.spaceshooter.utils.TextureRegistry;
 import com.alexei.spaceshooter.weapon.WeaponSpreadShot;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 
 public class EnemyBoss extends Unit {
-    private static final float UNIT_WIDTH  = 250;
-    private static final float UNIT_HEIGHT = 250;
+    private static final float UNIT_WIDTH  = 320;
+    private static final float UNIT_HEIGHT = 320;
     private static final float ENTER_SPEED = 150;     
     private static final float HOVER_SPEED = 100;      
     private static final Color UNIT_COLOR  = Color.valueOf("ff0055"); 
@@ -35,6 +36,13 @@ public class EnemyBoss extends Unit {
         super.addDeathSound(DEATH_SOUND);
         
         super.setStarCount(15);
+
+        // Apply boss sprite
+        if (TextureRegistry.boss != null) {
+            this.setTextureRegion(TextureRegistry.boss.getTexture());
+            setOrientInDirectionOfVelocity(false);
+            setOrientation(180f);
+        }
         super.addWeapon(new WeaponSpreadShot(this));
         
         // Let's add a second weapon to make it more boss-like

@@ -1,6 +1,7 @@
 package com.alexei.spaceshooter.entity;
 
 import com.alexei.spaceshooter.utils.SoundName;
+import com.alexei.spaceshooter.utils.TextureRegistry;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 
@@ -11,8 +12,8 @@ import com.badlogic.gdx.math.MathUtils;
  * then slowly drifts sideways until killed. Resembles the Chicken Invaders style.
  */
 public class EnemyShipA extends Unit {
-    private static final float UNIT_WIDTH  = 60;
-    private static final float UNIT_HEIGHT = 60;
+    private static final float UNIT_WIDTH  = 75;
+    private static final float UNIT_HEIGHT = 75;
     private static final float ENTER_SPEED = 380;     // speed while entering from top
     private static final float HOVER_SPEED = 70;      // horizontal drift speed when hovering
     private static final Color UNIT_COLOR  = Color.valueOf("5DBBFFFF"); // ice blue
@@ -36,7 +37,14 @@ public class EnemyShipA extends Unit {
         super.setLife(MAX_LIFE);
         super.clearDeathSounds();
         super.addDeathSound(DEATH_SOUND);
-        
+
+        // Apply enemy sprite (rotate 180° so it faces down toward player)
+        if (TextureRegistry.enemy1 != null) {
+            this.setTextureRegion(TextureRegistry.enemy1.getTexture());
+            setOrientInDirectionOfVelocity(false);
+            setOrientation(180f); // sprite faces up; flip 180° to face down
+        }
+
         super.addWeapon(new com.alexei.spaceshooter.weapon.WeaponEnemyLaser(this));
     }
 

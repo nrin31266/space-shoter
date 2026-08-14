@@ -50,8 +50,10 @@ public class Effect extends Visual {
      */
     @Override
     public void render(ShapeRenderer sr, SpriteBatch batch) {
-        sr.setColor(super.getColor());
-        sr.circle(position.x, position.y,10);
+        if (sr != null && sr.isDrawing()) {
+            sr.setColor(super.getColor());
+            sr.circle(position.x, position.y,10);
+        }
     }
 
     public boolean isDead() { return isDead; }

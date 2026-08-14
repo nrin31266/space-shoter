@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.graphics.Color;
 
 import java.util.ArrayList;
 
@@ -83,9 +84,27 @@ public class Starfield extends Visual {
     }
 
     public class Star extends Visual {
+        private Color color;
+        private float alpha;
+        private float speedMultiplier;
+
         public Star(float x, float y, float size, float direction, float speed) {
             super(x, y, size, size);
-            super.setVelocity(direction,speed);
+            
+            // Randomize a neon color for the star
+            float r = MathUtils.random();
+            if (r < 0.2f) this.color = new Color(0.2f, 0.8f, 1f, 1f); // Cyan
+            else if (r < 0.4f) this.color = new Color(1f, 0.2f, 0.8f, 1f); // Magenta
+            else if (r < 0.6f) this.color = new Color(0.8f, 0.2f, 1f, 1f); // Purple
+            else if (r < 0.8f) this.color = new Color(1f, 0.8f, 0.2f, 1f); // Yellow
+            else this.color = new Color(1f, 1f, 1f, 1f); // White
+
+            // Base alpha on size (larger = brighter, closer)
+            this.alpha = MathUtils.clamp((size - minStarSize) / (maxStarSize - minStarSize) * 0.8f + 0.2f, 0.2f, 1f);
+            
+            // Speed variance
+            this.speedMultiplier = MathUtils.random(0.8f, 1.2f);
+            super.setVelocity(direction, speed * this.speedMultiplier);
             setSize(size);
         }
 
@@ -100,16 +119,27 @@ public class Starfield extends Visual {
 
         @Override
         public void render(ShapeRenderer sr, SpriteBatch batch) {
-
             // check if star is out of bounds, in which case relocate it somewhere on the bottom screen edge
-            if (getY() < -getHeight()) {
+            if (getY() < -getHeight() * 10f) {
                 float x = MathUtils.random(0, Gdx.graphics.getWidth() - getWidth());
-                float y = Gdx.graphics.getHeight() + getWidth();
+                float y = Gdx.graphics.getHeight() + getWidth() * 10f;
                 setY(y);
                 setX(x);
+                // randomly re-assign color & alpha for variety
+                float r = MathUtils.random();
+                if (r < 0.2f) this.color.set(0.2f, 0.8f, 1f, 1f); 
+                else if (r < 0.4f) this.color.set(1f, 0.2f, 0.8f, 1f); 
+                else if (r < 0.6f) this.color.set(0.8f, 0.2f, 1f, 1f); 
+                else if (r < 0.8f) this.color.set(1f, 0.8f, 0.2f, 1f); 
+                else this.color.set(1f, 1f, 1f, 1f);
             }
 
-            sr.rect(getX(), getY(), getWidth(), getHeight());
+            if (sr != null && sr.isDrawing()) {
+                sr.setColor(color.r, color.g, color.b, alpha);
+                // Draw a streak based on velocity to simulate motion blur
+                float streakLength = getSpeed() * 0.15f; 
+                sr.rectLine(getX(), getY(), getX(), getY() + streakLength, getWidth());
+            }
         }
     }
 }

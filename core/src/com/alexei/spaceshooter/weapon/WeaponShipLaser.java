@@ -87,26 +87,7 @@ public class WeaponShipLaser extends Weapon {
                     unit.getCenterX() + xOffset, unit.getTop(),
                     6f, 24f,
                     dir, PROJECTILE_SPEED,
-                    PROJECTILE_COLOR, damage, true) {
-                @Override
-                public void render(ShapeRenderer sr, SpriteBatch batch) {
-                    Gdx.gl.glEnable(GL20.GL_BLEND);
-                    Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-
-                    float cx = getCenterX();
-                    float cy = getCenterY();
-                    float w  = getWidth();
-                    float h  = getHeight();
-
-                    // Thin Gold/Yellow Laser Beam
-                    sr.setColor(1f, 0.85f, 0.1f, 0.40f);
-                    sr.rect(cx - w, cy - h * 0.5f, w * 2f, h);
-                    sr.setColor(PROJECTILE_COLOR);
-                    sr.rect(cx - w * 0.5f, cy - h * 0.5f, w, h);
-                    sr.setColor(Color.WHITE);
-                    sr.rect(cx - w * 0.25f, cy - h * 0.4f, w * 0.5f, h * 0.8f);
-                }
-            };
+                    PROJECTILE_COLOR, damage, true);
         }
         return projectiles;
     }

@@ -40,17 +40,7 @@ public class WeaponRingBurst extends Weapon {
             projectiles[i] = new Projectile(
                     unit.getCenterX(), unit.getCenterY(),
                     PROJECTILE_SIZE, PROJECTILE_SIZE,
-                    dir, PROJECTILE_SPEED, col, getDamage()) {
-                @Override
-                public void render(ShapeRenderer sr, SpriteBatch batch) {
-                    sr.setColor(col.r, col.g, col.b, 0.4f);
-                    sr.circle(getCenterX(), getCenterY(), getWidth() * 0.85f);
-                    sr.setColor(col);
-                    sr.circle(getCenterX(), getCenterY(), getWidth() * 0.5f);
-                    sr.setColor(Color.WHITE);
-                    sr.circle(getCenterX(), getCenterY(), getWidth() * 0.25f);
-                }
-            };
+                    dir, PROJECTILE_SPEED, col, getDamage());
         }
         return projectiles;
     }

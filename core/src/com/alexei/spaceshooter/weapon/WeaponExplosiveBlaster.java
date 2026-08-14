@@ -87,25 +87,7 @@ public class WeaponExplosiveBlaster extends Weapon {
                     unit.getCenterX(), unit.getTop(),
                     size, size,
                     dir, PROJECTILE_SPEED,
-                    PROJECTILE_COLOR, damage, true) {
-                @Override
-                public void render(ShapeRenderer sr, SpriteBatch batch) {
-                    Gdx.gl.glEnable(GL20.GL_BLEND);
-                    Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-
-                    float cx = getCenterX();
-                    float cy = getCenterY();
-                    float r  = getWidth() * 0.5f;
-
-                    // Large Heavy Orange Plasma Sphere
-                    sr.setColor(1f, 0.4f, 0.0f, 0.35f);
-                    sr.circle(cx, cy, r * 1.4f, 24);
-                    sr.setColor(PROJECTILE_COLOR);
-                    sr.circle(cx, cy, r, 24);
-                    sr.setColor(Color.YELLOW);
-                    sr.circle(cx, cy, r * 0.40f, 24);
-                }
-            };
+                    PROJECTILE_COLOR, damage, true);
         }
         return projectiles;
     }

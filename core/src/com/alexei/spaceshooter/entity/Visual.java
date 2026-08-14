@@ -40,7 +40,14 @@ public class Visual {
      * @param sr
      */
     public void render(ShapeRenderer sr, SpriteBatch batch) {
-        if (region == null) {
+        if (region != null && batch != null && batch.isDrawing()) {
+            batch.draw(region,
+                    position.x, position.y,          // position
+                    size.x * 0.5f, size.y * 0.5f,    // origin (center)
+                    size.x, size.y,                   // size
+                    1f, 1f,                            // scale
+                    orientInDirectionOfVelocity ? dir : orientation); // rotation
+        } else if (region == null && sr != null && sr.isDrawing()) {
             sr.setColor(color);
             if (orientInDirectionOfVelocity) {
                 sr.rect(position.x, position.y, size.x * 0.5f, size.y * 0.5f, size.x, size.y, 1, 1, dir);
@@ -59,18 +66,19 @@ public class Visual {
 
     /***
      * Increments the position of the visual by the velocity delta. Intended to be called on each render call.
+     * Zero-allocation: avoids velocity.cpy() garbage by computing inline.
      */
     private void updatePosition(float deltaTime) {
-        // update position
         float scale = 1f;
-
         // when the app is backgrounded, for a moment, value of Gdx.graphics.getDeltaTime() is zero
         // causing a NaN if we divide it, so we guard against it here
         float curDelta = Gdx.graphics.getDeltaTime();
         if (curDelta > 0) {
             scale = deltaTime / (curDelta * 1000);
         }
-        position.add(velocity.cpy().scl(scale));
+        // Direct component math - avoids Vector2 allocation every frame
+        position.x += velocity.x * scale;
+        position.y += velocity.y * scale;
     }
 
     /**
@@ -125,12 +133,16 @@ public class Visual {
     public Vector2 vectorTo(Visual visual) {
         return visual.position.cpy().sub(position);
     }
+    /** NOTE: Returns a new Vector2. Prefer squareDistanceToCenter() when only distance is needed. */
     public Vector2 vectorToCenter(Visual visual) {
         return new Vector2(visual.getCenterX()-getCenterX(),visual.getCenterY()-getCenterY());
     }
 
     public float squareDistanceToCenter(Visual visual) {
-        return (new Vector2(visual.getCenterX(),visual.getCenterY())).dst2(getCenterX(), getCenterY());
+        // Zero-allocation: avoid new Vector2() per item-magnetization check
+        float dx = visual.getCenterX() - getCenterX();
+        float dy = visual.getCenterY() - getCenterY();
+        return dx * dx + dy * dy;
     }
 
     // getters/setters

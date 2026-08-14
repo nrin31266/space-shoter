@@ -51,6 +51,10 @@ public class MainMenuScreen implements Screen {
 
     // Title animation
     private float titlePulse = 0f;
+    /** Cached to avoid per-frame GlyphLayout allocation in renderTitle() */
+    private final com.badlogic.gdx.graphics.g2d.GlyphLayout cachedLayout = new com.badlogic.gdx.graphics.g2d.GlyphLayout();
+    /** 1x1 white texture reused for dialog dividers instead of creating Pixmap+Texture each time */
+    private Texture whiteDividerTex;
 
     public MainMenuScreen(MainGame game, AudioManager audioManager) {
         this.game = game;
@@ -73,6 +77,15 @@ public class MainMenuScreen implements Screen {
     public void show() {
         audioManager.stopAllMusic();
         audioManager.playMusic(SoundName.Ut);
+
+        // Create a 1x1 white texture for reuse in dividers
+        if (whiteDividerTex == null) {
+            com.badlogic.gdx.graphics.Pixmap pxWhite = new com.badlogic.gdx.graphics.Pixmap(1, 1, com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888);
+            pxWhite.setColor(Color.WHITE);
+            pxWhite.fill();
+            whiteDividerTex = new Texture(pxWhite);
+            pxWhite.dispose();
+        }
 
         createSkin();
         stage = new Stage(new ScreenViewport());
@@ -314,15 +327,11 @@ public class MainMenuScreen implements Screen {
                 (Gdx.graphics.getHeight() - dialog.getHeight()) / 2f);
     }
 
-    /** Thin horizontal divider inside a dialog */
+    /** Thin horizontal divider inside a dialog - reuses cached white texture to avoid Pixmap+Texture allocation */
     private void addDialogDivider(VisDialog dialog, Color color) {
-        Pixmap px = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
-        px.setColor(color);
-        px.fill();
-        Texture tex = new Texture(px);
-        px.dispose();
         com.badlogic.gdx.scenes.scene2d.ui.Image line =
-                new com.badlogic.gdx.scenes.scene2d.ui.Image(tex);
+                new com.badlogic.gdx.scenes.scene2d.ui.Image(whiteDividerTex);
+        line.setColor(color);
         dialog.getContentTable().add(line).width(600).height(2).padTop(10).padBottom(10).row();
     }
 
@@ -380,8 +389,8 @@ public class MainMenuScreen implements Screen {
         batch.begin();
 
         String title = "SPACE SHOOTER";
-        com.badlogic.gdx.graphics.g2d.GlyphLayout gl = new com.badlogic.gdx.graphics.g2d.GlyphLayout(titleFont, title);
-        float tx = (sw - gl.width) / 2f;
+        cachedLayout.setText(titleFont, title);
+        float tx = (sw - cachedLayout.width) / 2f;
         float ty = sh * 0.88f;
 
         // Outer glow layer (cyan, semi-transparent, offset)
@@ -420,5 +429,6 @@ public class MainMenuScreen implements Screen {
         if (skin != null) skin.dispose();
         if (titleFont != null) titleFont.dispose();
         if (fontAwesome != null) fontAwesome.dispose();
+        if (whiteDividerTex != null) whiteDividerTex.dispose();
     }
 }

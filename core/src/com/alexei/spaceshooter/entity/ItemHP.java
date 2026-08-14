@@ -1,6 +1,7 @@
 package com.alexei.spaceshooter.entity;
 
 import com.alexei.spaceshooter.utils.SoundName;
+import com.alexei.spaceshooter.utils.TextureRegistry;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -46,38 +47,30 @@ public class ItemHP extends Item {
         float scale = getPickUpAnimationScale();
         if (scale == 0) scale = 1f;
 
-        float cx = getCenterX();
-        float cy = getCenterY();
-        float ro  = RING_OUTER * scale;
-        float ri  = RING_INNER * scale;
+        float w = getWidth() * scale * 2.2f;
+        float h = getHeight() * scale * 2.2f;
 
-        // GamePlayScreen calls item.render() with batch open, sr ended.
-        batch.end();
-
-        // Enable blending for smooth alpha edges
-        Gdx.gl.glEnable(GL20.GL_BLEND);
-        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-
-        sr.begin(ShapeRenderer.ShapeType.Filled);
-
-        // ── Ring: outer filled circle then punch hole with background colour ──
-        sr.setColor(1f, 0.13f, 0.20f, 1f);
-        sr.circle(cx, cy, ro, SEGMENTS);          // full red disc
-
-        sr.setColor(0f, 0f, 0f, 0f);              // transparent — poke hole
-        // We can't truly punch holes with ShapeRenderer, so instead we
-        // overdraw the centre with the scene background (near-black space).
-        sr.setColor(0.04f, 0.04f, 0.08f, 1f);    // match space bg colour
-        sr.circle(cx, cy, ri, SEGMENTS);           // hollow centre
-
-        // ── Thick red "+" cross ──
-        float arm = ri * 0.78f;   // half-length of each arm (stays inside ring)
-        float thk = ri * 0.48f;   // arm thickness
-        sr.setColor(1f, 0.13f, 0.20f, 1f);
-        sr.rect(cx - thk / 2f, cy - arm, thk, arm * 2f); // vertical
-        sr.rect(cx - arm,      cy - thk / 2f, arm * 2f, thk); // horizontal
-
-        sr.end();
-        batch.begin();
+        if (batch != null && batch.isDrawing() && TextureRegistry.itemHp != null) {
+            batch.draw(TextureRegistry.itemHp,
+                    getCenterX() - w / 2f, getCenterY() - h / 2f,
+                    w / 2f, h / 2f,
+                    w, h,
+                    1f, 1f,
+                    0f);
+        } else if (sr != null && sr.isDrawing()) {
+            float cx = getCenterX();
+            float cy = getCenterY();
+            float ro  = RING_OUTER * scale;
+            float ri  = RING_INNER * scale;
+            sr.setColor(1f, 0.13f, 0.20f, 1f);
+            sr.circle(cx, cy, ro, SEGMENTS);
+            sr.setColor(0.04f, 0.04f, 0.08f, 1f);
+            sr.circle(cx, cy, ri, SEGMENTS);
+            float arm = ri * 0.78f;
+            float thk = ri * 0.48f;
+            sr.setColor(1f, 0.13f, 0.20f, 1f);
+            sr.rect(cx - thk / 2f, cy - arm, thk, arm * 2f);
+            sr.rect(cx - arm,      cy - thk / 2f, arm * 2f, thk);
+        }
     }
 }

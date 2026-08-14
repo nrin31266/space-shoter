@@ -34,20 +34,15 @@ public class Particle extends Visual {
     @Override
     public void render(ShapeRenderer sr, SpriteBatch batch) {
         if (isDead()) return;
-        sr.setColor(getColor());
-        // render the particle oriented around x,y
-//        sr.getTransformMatrix().idt();
-//        sr.getTransformMatrix().setToRotation(0, 0, 1, orientation);
-//        sr.getTransformMatrix().setTranslation(getX() - getWidth() / 2, getX() - getHeight() / 2, 0);
-//
-//        sr.rect(0, 0, getWidth(), getHeight());
-        if (particleShape == ParticleEmitter.ParticleShape.Rect)
-            sr.rect(getX(), getY(), getWidth(), getHeight());
-        else if (particleShape == ParticleEmitter.ParticleShape.Circle)
-            sr.circle(getX(), getY(), getWidth());
-        else if (particleShape == ParticleEmitter.ParticleShape.Texture)
-            sr.rect(getX(), getY(), getWidth(), getHeight()); // TODO: implement textures
-
+        if (sr != null && sr.isDrawing()) {
+            sr.setColor(getColor());
+            if (particleShape == ParticleEmitter.ParticleShape.Rect)
+                sr.rect(getX(), getY(), getWidth(), getHeight());
+            else if (particleShape == ParticleEmitter.ParticleShape.Circle)
+                sr.circle(getX(), getY(), getWidth());
+            else if (particleShape == ParticleEmitter.ParticleShape.Texture)
+                sr.rect(getX(), getY(), getWidth(), getHeight());
+        }
     }
 
     public float getPercentLifeElapsed() { return lifeElapsed / life; }

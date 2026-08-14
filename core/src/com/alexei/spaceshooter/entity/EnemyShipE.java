@@ -1,6 +1,7 @@
 package com.alexei.spaceshooter.entity;
 
 import com.alexei.spaceshooter.utils.SoundName;
+import com.alexei.spaceshooter.utils.TextureRegistry;
 import com.alexei.spaceshooter.weapon.WeaponDoublePulse;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
@@ -11,8 +12,8 @@ import com.badlogic.gdx.math.MathUtils;
  * Appears starting Wave 16.
  */
 public class EnemyShipE extends Unit {
-    private static final float UNIT_WIDTH  = 52;
-    private static final float UNIT_HEIGHT = 52;
+    private static final float UNIT_WIDTH  = 85;
+    private static final float UNIT_HEIGHT = 85;
     private static final float ENTER_SPEED = 420;
     private static final float HOVER_SPEED = 85;
     private static final Color UNIT_COLOR  = Color.valueOf("AA00FFFF"); // Purple
@@ -34,6 +35,13 @@ public class EnemyShipE extends Unit {
         super.setLife(MAX_LIFE);
         super.clearDeathSounds();
         super.addDeathSound(DEATH_SOUND);
+
+        // Apply enemy sprite
+        if (TextureRegistry.enemyE != null) {
+            this.setTextureRegion(TextureRegistry.enemyE.getTexture());
+            setOrientInDirectionOfVelocity(false);
+            setOrientation(180f);
+        }
 
         super.addWeapon(new WeaponDoublePulse(this));
     }

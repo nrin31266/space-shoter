@@ -1,6 +1,7 @@
 package com.alexei.spaceshooter.entity;
 
 import com.alexei.spaceshooter.utils.SoundName;
+import com.alexei.spaceshooter.utils.TextureRegistry;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -45,38 +46,34 @@ public class ItemWeaponUpgrade extends Item {
         float scale = getPickUpAnimationScale();
         if (scale == 0) scale = 1f;
 
-        float cx = getCenterX();
-        float cy = getCenterY();
-        float ro  = RING_OUTER * scale;
-        float ri  = RING_INNER * scale;
+        float w = getWidth() * scale * 2.2f;
+        float h = getHeight() * scale * 2.2f;
 
-        // GamePlayScreen calls item.render() with batch open, sr ended.
-        batch.end();
-
-        Gdx.gl.glEnable(GL20.GL_BLEND);
-        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-
-        sr.begin(ShapeRenderer.ShapeType.Filled);
-
-        // ── Ring: full blue disc, then overdraw centre with bg colour ──
-        sr.setColor(0f, 0.47f, 1f, 1f);
-        sr.circle(cx, cy, ro, SEGMENTS);
-
-        sr.setColor(0.04f, 0.04f, 0.08f, 1f); // match space bg
-        sr.circle(cx, cy, ri, SEGMENTS);
-
-        // ── Blue triangle pointing up (fits inside hollow centre) ──
-        float half = ri * 0.82f;
-        float triH = ri * 1.45f;
-        float baseY = cy - triH * 0.42f; // shift slightly downward for visual balance
-        sr.setColor(0f, 0.47f, 1f, 1f);
-        sr.triangle(
-            cx - half, baseY,
-            cx + half, baseY,
-            cx,        baseY + triH
-        );
-
-        sr.end();
-        batch.begin();
+        if (batch != null && batch.isDrawing() && TextureRegistry.itemUpgrade != null) {
+            batch.draw(TextureRegistry.itemUpgrade,
+                    getCenterX() - w / 2f, getCenterY() - h / 2f,
+                    w / 2f, h / 2f,
+                    w, h,
+                    1f, 1f,
+                    0f);
+        } else if (sr != null && sr.isDrawing()) {
+            float cx = getCenterX();
+            float cy = getCenterY();
+            float ro  = RING_OUTER * scale;
+            float ri  = RING_INNER * scale;
+            sr.setColor(0f, 0.47f, 1f, 1f);
+            sr.circle(cx, cy, ro, SEGMENTS);
+            sr.setColor(0.04f, 0.04f, 0.08f, 1f);
+            sr.circle(cx, cy, ri, SEGMENTS);
+            float half = ri * 0.82f;
+            float triH = ri * 1.45f;
+            float baseY = cy - triH * 0.42f;
+            sr.setColor(0f, 0.47f, 1f, 1f);
+            sr.triangle(
+                cx - half, baseY,
+                cx + half, baseY,
+                cx,        baseY + triH
+            );
+        }
     }
 }

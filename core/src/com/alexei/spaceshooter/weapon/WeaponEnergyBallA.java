@@ -48,15 +48,7 @@ public class WeaponEnergyBallA extends Weapon {
                     target.getCenterY() - getUnit().getCenterY(),
                     target.getCenterX() - getUnit().getCenterX());
         }
-        projectiles[0] = (new Projectile(unit.getCenterX(), unit.getCenterY(), PROJECTILE_WIDTH, PROJECTILE_HEIGHT, dir, PROJECTILE_SPEED, PROJECTILE_COLOR, getDamage()) {
-            @Override
-            public void render(ShapeRenderer sr, SpriteBatch batch) {
-                sr.setColor(getColor());
-                sr.circle(getCenterX(),getCenterY(),getWidth()/2);
-                sr.setColor(Color.CYAN);
-                sr.circle(getCenterX(),getCenterY(),getWidth()/2*2/3);
-            }
-        });
+        projectiles[0] = new Projectile(unit.getCenterX(), unit.getCenterY(), PROJECTILE_WIDTH, PROJECTILE_HEIGHT, dir, PROJECTILE_SPEED, PROJECTILE_COLOR, getDamage());
         return projectiles;
     }
 }

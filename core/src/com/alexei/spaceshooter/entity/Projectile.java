@@ -1,6 +1,7 @@
 package com.alexei.spaceshooter.entity;
 
 import com.alexei.spaceshooter.SpaceShooter;
+import com.alexei.spaceshooter.utils.TextureRegistry;
 import com.alexei.spaceshooter.utils.Utils;
 import com.alexei.spaceshooter.weapon.Weapon;
 import com.badlogic.gdx.Gdx;
@@ -58,34 +59,42 @@ public class Projectile extends Visual {
     }
 
     /**
-     * Renders projectiles with anti-aliased neon glow edges and an energetic white core.
+     * Renders projectiles with sprite textures when batch is active, or shape glow fallback.
      */
     @Override
     public void render(ShapeRenderer sr, SpriteBatch batch) {
         float cx = getCenterX();
         float cy = getCenterY();
-        float r  = Math.max(getWidth(), getHeight()) * 0.5f;
+        float w = getWidth() * 1.5f;
+        float h = getHeight() * 1.8f;
 
-        Gdx.gl.glEnable(GL20.GL_BLEND);
-        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-
-        Color col = getColor();
-
-        // 1. Soft Outer Neon Glow Aura
-        sr.setColor(col.r, col.g, col.b, 0.25f);
-        sr.circle(cx, cy, r + 5f, CIRCLE_SEGMENTS);
-
-        // 2. Neon Ring Border
-        sr.setColor(col.r, col.g, col.b, 0.80f);
-        sr.circle(cx, cy, r + 2f, CIRCLE_SEGMENTS);
-
-        // 3. Core Color
-        sr.setColor(col);
-        sr.circle(cx, cy, r, CIRCLE_SEGMENTS);
-
-        // 4. White Center Core for laser energy pulse
-        sr.setColor(Color.WHITE);
-        sr.circle(cx, cy, r * 0.40f, CIRCLE_SEGMENTS);
+        if (batch != null && batch.isDrawing()) {
+            com.badlogic.gdx.graphics.g2d.TextureRegion region;
+            if (isShipProjectile) {
+                region = TextureRegistry.laserBlue;
+            } else {
+                region = (w > 30 || h > 30) ? TextureRegistry.plasmaOrb : TextureRegistry.laserRed;
+            }
+            if (region != null) {
+                batch.draw(region,
+                        cx - w / 2f, cy - h / 2f,
+                        w / 2f, h / 2f,
+                        w, h,
+                        1f, 1f,
+                        getDirection() - 90f);
+            }
+        } else if (sr != null && sr.isDrawing()) {
+            float r = Math.max(getWidth(), getHeight()) * 0.5f;
+            Color col = getColor();
+            sr.setColor(col.r, col.g, col.b, 0.25f);
+            sr.circle(cx, cy, r + 5f, CIRCLE_SEGMENTS);
+            sr.setColor(col.r, col.g, col.b, 0.80f);
+            sr.circle(cx, cy, r + 2f, CIRCLE_SEGMENTS);
+            sr.setColor(col);
+            sr.circle(cx, cy, r, CIRCLE_SEGMENTS);
+            sr.setColor(Color.WHITE);
+            sr.circle(cx, cy, r * 0.40f, CIRCLE_SEGMENTS);
+        }
     }
 
     public void doDamage(Unit target) {

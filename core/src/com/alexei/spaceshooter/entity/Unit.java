@@ -56,34 +56,40 @@ public class Unit extends Visual {
     }
 
     public void render(ShapeRenderer sr, SpriteBatch batch) {
-        float dx=0; // small offsets, used for rendering only, when the unit is hit, the physical location of the unit is not changed.
-        float dy=0;
+        float dx = flashRunning ? -3 : 0;
+        float dy = flashRunning ? 4 : 0;
 
-        if (flashRunning) { // when the unit is hit, it "flashes", and is also slightly displaced, to show the force of impact.
-            dx = -3;
-            dy = 4;
+        if (getTextureRegion() != null && batch != null && batch.isDrawing()) {
+            if (flashRunning) {
+                batch.setColor(1f, 1f, 1f, 0.5f + flashColor.a);
+            } else {
+                batch.setColor(Color.WHITE);
+            }
+            batch.draw(getTextureRegion(),
+                    getX() + dx, getY() + dy,
+                    getWidth() * 0.5f, getHeight() * 0.5f,
+                    getWidth(), getHeight(),
+                    1f, 1f,
+                    isOrientInDirectionOfVelocity() ? getDirection() : getOrientation());
+            if (flashRunning) {
+                batch.setColor(Color.WHITE);
+            }
+            return;
         }
 
-
-        if (getTextureRegion() == null) {
-            sr.setColor(getColor());
-            sr.rect(getX() + dx, getY() + dy, getWidth(), getHeight());
-        }
-        else {
-             super.render(sr,batch);
-        }
-
-        // draw the unit "flashing". Represented here simply by a rectangle with some alpha
-        if (flashRunning) {
-            sr.setColor(flashColor);
-            sr.rect(getX()+dx,getY()+dy, getWidth(), getHeight());
-        }
-
-        // render damage points
-        for (DamagePoint p : damagePoints) {
-            sr.setColor(Color.BLACK.cpy());
-            sr.getColor().a = 0.25f;
-            sr.rect(position.x + p.pos.x + dx, position.y + p.pos.y + dy, p.dim.x, p.dim.y);
+        if (sr != null && sr.isDrawing()) {
+            if (getTextureRegion() == null) {
+                sr.setColor(getColor());
+                sr.rect(getX() + dx, getY() + dy, getWidth(), getHeight());
+            }
+            if (flashRunning) {
+                sr.setColor(flashColor);
+                sr.rect(getX() + dx, getY() + dy, getWidth(), getHeight());
+            }
+            for (DamagePoint p : damagePoints) {
+                sr.setColor(0f, 0f, 0f, 0.25f);
+                sr.rect(position.x + p.pos.x + dx, position.y + p.pos.y + dy, p.dim.x, p.dim.y);
+            }
         }
     }
 

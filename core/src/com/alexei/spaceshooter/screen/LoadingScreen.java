@@ -2,6 +2,7 @@ package com.alexei.spaceshooter.screen;
 
 import com.alexei.spaceshooter.MainGame;
 import com.alexei.spaceshooter.manager.AudioManager;
+import com.alexei.spaceshooter.utils.TextureRegistry;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
@@ -51,6 +52,9 @@ public class LoadingScreen implements Screen {
         if (assetManager.update()) {
             if (!loaded) {
                 loaded = true;
+                // Populate texture and audio registries from loaded AssetManager resources
+                TextureRegistry.populate(assetManager);
+                audioManager.populate(assetManager);
                 game.setScreen(new MainMenuScreen(game, audioManager));
             }
             return;

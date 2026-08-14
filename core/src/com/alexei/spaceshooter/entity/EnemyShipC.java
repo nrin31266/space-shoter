@@ -2,6 +2,7 @@ package com.alexei.spaceshooter.entity;
 
 import com.alexei.spaceshooter.SpaceShooter;
 import com.alexei.spaceshooter.utils.SoundName;
+import com.alexei.spaceshooter.utils.TextureRegistry;
 import com.alexei.spaceshooter.weapon.WeaponSniperBeam;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
@@ -40,6 +41,13 @@ public class EnemyShipC extends Unit {
         super.clearDeathSounds();
         super.addDeathSound(DEATH_SOUND);
         sniperWeapon = new WeaponSniperBeam(this);
+        // Apply enemy sprite
+        if (TextureRegistry.enemyC != null) {
+            this.setTextureRegion(TextureRegistry.enemyC.getTexture());
+            setOrientInDirectionOfVelocity(false);
+            setOrientation(180f);
+        }
+
         super.addWeapon(sniperWeapon);
     }
 

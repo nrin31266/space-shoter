@@ -71,29 +71,62 @@ public class AudioManager {
     }
 
     /**
-     * Load all sounds from the sounds/ folder. Called during LoadingScreen.
+     * Queue all sounds to be loaded by AssetManager during LoadingScreen.
      */
     public void loadSounds(AssetManager assetManager) {
         String folder = "sounds";
+        assetManager.load(folder + "/alarm.mp3", Sound.class);
+        assetManager.load(folder + "/laser_shoot2.mp3", Sound.class);
+        assetManager.load(folder + "/hit7.mp3", Sound.class);
+        assetManager.load(folder + "/explode2_2.mp3", Sound.class);
+        assetManager.load(folder + "/explode3.mp3", Sound.class);
+        assetManager.load(folder + "/explode4_4.mp3", Sound.class);
+        assetManager.load(folder + "/explode5_5.mp3", Sound.class);
+        assetManager.load(folder + "/explode8.mp3", Sound.class);
+        assetManager.load(folder + "/laser_shoot.mp3", Sound.class);
+        assetManager.load(folder + "/rocket.mp3", Sound.class);
+        assetManager.load(folder + "/end_game.mp3", Sound.class);
+        assetManager.load(folder + "/laser.mp3", Sound.class);
+        assetManager.load(folder + "/explode.mp3", Sound.class);
+        assetManager.load(folder + "/get_damage.mp3", Sound.class);
+        assetManager.load(folder + "/tick.mp3", Sound.class);
+        assetManager.load(folder + "/ready.mp3", Sound.class);
+        assetManager.load(folder + "/go.mp3", Sound.class);
+        assetManager.load(folder + "/warning.mp3", Sound.class);
+    }
 
-        addSound(assetManager, SoundName.Alarm, folder + "/alarm.mp3");
-        addSound(assetManager, SoundName.LaserShoot2, folder + "/laser_shoot2.mp3");
-        addSound(assetManager, SoundName.Hit7, folder + "/hit7.mp3");
-        addSound(assetManager, SoundName.Explode2, folder + "/explode2_2.mp3");
-        addSound(assetManager, SoundName.Explode3, folder + "/explode3.mp3");
-        addSound(assetManager, SoundName.Explode4, folder + "/explode4_4.mp3");
-        addSound(assetManager, SoundName.Explode5, folder + "/explode5_5.mp3");
-        addSound(assetManager, SoundName.Explode8, folder + "/explode8.mp3");
-        addSound(assetManager, SoundName.LaserShoot, folder + "/laser_shoot.mp3");
-        addSound(assetManager, SoundName.Rocket, folder + "/rocket.mp3");
-        addSound(assetManager, SoundName.EndGame, folder + "/end_game.mp3");
-        addSound(assetManager, SoundName.Laser, folder + "/laser.mp3");
-        addSound(assetManager, SoundName.Explode, folder + "/explode.mp3");
-        addSound(assetManager, SoundName.GetDamage, folder + "/get_damage.mp3");
-        addSound(assetManager, SoundName.Tick, folder + "/tick.mp3");
-        addSound(assetManager, SoundName.Ready, folder + "/ready.mp3");
-        addSound(assetManager, SoundName.Go, folder + "/go.mp3");
-        addSound(assetManager, SoundName.Warning, folder + "/warning.mp3");
+    /**
+     * Queue all music to be loaded by AssetManager during LoadingScreen.
+     */
+    public void loadMusic(AssetManager assetManager) {
+        String musicFolder = "music";
+        assetManager.load(musicFolder + "/ut.mp3", Music.class);
+        assetManager.load(musicFolder + "/action_music.mp3", Music.class);
+    }
+
+    /**
+     * Populate sound and music maps from loaded AssetManager resources.
+     */
+    public void populate(AssetManager assetManager) {
+        String folder = "sounds";
+        getLoadedSound(assetManager, SoundName.Alarm, folder + "/alarm.mp3");
+        getLoadedSound(assetManager, SoundName.LaserShoot2, folder + "/laser_shoot2.mp3");
+        getLoadedSound(assetManager, SoundName.Hit7, folder + "/hit7.mp3");
+        getLoadedSound(assetManager, SoundName.Explode2, folder + "/explode2_2.mp3");
+        getLoadedSound(assetManager, SoundName.Explode3, folder + "/explode3.mp3");
+        getLoadedSound(assetManager, SoundName.Explode4, folder + "/explode4_4.mp3");
+        getLoadedSound(assetManager, SoundName.Explode5, folder + "/explode5_5.mp3");
+        getLoadedSound(assetManager, SoundName.Explode8, folder + "/explode8.mp3");
+        getLoadedSound(assetManager, SoundName.LaserShoot, folder + "/laser_shoot.mp3");
+        getLoadedSound(assetManager, SoundName.Rocket, folder + "/rocket.mp3");
+        getLoadedSound(assetManager, SoundName.EndGame, folder + "/end_game.mp3");
+        getLoadedSound(assetManager, SoundName.Laser, folder + "/laser.mp3");
+        getLoadedSound(assetManager, SoundName.Explode, folder + "/explode.mp3");
+        getLoadedSound(assetManager, SoundName.GetDamage, folder + "/get_damage.mp3");
+        getLoadedSound(assetManager, SoundName.Tick, folder + "/tick.mp3");
+        getLoadedSound(assetManager, SoundName.Ready, folder + "/ready.mp3");
+        getLoadedSound(assetManager, SoundName.Go, folder + "/go.mp3");
+        getLoadedSound(assetManager, SoundName.Warning, folder + "/warning.mp3");
 
         // sound categories
         ArrayList<SoundName> soundsHit     = new ArrayList<>();
@@ -104,40 +137,36 @@ public class AudioManager {
         soundsExplode.add(SoundName.Explode2);
 
         // Per-sound throttle overrides (ms between plays)
-        // Laser weapons fire 5+ times/second; without throttle they create audio clipping.
-        // Intervals are set generously to prevent simultaneous instance pileup across
-        // multiple enemies firing the same sound in the same frame.
-        soundMinIntervals.put(SoundName.LaserShoot2, 250L);  // sniper beam (ShipC)
+        soundMinIntervals.put(SoundName.LaserShoot2, 250L);
         soundMinIntervals.put(SoundName.LaserShoot,  LASER_MIN_INTERVAL_MS);
-        soundMinIntervals.put(SoundName.Laser,        350L);  // enemy energy ball & spread (ShipB/D/Boss) — many enemies fire simultaneously
-        soundMinIntervals.put(SoundName.Explode5,     150L);  // small explosion (EnemyShipA) — many can die at once
-        soundMinIntervals.put(SoundName.Explode2,     180L);  // medium explosion
-        soundMinIntervals.put(SoundName.Hit7,         120L);  // item pick-up
-        soundMinIntervals.put(SoundName.Explode,      200L);  // generic explosion
+        soundMinIntervals.put(SoundName.Laser,        350L);
+        soundMinIntervals.put(SoundName.Explode5,     150L);
+        soundMinIntervals.put(SoundName.Explode2,     180L);
+        soundMinIntervals.put(SoundName.Hit7,         120L);
+        soundMinIntervals.put(SoundName.Explode,      200L);
         soundMinIntervals.put(SoundName.Explode3,     180L);
         soundMinIntervals.put(SoundName.Explode4,     180L);
         soundMinIntervals.put(SoundName.Explode8,     180L);
-    }
 
-    /**
-     * Load music from the music/ folder. Called during LoadingScreen.
-     */
-    public void loadMusic(AssetManager assetManager) {
         String musicFolder = "music";
-
-        Music utMusic = Gdx.audio.newMusic(Gdx.files.internal(musicFolder + "/ut.mp3"));
-        utMusic.setLooping(true);
-        utMusic.setVolume(0.4f);
-        musicMap.put(SoundName.Ut, utMusic);
-
-        Music actionMusic = Gdx.audio.newMusic(Gdx.files.internal(musicFolder + "/action_music.mp3"));
-        actionMusic.setLooping(true);
-        actionMusic.setVolume(1f);
-        musicMap.put(SoundName.ActionMusic, actionMusic);
+        if (assetManager.isLoaded(musicFolder + "/ut.mp3")) {
+            Music utMusic = assetManager.get(musicFolder + "/ut.mp3", Music.class);
+            utMusic.setLooping(true);
+            utMusic.setVolume(0.4f);
+            musicMap.put(SoundName.Ut, utMusic);
+        }
+        if (assetManager.isLoaded(musicFolder + "/action_music.mp3")) {
+            Music actionMusic = assetManager.get(musicFolder + "/action_music.mp3", Music.class);
+            actionMusic.setLooping(true);
+            actionMusic.setVolume(1.0f);
+            musicMap.put(SoundName.ActionMusic, actionMusic);
+        }
     }
 
-    private void addSound(AssetManager assetManager, SoundName name, String path) {
-        sounds.put(name, Gdx.audio.newSound(Gdx.files.internal(path)));
+    private void getLoadedSound(AssetManager assetManager, SoundName name, String path) {
+        if (assetManager.isLoaded(path)) {
+            sounds.put(name, assetManager.get(path, Sound.class));
+        }
     }
 
     public void playSound(SoundName soundName) {

@@ -60,13 +60,16 @@ public class GamePlayScreen implements Screen {
     private boolean continueFromSave = false;
     private int     startWaveId     = 1;
 
-    // ─── Rendering ────────────────────────────────────────────────────
     private ShapeRenderer shapeRenderer;
     private ShapeDrawer   drawer;
     private SpriteBatch   batch;
     private BitmapFont    hudFont;
     private BitmapFont    overlayFont;
     private Texture       textureSolid;
+    /** Cached GlyphLayout to avoid per-frame allocation in renderBossHealthBar, renderWaveAnnouncement etc. */
+    private final com.badlogic.gdx.graphics.g2d.GlyphLayout cachedLayout = new com.badlogic.gdx.graphics.g2d.GlyphLayout();
+    /** Track whether batch is currently drawing (to avoid nested begin/end) */
+    private boolean batchDrawing = false;
 
     // ─── Input ────────────────────────────────────────────────────────
     private final TouchData touch            = new TouchData();
@@ -537,15 +540,14 @@ public class GamePlayScreen implements Screen {
         float sh   = Gdx.graphics.getHeight();
         Ship  ship = state.ship;
 
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-
         // ── Game Over ─────────────────────────────────────────────
         if (isGameOver) {
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
             state.starfield.update(dt);
             state.starfield2.update(dt);
             state.starfield.render(shapeRenderer, batch);
             state.starfield2.render(shapeRenderer, batch);
-            shapeRenderer.end();
+            if (shapeRenderer.isDrawing()) shapeRenderer.end();
             showGameOverPopup();
             updateHUD();
             uiStage.act(delta);
@@ -555,10 +557,11 @@ public class GamePlayScreen implements Screen {
 
         // ── Paused ────────────────────────────────────────────────
         if (isPaused) {
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
             state.starfield.render(shapeRenderer, batch);
             state.starfield2.render(shapeRenderer, batch);
             ship.render(shapeRenderer, batch);
-            shapeRenderer.end();
+            if (shapeRenderer.isDrawing()) shapeRenderer.end();
             showPauseDialog();
             uiStage.act(delta);
             uiStage.draw();
@@ -572,7 +575,7 @@ public class GamePlayScreen implements Screen {
             audioManager.stopAllMusic();
             isGameOver = true;
             saveCurrentGame();
-            shapeRenderer.end();
+            if (shapeRenderer.isDrawing()) shapeRenderer.end();
             return;
         }
 
@@ -608,14 +611,16 @@ public class GamePlayScreen implements Screen {
             }
 
             // Render
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
             state.starfield.render(shapeRenderer, batch);
             state.starfield2.render(shapeRenderer, batch);
-            for (Projectile p : state.projectiles) p.render(shapeRenderer, batch);
             ship.render(shapeRenderer, batch);
-            for (Visual v : state.visualEffects) v.render(shapeRenderer, batch);
-            shapeRenderer.end();
+            if (shapeRenderer.isDrawing()) shapeRenderer.end();
 
             batch.begin();
+            ship.render(shapeRenderer, batch);
+            for (Projectile p : state.projectiles) p.render(shapeRenderer, batch);
+            for (Visual     v : state.visualEffects) v.render(shapeRenderer, batch);
             renderIntroOverlay(sw, sh);
             if (showWaveAnnouncement) renderWaveAnnouncement(sw, sh);
             batch.end();
@@ -674,19 +679,17 @@ public class GamePlayScreen implements Screen {
             }
 
             // Render everything that's still around
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
             state.starfield.render(shapeRenderer, batch);
             state.starfield2.render(shapeRenderer, batch);
-            for (Projectile p : state.projectiles) p.render(shapeRenderer, batch);
-            shapeRenderer.end();
-            batch.begin();
-            for (Item i : state.items) i.render(shapeRenderer, batch);
-            batch.end();
-            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
             ship.render(shapeRenderer, batch);
-            for (Visual v : state.visualEffects) v.render(shapeRenderer, batch);
-            shapeRenderer.end();
+            if (shapeRenderer.isDrawing()) shapeRenderer.end();
 
             batch.begin();
+            ship.render(shapeRenderer, batch);
+            for (Projectile p : state.projectiles) p.render(shapeRenderer, batch);
+            for (Item       i : state.items)       i.render(shapeRenderer, batch);
+            for (Visual     v : state.visualEffects) v.render(shapeRenderer, batch);
             if (showWaveClear)        renderWaveClear(sw, sh);
             if (showWaveAnnouncement) renderWaveAnnouncement(sw, sh);
             batch.end();
@@ -802,24 +805,23 @@ public class GamePlayScreen implements Screen {
 
         // ══ RENDER ════════════════════════════════════════════════
 
+        // Pass 1: Background & Shape primitives
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         state.starfield.render(shapeRenderer, batch);
         state.starfield2.render(shapeRenderer, batch);
+        ship.render(shapeRenderer, batch); // Renders shield circle if invulnerable
+        if (shapeRenderer.isDrawing()) shapeRenderer.end();
 
-        for (Projectile p : state.projectiles) p.render(shapeRenderer, batch);
-        for (Unit      e : state.enemies)     e.render(shapeRenderer, batch);
-
-        shapeRenderer.end();
+        // Pass 2: All game entity sprites (Single SpriteBatch pass!)
         batch.begin();
-        for (Item i : state.items) i.render(shapeRenderer, batch);
-        batch.end();
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-
         ship.render(shapeRenderer, batch);
-        for (Visual v : state.visualEffects) v.render(shapeRenderer, batch);
+        for (Unit      e : state.enemies)     e.render(shapeRenderer, batch);
+        for (Item      i : state.items)       i.render(shapeRenderer, batch);
+        for (Projectile p : state.projectiles) p.render(shapeRenderer, batch);
+        for (Visual    v : state.visualEffects) v.render(shapeRenderer, batch);
+        batch.end();
 
-        shapeRenderer.end();
-
-        // Overlays & Boss Health Bar
+        // Pass 3: Overlays & UI
         renderBossHealthBar(sw, sh);
 
         batch.begin();
@@ -868,8 +870,8 @@ public class GamePlayScreen implements Screen {
                 ? "BOSS x" + bossCount + " (" + (int)(pct * 100) + "%)"
                 : "BOSS (" + (int)(pct * 100) + "%)";
         hudFont.setColor(Color.WHITE);
-        GlyphLayout gl = new GlyphLayout(hudFont, label);
-        hudFont.draw(batch, label, (sw - gl.width) / 2f, barY + barH + 18f);
+        cachedLayout.setText(hudFont, label);
+        hudFont.draw(batch, label, (sw - cachedLayout.width) / 2f, barY + barH + 18f);
         batch.end();
     }
 
@@ -887,16 +889,16 @@ public class GamePlayScreen implements Screen {
 
         overlayFont.setColor(new Color(0f, 0.92f, 1f, alpha));
         String title = "GET READY!";
-        GlyphLayout gl = new GlyphLayout(overlayFont, title);
+        cachedLayout.setText(overlayFont, title);
         overlayFont.setColor(0f, 0f, 0f, alpha * 0.5f);
-        overlayFont.draw(batch, title, (sw - gl.width) / 2f + 3, sh * 0.60f - 3);
+        overlayFont.draw(batch, title, (sw - cachedLayout.width) / 2f + 3, sh * 0.60f - 3);
         overlayFont.setColor(new Color(0f, 0.92f, 1f, alpha * (0.8f + pulse * 0.2f)));
-        overlayFont.draw(batch, title, (sw - gl.width) / 2f, sh * 0.60f);
+        overlayFont.draw(batch, title, (sw - cachedLayout.width) / 2f, sh * 0.60f);
 
         hudFont.setColor(new Color(1f, 1f, 1f, alpha * 0.7f));
         String sub = "HOLD SCREEN TO SHOOT  •  DRAG TO MOVE";
-        GlyphLayout sl = new GlyphLayout(hudFont, sub);
-        hudFont.draw(batch, sub, (sw - sl.width) / 2f, sh * 0.50f);
+        cachedLayout.setText(hudFont, sub);
+        hudFont.draw(batch, sub, (sw - cachedLayout.width) / 2f, sh * 0.50f);
     }
 
     private void renderWaveAnnouncement(float sw, float sh) {
@@ -909,11 +911,11 @@ public class GamePlayScreen implements Screen {
         float slideY = sh * 0.72f + (1f - Interpolation.pow3Out.apply(Math.min(1f, progress * 3f))) * sh * 0.15f;
 
         String txt = "WAVE " + state.currentWaveId;
-        GlyphLayout gl = new GlyphLayout(overlayFont, txt);
+        cachedLayout.setText(overlayFont, txt);
         overlayFont.setColor(0f, 0f, 0f, alpha * 0.6f);
-        overlayFont.draw(batch, txt, (sw - gl.width) / 2f + 3, slideY - 3);
+        overlayFont.draw(batch, txt, (sw - cachedLayout.width) / 2f + 3, slideY - 3);
         overlayFont.setColor(new Color(0f, 0.92f, 1f, alpha));
-        overlayFont.draw(batch, txt, (sw - gl.width) / 2f, slideY);
+        overlayFont.draw(batch, txt, (sw - cachedLayout.width) / 2f, slideY);
     }
 
     private void renderWaveClear(float sw, float sh) {
@@ -924,11 +926,11 @@ public class GamePlayScreen implements Screen {
         else alpha = 1f;
 
         String txt = "WAVE CLEAR!";
-        GlyphLayout gl = new GlyphLayout(overlayFont, txt);
+        cachedLayout.setText(overlayFont, txt);
         overlayFont.setColor(0f, 0f, 0f, alpha * 0.5f);
-        overlayFont.draw(batch, txt, (sw - gl.width) / 2f + 3, sh * 0.62f - 3);
+        overlayFont.draw(batch, txt, (sw - cachedLayout.width) / 2f + 3, sh * 0.62f - 3);
         overlayFont.setColor(new Color(1f, 0.88f, 0.1f, alpha));
-        overlayFont.draw(batch, txt, (sw - gl.width) / 2f, sh * 0.62f);
+        overlayFont.draw(batch, txt, (sw - cachedLayout.width) / 2f, sh * 0.62f);
     }
 
     private void updateHUD() {

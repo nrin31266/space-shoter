@@ -20,13 +20,14 @@ public class EffectExplosion extends ParticleEmitter {
     public static final float PARTICLE_ROTATION_SPEED = 0;
     public static final float PARTICLE_ROTATION_SPEED_VARIATION = 0;
 
-    public static final com.badlogic.gdx.graphics.Color PARTICLE_COLOR = new com.badlogic.gdx.graphics.Color(com.badlogic.gdx.graphics.Color.BLUE);
+    /** Warm orange-gold explosion color — matches a realistic fire burst */
+    public static final com.badlogic.gdx.graphics.Color PARTICLE_COLOR = new com.badlogic.gdx.graphics.Color(1.0f, 0.55f, 0.1f, 1f);
     public static final float PARTICLE_COLOR_VARIATION = 0; // TODO
 
     public static final float PARTICLE_ALPHA = 1;
     public static final float PARTICLE_ALPHA_VARIATION = 0;
 
-    public static final int PARTICLE_LIFE_PERIOD = 600;
+    public static final int PARTICLE_LIFE_PERIOD = 450;
     public static final int PARTICLE_LIFE_PERIOD_VARIATION = 100;
 
     public static final ParticleEmitter.ParticleShape PARTICLE_SHAPE = ParticleShape.Rect;

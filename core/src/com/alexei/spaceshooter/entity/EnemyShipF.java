@@ -1,6 +1,7 @@
 package com.alexei.spaceshooter.entity;
 
 import com.alexei.spaceshooter.utils.SoundName;
+import com.alexei.spaceshooter.utils.TextureRegistry;
 import com.alexei.spaceshooter.weapon.WeaponRingBurst;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
@@ -11,8 +12,8 @@ import com.badlogic.gdx.math.MathUtils;
  * Appears starting Wave 16.
  */
 public class EnemyShipF extends Unit {
-    private static final float UNIT_WIDTH  = 85;
-    private static final float UNIT_HEIGHT = 85;
+    private static final float UNIT_WIDTH  = 125;
+    private static final float UNIT_HEIGHT = 125;
     private static final float ENTER_SPEED = 150;
     private static final float HOVER_SPEED = 35;
     private static final Color UNIT_COLOR  = Color.valueOf("FFD700FF"); // Heavy Gold
@@ -34,6 +35,13 @@ public class EnemyShipF extends Unit {
         super.setLife(MAX_LIFE);
         super.clearDeathSounds();
         super.addDeathSound(DEATH_SOUND);
+
+        // Apply enemy sprite
+        if (TextureRegistry.enemyF != null) {
+            this.setTextureRegion(TextureRegistry.enemyF.getTexture());
+            setOrientInDirectionOfVelocity(false);
+            setOrientation(180f);
+        }
 
         super.addWeapon(new WeaponRingBurst(this));
     }

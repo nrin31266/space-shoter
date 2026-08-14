@@ -53,16 +53,7 @@ public class WeaponSniperBeam extends Weapon {
                 unit.getCenterX(), unit.getCenterY(),
                 PROJECTILE_WIDTH, PROJECTILE_HEIGHT,
                 dir, PROJECTILE_SPEED,
-                PROJECTILE_COLOR, getDamage()) {
-            @Override
-            public void render(ShapeRenderer sr, SpriteBatch batch) {
-                // Bright thin beam
-                sr.setColor(getColor());
-                sr.circle(getCenterX(), getCenterY(), getWidth());
-                sr.setColor(Color.WHITE);
-                sr.circle(getCenterX(), getCenterY(), getWidth() * 0.4f);
-            }
-        };
+                PROJECTILE_COLOR, getDamage());
         return new Projectile[]{p};
     }
 }

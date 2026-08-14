@@ -2,6 +2,7 @@ package com.alexei.spaceshooter.entity;
 
 import com.alexei.spaceshooter.manager.AudioManager;
 import com.alexei.spaceshooter.utils.SoundName;
+import com.alexei.spaceshooter.utils.TextureRegistry;
 import com.alexei.spaceshooter.weapon.WeaponExplosiveBlaster;
 import com.alexei.spaceshooter.weapon.WeaponHomingLightning;
 import com.alexei.spaceshooter.weapon.WeaponShipLaser;
@@ -54,6 +55,12 @@ public class Ship extends Unit {
         super.clearSounds();
         super.addDeathSound(DEATH_SOUND);
         super.addDamageSound(DAMAGE_SOUND);
+
+        // Apply ship sprite if available
+        if (TextureRegistry.ship != null) {
+            this.setTextureRegion(TextureRegistry.ship.getTexture());
+            setOrientInDirectionOfVelocity(false); // ship faces up, not in direction of motion
+        }
 
         // Instantiate player weapons
         weaponLaser = new WeaponShipLaser(this);
@@ -161,8 +168,8 @@ public class Ship extends Unit {
     public void render(com.badlogic.gdx.graphics.glutils.ShapeRenderer shapeRenderer, com.badlogic.gdx.graphics.g2d.SpriteBatch batch) {
         if (isDead()) return;
 
-        // Render subtle glowing neon shield bubble when invulnerable
-        if (invulnerabilityTimer > 0) {
+        // Render subtle glowing neon shield bubble when invulnerable (only if ShapeRenderer is currently drawing)
+        if (invulnerabilityTimer > 0 && shapeRenderer != null && shapeRenderer.isDrawing()) {
             Gdx.gl.glEnable(com.badlogic.gdx.graphics.GL20.GL_BLEND);
             Gdx.gl.glBlendFunc(com.badlogic.gdx.graphics.GL20.GL_SRC_ALPHA, com.badlogic.gdx.graphics.GL20.GL_ONE_MINUS_SRC_ALPHA);
 
@@ -180,12 +187,14 @@ public class Ship extends Unit {
             shapeRenderer.circle(cx, cy, radius - 3f, 32);
         }
 
+        // Ship visibility: flash effect - render every other phase when invulnerable
+        boolean shouldRender = true;
         if (invulnerabilityTimer > 0) {
             float flashPhase = (invulnerabilityTimer * 18f) % 2f;
-            if (flashPhase > 0.9f) {
-                super.render(shapeRenderer, batch);
-            }
-        } else {
+            shouldRender = (flashPhase > 0.9f);
+        }
+
+        if (shouldRender) {
             super.render(shapeRenderer, batch);
         }
     }

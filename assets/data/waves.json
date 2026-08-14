@@ -7,15 +7,8 @@
           "delay": 0.5,
           "enemyType": "EnemyShipA",
           "pattern": "GRID",
-          "count": 16,
-          "hoverYPct": 0.55
-        },
-        {
-          "delay": 6.0,
-          "enemyType": "EnemyShipA",
-          "pattern": "CHEVRON",
-          "count": 9,
-          "hoverYPct": 0.6
+          "count": 6,
+          "hoverYPct": 0.65
         }
       ]
     },
@@ -25,16 +18,16 @@
         {
           "delay": 0.5,
           "enemyType": "EnemyShipB",
-          "pattern": "INTERLEAVED_ROWS",
-          "count": 16,
-          "hoverYPct": 0.55
+          "pattern": "GRID",
+          "count": 4,
+          "hoverYPct": 0.7
         },
         {
-          "delay": 7.0,
-          "enemyType": "EnemyShipA",
-          "pattern": "GRID",
-          "count": 20,
-          "hoverYPct": 0.6
+          "delay": 3.5,
+          "enemyType": "EnemyShipC",
+          "pattern": "CHEVRON",
+          "count": 4,
+          "hoverYPct": 0.55
         }
       ]
     },
@@ -43,24 +36,17 @@
       "actions": [
         {
           "delay": 0.5,
-          "enemyType": "EnemyShipC",
-          "pattern": "CHEVRON",
-          "count": 11,
-          "hoverYPct": 0.5
-        },
-        {
-          "delay": 5.0,
-          "enemyType": "EnemyShipB",
+          "enemyType": "EnemyShipD",
           "pattern": "GRID",
-          "count": 16,
-          "hoverYPct": 0.65
+          "count": 2,
+          "hoverYPct": 0.75
         },
         {
-          "delay": 10.0,
-          "enemyType": "EnemyShipA",
-          "pattern": "RANDOM",
-          "count": 12,
-          "hoverYPct": 0.55
+          "delay": 4.0,
+          "enemyType": "EnemyShipE",
+          "pattern": "CHEVRON",
+          "count": 6,
+          "hoverYPct": 0.6
         }
       ]
     },
@@ -69,24 +55,17 @@
       "actions": [
         {
           "delay": 0.5,
-          "enemyType": "EnemyShipD",
+          "enemyType": "EnemyShipF",
           "pattern": "GRID",
-          "count": 12,
-          "hoverYPct": 0.65
+          "count": 3,
+          "hoverYPct": 0.7
         },
         {
-          "delay": 7.0,
+          "delay": 4.5,
           "enemyType": "EnemyShipC",
           "pattern": "INTERLEAVED_ROWS",
-          "count": 16,
+          "count": 4,
           "hoverYPct": 0.55
-        },
-        {
-          "delay": 13.0,
-          "enemyType": "EnemyShipB",
-          "pattern": "CHEVRON",
-          "count": 13,
-          "hoverYPct": 0.5
         }
       ]
     },
@@ -97,14 +76,22 @@
           "delay": 0.5,
           "enemyType": "EnemyShipA",
           "pattern": "GRID",
-          "count": 25,
-          "hoverYPct": 0.45
+          "count": 4,
+          "hoverYPct": 0.7
+        },
+        {
+          "delay": 3.0,
+          "enemyType": "EnemyShipD",
+          "pattern": "CHEVRON",
+          "count": 2,
+          "hoverYPct": 0.75
         },
         {
           "delay": 6.0,
-          "enemyType": "BOSS",
-          "pattern": "BOSS",
-          "count": 1
+          "enemyType": "EnemyShipE",
+          "pattern": "INTERLEAVED_ROWS",
+          "count": 4,
+          "hoverYPct": 0.6
         }
       ]
     },
@@ -115,7 +102,7 @@
           "delay": 0.5,
           "enemyType": "EnemyShipC",
           "pattern": "GRID",
-          "count": 20,
+          "count": 12,
           "hoverYPct": 0.6
         },
         {
@@ -134,21 +121,21 @@
           "delay": 0.5,
           "enemyType": "EnemyShipD",
           "pattern": "INTERLEAVED_ROWS",
-          "count": 16,
+          "count": 9,
           "hoverYPct": 0.65
         },
         {
           "delay": 8.0,
           "enemyType": "EnemyShipC",
           "pattern": "CHEVRON",
-          "count": 15,
+          "count": 9,
           "hoverYPct": 0.45
         },
         {
           "delay": 13.0,
           "enemyType": "EnemyShipB",
           "pattern": "GRID",
-          "count": 25,
+          "count": 15,
           "hoverYPct": 0.55
         }
       ]
@@ -160,21 +147,21 @@
           "delay": 0.5,
           "enemyType": "EnemyShipD",
           "pattern": "GRID",
-          "count": 20,
+          "count": 12,
           "hoverYPct": 0.7
         },
         {
           "delay": 8.0,
           "enemyType": "EnemyShipC",
           "pattern": "INTERLEAVED_ROWS",
-          "count": 20,
+          "count": 12,
           "hoverYPct": 0.5
         },
         {
           "delay": 16.0,
           "enemyType": "EnemyShipA",
           "pattern": "CHEVRON",
-          "count": 17,
+          "count": 10,
           "hoverYPct": 0.5
         }
       ]
@@ -186,28 +173,28 @@
           "delay": 0.5,
           "enemyType": "EnemyShipC",
           "pattern": "GRID",
-          "count": 25,
+          "count": 15,
           "hoverYPct": 0.45
         },
         {
           "delay": 7.0,
           "enemyType": "EnemyShipD",
           "pattern": "CHEVRON",
-          "count": 13,
+          "count": 7,
           "hoverYPct": 0.65
         },
         {
           "delay": 14.0,
           "enemyType": "EnemyShipB",
           "pattern": "INTERLEAVED_ROWS",
-          "count": 20,
+          "count": 12,
           "hoverYPct": 0.55
         },
         {
           "delay": 20.0,
           "enemyType": "EnemyShipA",
           "pattern": "RANDOM",
-          "count": 15,
+          "count": 9,
           "hoverYPct": 0.55
         }
       ]
@@ -219,7 +206,7 @@
           "delay": 0.5,
           "enemyType": "EnemyShipD",
           "pattern": "GRID",
-          "count": 20,
+          "count": 12,
           "hoverYPct": 0.55
         },
         {
@@ -232,7 +219,7 @@
           "delay": 13.0,
           "enemyType": "EnemyShipC",
           "pattern": "CHEVRON",
-          "count": 15,
+          "count": 9,
           "hoverYPct": 0.55
         },
         {
@@ -250,14 +237,14 @@
           "delay": 0.5,
           "enemyType": "EnemyShipD",
           "pattern": "GRID",
-          "count": 25,
+          "count": 15,
           "hoverYPct": 0.65
         },
         {
           "delay": 8.0,
           "enemyType": "EnemyShipC",
           "pattern": "GRID",
-          "count": 25,
+          "count": 15,
           "hoverYPct": 0.6
         }
       ]
@@ -269,21 +256,21 @@
           "delay": 0.5,
           "enemyType": "EnemyShipC",
           "pattern": "CHEVRON",
-          "count": 17,
+          "count": 10,
           "hoverYPct": 0.55
         },
         {
           "delay": 6.0,
           "enemyType": "EnemyShipD",
           "pattern": "INTERLEAVED_ROWS",
-          "count": 24,
+          "count": 14,
           "hoverYPct": 0.6
         },
         {
           "delay": 14.0,
           "enemyType": "EnemyShipB",
           "pattern": "GRID",
-          "count": 30,
+          "count": 18,
           "hoverYPct": 0.45
         }
       ]
@@ -295,21 +282,21 @@
           "delay": 0.5,
           "enemyType": "EnemyShipD",
           "pattern": "CHEVRON",
-          "count": 15,
+          "count": 9,
           "hoverYPct": 0.65
         },
         {
           "delay": 7.0,
           "enemyType": "EnemyShipD",
           "pattern": "GRID",
-          "count": 20,
+          "count": 12,
           "hoverYPct": 0.5
         },
         {
           "delay": 15.0,
           "enemyType": "EnemyShipC",
           "pattern": "INTERLEAVED_ROWS",
-          "count": 24,
+          "count": 14,
           "hoverYPct": 0.55
         }
       ]
@@ -321,28 +308,28 @@
           "delay": 0.5,
           "enemyType": "EnemyShipC",
           "pattern": "GRID",
-          "count": 30,
+          "count": 18,
           "hoverYPct": 0.55
         },
         {
           "delay": 8.0,
           "enemyType": "EnemyShipD",
           "pattern": "CHEVRON",
-          "count": 19,
+          "count": 11,
           "hoverYPct": 0.65
         },
         {
           "delay": 16.0,
           "enemyType": "EnemyShipB",
           "pattern": "INTERLEAVED_ROWS",
-          "count": 24,
+          "count": 14,
           "hoverYPct": 0.5
         },
         {
           "delay": 23.0,
           "enemyType": "EnemyShipA",
           "pattern": "GRID",
-          "count": 36,
+          "count": 21,
           "hoverYPct": 0.7
         }
       ]
@@ -354,7 +341,7 @@
           "delay": 0.5,
           "enemyType": "EnemyShipD",
           "pattern": "GRID",
-          "count": 25,
+          "count": 15,
           "hoverYPct": 0.65
         },
         {
@@ -367,7 +354,7 @@
           "delay": 13.0,
           "enemyType": "EnemyShipC",
           "pattern": "CHEVRON",
-          "count": 21,
+          "count": 12,
           "hoverYPct": 0.55
         },
         {
@@ -380,7 +367,7 @@
           "delay": 29.0,
           "enemyType": "EnemyShipD",
           "pattern": "GRID",
-          "count": 30,
+          "count": 18,
           "hoverYPct": 0.55
         },
         {
@@ -405,14 +392,14 @@
           "delay": 8.0,
           "enemyType": "EnemyShipE",
           "pattern": "CHEVRON",
-          "count": 15,
+          "count": 9,
           "hoverYPct": 0.5
         },
         {
           "delay": 15.0,
           "enemyType": "EnemyShipD",
           "pattern": "INTERLEAVED_ROWS",
-          "count": 20,
+          "count": 12,
           "hoverYPct": 0.65,
           "secondaryEnemyType": "EnemyShipF"
         }
@@ -425,21 +412,21 @@
           "delay": 0.5,
           "enemyType": "EnemyShipE",
           "pattern": "CHEVRON",
-          "count": 17,
+          "count": 10,
           "hoverYPct": 0.45
         },
         {
           "delay": 7.0,
           "enemyType": "EnemyShipC",
           "pattern": "GRID",
-          "count": 25,
+          "count": 15,
           "hoverYPct": 0.55
         },
         {
           "delay": 14.0,
           "enemyType": "EnemyShipF",
           "pattern": "INTERLEAVED_ROWS",
-          "count": 16,
+          "count": 9,
           "hoverYPct": 0.6,
           "secondaryEnemyType": "EnemyShipE"
         },
@@ -447,7 +434,7 @@
           "delay": 22.0,
           "enemyType": "EnemyShipB",
           "pattern": "RANDOM",
-          "count": 18,
+          "count": 10,
           "hoverYPct": 0.5
         }
       ]
@@ -459,28 +446,28 @@
           "delay": 0.5,
           "enemyType": "EnemyShipD",
           "pattern": "GRID",
-          "count": 24,
+          "count": 14,
           "hoverYPct": 0.65
         },
         {
           "delay": 8.0,
           "enemyType": "EnemyShipE",
           "pattern": "CHEVRON",
-          "count": 19,
+          "count": 11,
           "hoverYPct": 0.5
         },
         {
           "delay": 16.0,
           "enemyType": "EnemyShipF",
           "pattern": "GRID",
-          "count": 16,
+          "count": 9,
           "hoverYPct": 0.55
         },
         {
           "delay": 24.0,
           "enemyType": "EnemyShipC",
           "pattern": "INTERLEAVED_ROWS",
-          "count": 24,
+          "count": 14,
           "hoverYPct": 0.5,
           "secondaryEnemyType": "EnemyShipE"
         }
@@ -493,7 +480,7 @@
           "delay": 0.5,
           "enemyType": "EnemyShipF",
           "pattern": "CHEVRON",
-          "count": 15,
+          "count": 9,
           "hoverYPct": 0.6
         },
         {
@@ -506,7 +493,7 @@
           "delay": 15.0,
           "enemyType": "EnemyShipE",
           "pattern": "GRID",
-          "count": 25,
+          "count": 15,
           "hoverYPct": 0.5
         },
         {
@@ -519,7 +506,7 @@
           "delay": 31.0,
           "enemyType": "EnemyShipD",
           "pattern": "INTERLEAVED_ROWS",
-          "count": 28,
+          "count": 16,
           "hoverYPct": 0.6,
           "secondaryEnemyType": "EnemyShipF"
         }
@@ -532,7 +519,7 @@
           "delay": 0.5,
           "enemyType": "EnemyShipE",
           "pattern": "CHEVRON",
-          "count": 21,
+          "count": 12,
           "hoverYPct": 0.45
         },
         {
@@ -545,7 +532,7 @@
           "delay": 16.0,
           "enemyType": "EnemyShipF",
           "pattern": "GRID",
-          "count": 20,
+          "count": 12,
           "hoverYPct": 0.6
         },
         {
@@ -558,7 +545,7 @@
           "delay": 33.0,
           "enemyType": "EnemyShipC",
           "pattern": "INTERLEAVED_ROWS",
-          "count": 28,
+          "count": 16,
           "hoverYPct": 0.5,
           "secondaryEnemyType": "EnemyShipE"
         },
