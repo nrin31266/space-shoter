@@ -40,7 +40,6 @@ public class MainMenuScreen implements Screen {
     private final AudioManager audioManager;
     private final ShapeRenderer shapeRenderer;
     private final SpriteBatch batch;
-    private final Ship ship;
     private final Starfield starfield;
     private final Starfield starfield2;
 
@@ -61,7 +60,6 @@ public class MainMenuScreen implements Screen {
         this.audioManager = audioManager;
         this.shapeRenderer = new ShapeRenderer();
         this.batch = new SpriteBatch();
-        this.ship = new Ship();
 
         float sw = Gdx.graphics.getWidth();
         float sh = Gdx.graphics.getHeight();
@@ -71,7 +69,7 @@ public class MainMenuScreen implements Screen {
         this.starfield2 = new Starfield((int) sw, (int) sh,
                 GameState.STAR_SCROLL_ANGLE_2, GameState.STAR_SCROLL_SPEED_2,
                 GameState.STAR_COUNT_2, GameState.MIN_STAR_SIZE_2, GameState.MAX_STAR_SIZE_2);
-        this.starfield.setNebula(com.alexei.spaceshooter.utils.TextureRegistry.nebula, 0.55f);
+        this.starfield.setNebula(com.alexei.spaceshooter.utils.TextureRegistry.nebula, 0.34f);
     }
 
     @Override
@@ -192,8 +190,8 @@ public class MainMenuScreen implements Screen {
         totalStarsLabel.setColor(new Color(0f, 0.92f, 1f, 0.95f));
         root.add(totalStarsLabel).padBottom(20).row();
 
-        // Spacer
-        root.add().height(100).row();
+        // Spacer — pushes buttons down, away from the info cluster
+        root.add().height(110).row();
 
         // ─── NEW GAME Button ──────────────────────────────────────
         Button newGameBtn = CustomUI.createButton("\uf04b", "NEW GAME", false);
@@ -360,9 +358,6 @@ public class MainMenuScreen implements Screen {
 
         titlePulse += delta;
 
-        ship.setX((screenWidth - ship.getWidth()) / 2f);
-        ship.setY(ship.getHeight() * 2);
-
         starfield.update(deltaTime);
         starfield2.update(deltaTime);
 
@@ -370,15 +365,14 @@ public class MainMenuScreen implements Screen {
         batch.begin();
         starfield.render(shapeRenderer, batch);
         starfield2.render(shapeRenderer, batch);
-        // Large hero ship art, gently bobbing, above the title
+        // Hero ship art at the bottom of the screen (below the buttons), gently bobbing.
         if (com.alexei.spaceshooter.utils.TextureRegistry.ship != null) {
-            float shipSize = screenHeight * 0.16f;
-            float bob = MathUtils.sin(titlePulse * 2.2f) * 10f;
+            float shipSize = screenHeight * 0.20f;
+            float bob = MathUtils.sin(titlePulse * 2.2f) * 8f;
             batch.draw(com.alexei.spaceshooter.utils.TextureRegistry.ship,
-                    (screenWidth - shipSize) / 2f, screenHeight * 0.56f + bob,
+                    (screenWidth - shipSize) / 2f, screenHeight * 0.045f + bob,
                     shipSize, shipSize);
         }
-        ship.render(shapeRenderer, batch);
         batch.end();
 
         // ─── Animated title (drawn manually for glow effect) ─────

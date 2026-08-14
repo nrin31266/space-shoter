@@ -25,12 +25,25 @@ public class TextureRegistry {
     public static TextureRegion enemyF  = null; // EnemyShipF (dragoon)
     public static TextureRegion boss    = null; // EnemyBoss
 
-    public static TextureRegion itemStar    = null; // currency (crystal)
+    public static TextureRegion itemStar    = null; // currency (star)
     public static TextureRegion itemHp      = null; // health pickup
-    public static TextureRegion itemUpgrade = null; // weapon upgrade
-    public static TextureRegion laserBlue   = null; // player projectile
-    public static TextureRegion laserRed    = null; // enemy projectile
+    public static TextureRegion itemEnergy  = null; // pure energy / power upgrade
+    public static TextureRegion itemUpgrade = null; // plasma weapon upgrade (blue bolt)
+    public static TextureRegion itemUpgradeExplosive = null; // explosive weapon upgrade (orange burst)
+    public static TextureRegion itemUpgradeHoming    = null; // homing weapon upgrade (purple crosshair)
+
+    // Projectiles
+    public static TextureRegion laserBlue   = null; // player beam (laser track)
+    public static TextureRegion shotOrb     = null; // player explosive orb (piercing track)
+    public static TextureRegion shotDart    = null; // player homing dart (homing track)
+    public static TextureRegion laserRed    = null; // enemy thin beam (sniper)
     public static TextureRegion plasmaOrb   = null; // heavy/boss projectile
+    public static TextureRegion orbRed      = null; // enemy round shot
+    public static TextureRegion orbGreen    = null; // enemy energy ball
+    public static TextureRegion orbGold     = null; // enemy ring/spread shot
+    public static TextureRegion orbPurple   = null; // enemy pulse shot
+    public static TextureRegion orbPink     = null; // enemy sniper shot
+
     public static TextureRegion nebula      = null; // space background tile
 
     private static boolean initialized = false;
@@ -53,10 +66,22 @@ public class TextureRegistry {
 
         itemStar    = reg(assetManager, "item_star.png");
         itemHp      = reg(assetManager, "item_hp.png");
+        itemEnergy  = reg(assetManager, "item_energy.png");
         itemUpgrade = reg(assetManager, "item_upgrade.png");
+        itemUpgradeExplosive = reg(assetManager, "item_upgrade_explosive.png");
+        itemUpgradeHoming    = reg(assetManager, "item_upgrade_homing.png");
+
         laserBlue   = reg(assetManager, "laser_blue.png");
+        shotOrb     = reg(assetManager, "shot_orb.png");
+        shotDart    = reg(assetManager, "shot_dart.png");
         laserRed    = reg(assetManager, "laser_red.png");
         plasmaOrb   = reg(assetManager, "plasma_orb.png");
+        orbRed      = reg(assetManager, "orb_red.png");
+        orbGreen    = reg(assetManager, "orb_green.png");
+        orbGold     = reg(assetManager, "orb_gold.png");
+        orbPurple   = reg(assetManager, "orb_purple.png");
+        orbPink     = reg(assetManager, "orb_pink.png");
+
         nebula      = reg(assetManager, "nebula.png");
 
         // Defensive fallbacks: never let an entity draw without a region.

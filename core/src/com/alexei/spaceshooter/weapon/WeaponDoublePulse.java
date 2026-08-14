@@ -13,17 +13,19 @@ public class WeaponDoublePulse extends Weapon {
     private static final int WEAPON_FIRE_RATE = 2400; // ms between shots
     private static final float WEAPON_DAMAGE = 1f;
     private static final SoundName WEAPON_SOUND = SoundName.Laser;
-    private static final float PROJECTILE_WIDTH = 8f;
+    private static final float PROJECTILE_WIDTH = 16f;
     private static final float PROJECTILE_HEIGHT = 16f;
     private static final float PROJECTILE_DIRECTION = 270f;
     private static final float PROJECTILE_SPEED = 450f;
-    private static final Color PROJECTILE_COLOR = Color.valueOf("AA00FF"); // Purple
+    private static final Color PROJECTILE_COLOR = Color.valueOf("AA40FFFF"); // Purple
 
     public WeaponDoublePulse(Unit unit) {
         super.setUnit(unit);
         super.setFireRate(WEAPON_FIRE_RATE);
         super.setDamage(WEAPON_DAMAGE);
         super.setWeaponSound(WEAPON_SOUND);
+        // Round purple pulse orbs.
+        super.setProjectileVisual(com.alexei.spaceshooter.utils.TextureRegistry.orbPurple, true);
     }
 
     @Override
@@ -32,21 +34,25 @@ public class WeaponDoublePulse extends Weapon {
         if (unit == null) return new Projectile[0];
 
         Projectile[] projectiles = new Projectile[2];
-        float offsetX = 12f;
+        float offsetX = 14f;
 
         // Left pulse
-        projectiles[0] = new Projectile(
+        Projectile l = new Projectile(
                 unit.getCenterX() - offsetX, unit.getCenterY(),
                 PROJECTILE_WIDTH, PROJECTILE_HEIGHT,
                 PROJECTILE_DIRECTION, PROJECTILE_SPEED,
                 PROJECTILE_COLOR, getDamage(), false);
+        applyProjectileVisual(l);
+        projectiles[0] = l;
 
         // Right pulse
-        projectiles[1] = new Projectile(
+        Projectile r = new Projectile(
                 unit.getCenterX() + offsetX, unit.getCenterY(),
                 PROJECTILE_WIDTH, PROJECTILE_HEIGHT,
                 PROJECTILE_DIRECTION, PROJECTILE_SPEED,
                 PROJECTILE_COLOR, getDamage(), false);
+        applyProjectileVisual(r);
+        projectiles[1] = r;
 
         return projectiles;
     }

@@ -14,10 +14,10 @@ import com.badlogic.gdx.math.MathUtils;
  * Orange color, 8 HP, drops 3 stars. Appears from wave 4.
  */
 public class EnemyShipD extends Unit {
-    private static final float UNIT_WIDTH   = 100;
-    private static final float UNIT_HEIGHT  = 100;
-    private static final float ENTER_SPEED  = 170;
-    private static final float HOVER_SPEED  = 40;
+    private static final float UNIT_WIDTH   = 190;
+    private static final float UNIT_HEIGHT  = 190;
+    private static final float ENTER_SPEED  = 240;
+    private static final float HOVER_SPEED  = 45;
     private static final Color UNIT_COLOR   = Color.valueOf("FF7700FF");
     private static final float MAX_LIFE     = 8f;
     private static final SoundName DEATH_SOUND = SoundName.Explode2;
@@ -32,6 +32,7 @@ public class EnemyShipD extends Unit {
 
     public EnemyShipD() {
         super(0, 0, UNIT_WIDTH, UNIT_HEIGHT);
+        setArrived(false); // don't fire until it reaches hover position
         float speed = ENTER_SPEED + MathUtils.random(-ENTER_SPEED * 0.10f, ENTER_SPEED * 0.10f);
         super.setVelocity(270, speed);
         super.setColor(UNIT_COLOR);
@@ -71,6 +72,7 @@ public class EnemyShipD extends Unit {
             case ENTERING:
                 if (hoverY > 0 && getY() <= hoverY) {
                     moveState = MoveState.HOVERING;
+                    setArrived(true);
                 }
                 break;
 

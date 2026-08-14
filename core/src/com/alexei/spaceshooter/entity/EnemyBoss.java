@@ -31,6 +31,7 @@ public class EnemyBoss extends Unit {
 
     public EnemyBoss() {
         super(0, 0, UNIT_WIDTH, UNIT_HEIGHT);
+        setArrived(false); // boss doesn't fire until it's fully on screen
         super.setVelocity(270, ENTER_SPEED); 
         super.setColor(UNIT_COLOR);
         super.setMaxLife(MAX_LIFE);
@@ -48,9 +49,17 @@ public class EnemyBoss extends Unit {
         }
         super.addWeapon(new WeaponSpreadShot(this));
         
+        // Boss heavy shots use the menacing plasma orb.
+        for (com.alexei.spaceshooter.weapon.Weapon w : getWeapons()) {
+            w.setProjectileVisual(com.alexei.spaceshooter.utils.TextureRegistry.plasmaOrb, true);
+            w.setDamage(2f); // boss shots hit harder
+        }
+
         // Let's add a second weapon to make it more boss-like
         com.alexei.spaceshooter.weapon.Weapon w2 = new com.alexei.spaceshooter.weapon.WeaponEnemyLaser(this);
         w2.setFireRate(800);
+        w2.setProjectileVisual(com.alexei.spaceshooter.utils.TextureRegistry.plasmaOrb, true);
+        w2.setDamage(1.5f);
         super.addWeapon(w2);
     }
 
@@ -68,6 +77,7 @@ public class EnemyBoss extends Unit {
             case ENTERING:
                 if (hoverY > 0 && getY() <= hoverY) {
                     moveState = MoveState.HOVERING;
+                    setArrived(true);
                     super.setVelocityVector(HOVER_SPEED * hoverDir / com.alexei.spaceshooter.SpaceShooter.FPS, 0);
                 }
                 break;

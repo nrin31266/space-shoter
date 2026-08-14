@@ -11,12 +11,12 @@ import com.badlogic.gdx.math.MathUtils;
 
 /**
  * HP pickup item.
- * Visual: red ring (proper hollow ring) with a thick red "+" cross centred inside.
+ * Visual: red ring with a thick red "+" cross centred inside.
  */
 public class ItemHP extends Item {
-    // Raised ~33% for mobile visibility.
-    public static final float ITEM_SIZE = 24f;
-    public static final Color ITEM_COLOR = Color.valueOf("ff2233");
+    // Sized up for mobile visibility (slightly larger than before).
+    public static final float ITEM_SIZE = 34f;
+    public static final Color ITEM_COLOR = Color.valueOf("ff4655");
     public static final SoundName PICK_UP_SOUND = SoundName.Pickup;
 
     // Ring geometry
@@ -48,16 +48,18 @@ public class ItemHP extends Item {
         float scale = getPickUpAnimationScale();
         if (scale == 0) scale = 1f;
 
-        float w = getWidth() * scale * 2.2f;
-        float h = getHeight() * scale * 2.2f;
+        float w = getWidth() * scale * 2.4f;
+        float h = getHeight() * scale * 2.4f;
 
         if (batch != null && batch.isDrawing() && TextureRegistry.itemHp != null) {
+            batch.setColor(Color.WHITE);
             batch.draw(TextureRegistry.itemHp,
                     getCenterX() - w / 2f, getCenterY() - h / 2f,
                     w / 2f, h / 2f,
                     w, h,
                     1f, 1f,
                     0f);
+            batch.setColor(Color.WHITE);
         } else if (sr != null && sr.isDrawing()) {
             float cx = getCenterX();
             float cy = getCenterY();

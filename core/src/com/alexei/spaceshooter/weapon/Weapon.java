@@ -1,10 +1,14 @@
 package com.alexei.spaceshooter.weapon;
 
+import com.alexei.spaceshooter.SpaceShooter;
 import com.alexei.spaceshooter.entity.Projectile;
+import com.alexei.spaceshooter.entity.Ship;
 import com.alexei.spaceshooter.entity.Unit;
 import com.alexei.spaceshooter.manager.AudioManager;
 import com.alexei.spaceshooter.utils.SoundName;
 import com.alexei.spaceshooter.utils.Timer;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,8 +31,59 @@ public abstract class Weapon {
     /** When false, weapon will not fire even if timer elapses. Used for touch-to-shoot. */
     private boolean enabled = true;
 
+    /** Optional per-weapon projectile texture. Null = auto-select by projectile type. */
+    protected TextureRegion projectileRegion = null;
+    /** When true the projectile renders as a round orb (no direction rotation). */
+    protected boolean projectileRound = false;
+
     public Weapon() {
         timer = new Timer(0, 0);
+    }
+
+    /** Assign the projectile visual used by this weapon. */
+    public void setProjectileVisual(TextureRegion region, boolean round) {
+        this.projectileRegion = region;
+        this.projectileRound = round;
+    }
+
+    /** Apply this weapon's visual to a freshly created projectile. */
+    protected void applyProjectileVisual(Projectile p) {
+        if (projectileRegion != null) {
+            p.setVisualRegion(projectileRegion);
+            p.setRoundVisual(projectileRound);
+        }
+    }
+
+    /**
+     * Inherit a clamped fraction of the ship's lateral motion so fired shots
+     * track the ship nose while dodging, WITHOUT ever stalling the shot.
+     * The inherited component is clamped to a small fraction of the bullet's
+     * own forward speed so a fast ship jerk can never make bullets float or
+     * fly sideways.
+     */
+    protected void inheritShipMotion(Projectile p, float forwardSpeed) {
+        Unit unit = getUnit();
+        if (!(unit instanceof Ship)) return;
+        Ship ship = (Ship) unit;
+
+        float fps = SpaceShooter.FPS;
+        // Max inherited drift is 30% of the shot's forward speed.
+        float maxInherit = forwardSpeed * 0.30f / fps;
+        float vx = MathUtils.clamp(ship.getMoveVelX() * 0.12f / fps, -maxInherit, maxInherit);
+        // Only inherit upward ship motion (keeps shots always travelling up).
+        float vy = MathUtils.clamp(ship.getMoveVelY() * 0.10f / fps, 0f, maxInherit);
+        p.getVelocity().x += vx;
+        p.getVelocity().y += vy;
+    }
+
+    /** Spawn a small muzzle flash at the ship's nose (reused shared effect list, no extra allocation). */
+    protected void spawnMuzzleFlash(com.badlogic.gdx.graphics.Color color) {
+        Unit unit = getUnit();
+        if (unit == null) return;
+        com.alexei.spaceshooter.effect.EffectFlash flash =
+                new com.alexei.spaceshooter.effect.EffectFlash(unit.getCenterX(), unit.getTop(), unit);
+        flash.setColor(color);
+        com.alexei.spaceshooter.entity.Visual.addVisualEffect(flash);
     }
 
     public void setAudioManager(AudioManager audioManager) {

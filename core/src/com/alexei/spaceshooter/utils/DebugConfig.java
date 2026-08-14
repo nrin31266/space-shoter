@@ -44,12 +44,15 @@ public class DebugConfig {
 
     // ── Drop Rate Config (Tỉ lệ rơi vật phẩm khi diệt quái) ──
 
-    /** Tỉ lệ rơi Item Nâng Cấp Vũ Khí (Mặc định 0.15f = 15%) */
-    public static float DROP_RATE_WEAPON_UPGRADE = 0.05f;
+    /** Tỉ lệ rơi Item Đổi Loại Đạn (0 = Laser, 1 = Bắn, 2 = Dí) */
+    public static float DROP_RATE_WEAPON_UPGRADE = 0.06f;
+
+    /** Tỉ lệ rơi Item Nâng Cấp Năng Lượng (chỉ tăng cấp, không đổi loại đạn) */
+    public static float DROP_RATE_ENERGY = 0.09f;
 
     /** Tỉ lệ rơi Item Máu (Mặc định 0.05f = 5%) */
     public static float DROP_RATE_HP = 0.05f;
 
-    /** Tỉ lệ rơi Sao (Mặc định 0.90f = 90%) */
-    public static float DROP_RATE_STAR = 0.90f;
+    /** Tỉ lệ rơi Sao (cao để người chơi luôn có tiền) */
+    public static float DROP_RATE_STAR = 1.00f;
 }

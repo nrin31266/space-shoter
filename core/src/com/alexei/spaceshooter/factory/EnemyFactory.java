@@ -73,6 +73,12 @@ public class EnemyFactory {
                 case "CHEVRON":
                     enemies.addAll(createChevronFormation(action, screenWidth, screenHeight));
                     break;
+                case "DIAMOND":
+                    enemies.addAll(createDiamondFormation(action, screenWidth, screenHeight));
+                    break;
+                case "CHECKERBOARD":
+                    enemies.addAll(createCheckerboardFormation(action, screenWidth, screenHeight));
+                    break;
                 default:
                     Gdx.app.error("[EnemyFactory]", "Unknown pattern: " + action.pattern);
                     enemies.addAll(createRandomFormation(action, screenWidth, screenHeight));
@@ -182,6 +188,12 @@ public class EnemyFactory {
 
     // ─── Formation Methods ───────────────────────────────────────────
 
+    /** Width-aware horizontal clamp so an enemy never sticks half out of the screen edge. */
+    private float clampX(Unit u, float cx, float screenWidth) {
+        float margin = u.getWidth() * 0.5f + 8f;
+        return MathUtils.clamp(cx, margin, screenWidth - margin);
+    }
+
     private List<Unit> createLineFormation(SpawnAction action,
                                            float screenWidth, float screenHeight) {
         List<Unit> enemies = new ArrayList<>();
@@ -190,9 +202,9 @@ public class EnemyFactory {
 
         for (int i = 0; i < action.count; i++) {
             float cx = slotWidth * i + slotWidth / 2f;
-            float jitter = MathUtils.random(-slotWidth * 0.12f, slotWidth * 0.12f);
-            float x = MathUtils.clamp(cx + jitter, 10f, screenWidth - 70f);
-            Unit u = createEnemy(action.enemyType, x, spawnY, screenWidth, screenHeight);
+            float jitter = MathUtils.random(-slotWidth * 0.10f, slotWidth * 0.10f);
+            Unit u = createEnemy(action.enemyType, cx + jitter, spawnY, screenWidth, screenHeight);
+            u.setX(clampX(u, u.getX(), screenWidth));
             applyHoverYPct(u, action, screenHeight);
             enemies.add(u);
         }
@@ -217,25 +229,29 @@ public class EnemyFactory {
             if (row == 0) {
                 Unit u = createEnemy(action.enemyType, centerX - 30f, rowY,
                         screenWidth, screenHeight);
+                u.setX(clampX(u, u.getX(), screenWidth));
                 applyHoverYPct(u, action, screenHeight);
                 enemies.add(u);
                 remaining--;
             } else {
                 float spread = spreadPerRow * row;
-                float leftX  = MathUtils.clamp(centerX - spread, 10f, screenWidth - 70f);
-                float rightX = MathUtils.clamp(centerX + spread, 10f, screenWidth - 70f);
+                float leftX  = centerX - spread;
+                float rightX = centerX + spread;
 
                 if (remaining >= 2) {
                     Unit u1 = createEnemy(action.enemyType, leftX, rowY, screenWidth, screenHeight);
+                    u1.setX(clampX(u1, u1.getX(), screenWidth));
                     applyHoverYPct(u1, action, screenHeight);
                     enemies.add(u1);
                     Unit u2 = createEnemy(action.enemyType, rightX, rowY, screenWidth, screenHeight);
+                    u2.setX(clampX(u2, u2.getX(), screenWidth));
                     applyHoverYPct(u2, action, screenHeight);
                     enemies.add(u2);
                     remaining -= 2;
                 } else {
                     Unit u = createEnemy(action.enemyType, centerX - 30f, rowY,
                             screenWidth, screenHeight);
+                    u.setX(clampX(u, u.getX(), screenWidth));
                     applyHoverYPct(u, action, screenHeight);
                     enemies.add(u);
                     remaining--;
@@ -255,10 +271,11 @@ public class EnemyFactory {
         for (int i = 0; i < action.count; i++) {
             float colLeft = colWidth * i;
             float x = MathUtils.random(colLeft + 10f,
-                    Math.min(colLeft + colWidth - 70f, screenWidth - 70f));
+                    Math.min(colLeft + colWidth - 10f, screenWidth - 10f));
             float yOffset = MathUtils.random(0, screenHeight * 0.08f);
             Unit u = createEnemy(action.enemyType, x,
                     screenHeight + SPAWN_Y_OFFSET + yOffset, screenWidth, screenHeight);
+            u.setX(clampX(u, u.getX(), screenWidth));
             applyHoverYPct(u, action, screenHeight);
             enemies.add(u);
         }
@@ -274,9 +291,10 @@ public class EnemyFactory {
 
         for (int i = 0; i < bossCount; i++) {
             float cx = slotWidth * i + slotWidth / 2f;
-            float x = MathUtils.clamp(cx - 125f, 10f, screenWidth - 260f);
+            Unit u = createEnemy("BOSS", cx, spawnY, screenWidth, screenHeight);
+            u.setX(clampX(u, u.getX(), screenWidth));
             float yStagger = i * (screenHeight * 0.05f);
-            Unit u = createEnemy("BOSS", x, spawnY + yStagger, screenWidth, screenHeight);
+            u.setY(u.getY() + yStagger);
             enemies.add(u);
         }
         return enemies;
@@ -300,8 +318,8 @@ public class EnemyFactory {
             float rowOffsetX = (r % 2 == 0) ? 0 : slotWidth * 0.5f;
             for (int c = 0; c < perRow; c++) {
                 float cx = (slotWidth * c) + (slotWidth / 2f) + rowOffsetX;
-                float x = MathUtils.clamp(cx - 30f, 10f, screenWidth - 70f);
-                Unit u = createEnemy(typeForThisRow, x, spawnY, screenWidth, screenHeight);
+                Unit u = createEnemy(typeForThisRow, cx, spawnY, screenWidth, screenHeight);
+                u.setX(clampX(u, u.getX(), screenWidth));
                 applyHoverYPct(u, action, screenHeight);
                 enemies.add(u);
             }
@@ -320,8 +338,8 @@ public class EnemyFactory {
             for (int c = 0; c < cols; c++) {
                 if (spawned >= action.count) break;
                 float cx = (slotWidth * c) + (slotWidth / 2f);
-                float x = MathUtils.clamp(cx - 30f, 10f, screenWidth - 70f);
-                Unit u = createEnemy(action.enemyType, x, spawnY, screenWidth, screenHeight);
+                Unit u = createEnemy(action.enemyType, cx, spawnY, screenWidth, screenHeight);
+                u.setX(clampX(u, u.getX(), screenWidth));
                 applyHoverYPct(u, action, screenHeight);
                 enemies.add(u);
                 spawned++;
@@ -336,12 +354,73 @@ public class EnemyFactory {
         float slotWidth = screenWidth / action.count;
         for (int i = 0; i < action.count; i++) {
             float cx = slotWidth * i + slotWidth / 2f;
-            float x = MathUtils.clamp(cx - 30f, 10f, screenWidth - 70f);
             int distFromCenter = Math.abs(i - half);
             float spawnY = screenHeight + SPAWN_Y_OFFSET + (distFromCenter * screenHeight * 0.08f);
-            Unit u = createEnemy(action.enemyType, x, spawnY, screenWidth, screenHeight);
+            Unit u = createEnemy(action.enemyType, cx, spawnY, screenWidth, screenHeight);
+            u.setX(clampX(u, u.getX(), screenWidth));
             applyHoverYPct(u, action, screenHeight);
             enemies.add(u);
+        }
+        return enemies;
+    }
+
+    /** Diamond / X layout: enemies spread symmetrically around the centre. */
+    private List<Unit> createDiamondFormation(SpawnAction action, float screenWidth, float screenHeight) {
+        List<Unit> enemies = new ArrayList<>();
+        float centerX = screenWidth / 2f;
+        float midY = screenHeight + SPAWN_Y_OFFSET;
+        // Rows: 1, 2, 2, 1 (tight, centred)
+        float[] rowSpreads = { 0f, screenWidth * 0.18f, screenWidth * 0.18f, 0f };
+        int[]   rowCounts  = { 1, 2, 2, 1 };
+        int spawned = 0;
+        for (int r = 0; r < rowCounts.length; r++) {
+            if (spawned >= action.count) break;
+            float rowY = midY + r * screenHeight * 0.07f;
+            int perRow = Math.min(rowCounts[r], action.count - spawned);
+            for (int c = 0; c < perRow; c++) {
+                float x = centerX + (perRow == 1 ? 0f : (c == 0 ? -rowSpreads[r] : rowSpreads[r]));
+                Unit u = createEnemy(action.enemyType, x, rowY, screenWidth, screenHeight);
+                u.setX(clampX(u, u.getX(), screenWidth));
+                applyHoverYPct(u, action, screenHeight);
+                enemies.add(u);
+                spawned++;
+            }
+        }
+        // Any leftovers fill the top row of the diamond
+        while (spawned < action.count) {
+            float x = centerX + MathUtils.random(-screenWidth * 0.1f, screenWidth * 0.1f);
+            Unit u = createEnemy(action.enemyType, x, midY, screenWidth, screenHeight);
+            u.setX(clampX(u, u.getX(), screenWidth));
+            applyHoverYPct(u, action, screenHeight);
+            enemies.add(u);
+            spawned++;
+        }
+        return enemies;
+    }
+
+    /** Checkerboard: two interleaved enemy types in a compact grid (xen kẽ). */
+    private List<Unit> createCheckerboardFormation(SpawnAction action, float screenWidth, float screenHeight) {
+        List<Unit> enemies = new ArrayList<>();
+        String secondaryType = (action.secondaryEnemyType != null && !action.secondaryEnemyType.isEmpty())
+                ? action.secondaryEnemyType
+                : "EnemyShipA";
+        int cols = (int) Math.ceil(Math.sqrt(action.count));
+        int rows = (int) Math.ceil((float) action.count / cols);
+        float slotWidth = screenWidth / cols;
+        int spawned = 0;
+        for (int r = 0; r < rows; r++) {
+            float spawnY = screenHeight + SPAWN_Y_OFFSET + (r * screenHeight * 0.09f);
+            for (int c = 0; c < cols; c++) {
+                if (spawned >= action.count) break;
+                float cx = (slotWidth * c) + (slotWidth / 2f);
+                boolean usePrimary = ((r + c) % 2 == 0);
+                String type = usePrimary ? action.enemyType : secondaryType;
+                Unit u = createEnemy(type, cx, spawnY, screenWidth, screenHeight);
+                u.setX(clampX(u, u.getX(), screenWidth));
+                applyHoverYPct(u, action, screenHeight);
+                enemies.add(u);
+                spawned++;
+            }
         }
         return enemies;
     }

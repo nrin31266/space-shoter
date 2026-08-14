@@ -9,8 +9,8 @@ public class WeaponEnemyLaser extends Weapon {
     private static final int WEAPON_FIRE_RATE = 8000; // ms — ShipA fires slowly (straight down, not aimed)
     private static final float WEAPON_DAMAGE = 1;
     private static final SoundName WEAPON_SOUND = SoundName.Laser;
-    private static final float PROJECTILE_WIDTH = 12; 
-    private static final float PROJECTILE_HEIGHT = 12; 
+    private static final float PROJECTILE_WIDTH = 16; 
+    private static final float PROJECTILE_HEIGHT = 16; 
     private static final float PROJECTILE_DIRECTION = 270;
     private static final float PROJECTILE_SPEED = 400;
     private static final Color PROJECTILE_COLOR = Color.valueOf("ff5555");
@@ -20,6 +20,8 @@ public class WeaponEnemyLaser extends Weapon {
         super.setFireRate(WEAPON_FIRE_RATE);
         super.setDamage(WEAPON_DAMAGE);
         super.setWeaponSound(WEAPON_SOUND);
+        // Round red orb — readable, distinct from beams.
+        super.setProjectileVisual(com.alexei.spaceshooter.utils.TextureRegistry.orbRed, true);
     }
 
     @Override
@@ -28,7 +30,9 @@ public class WeaponEnemyLaser extends Weapon {
         if (unit == null) return new Projectile[0];
 
         Projectile[] projectiles = new Projectile[1];
-        projectiles[0] = new Projectile(unit.getCenterX(), unit.getCenterY(), PROJECTILE_WIDTH, PROJECTILE_HEIGHT, PROJECTILE_DIRECTION, PROJECTILE_SPEED, PROJECTILE_COLOR, getDamage(), false);
+        Projectile p = new Projectile(unit.getCenterX(), unit.getCenterY(), PROJECTILE_WIDTH, PROJECTILE_HEIGHT, PROJECTILE_DIRECTION, PROJECTILE_SPEED, PROJECTILE_COLOR, getDamage(), false);
+        applyProjectileVisual(p);
+        projectiles[0] = p;
         return projectiles;
     }
 }

@@ -11,19 +11,21 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 /**
- * Explosive Blaster — Track 1 player weapon.
- * Fires large, heavy neon-orange plasma spheres (max 3 streams) with ultra-slight spread ("tẻ siêu nhẹ") and high damage.
+ * Explosive Blaster — Track 1 player weapon ("đạn xuyên thấu" / piercing).
+ * Fires large neon-orange plasma spheres that PIERCE through enemies (up to 3 hits).
+ * Ultra-slight spread ("tẻ siêu nhẹ") and high damage.
  */
 public class WeaponExplosiveBlaster extends Weapon {
     private static final SoundName WEAPON_SOUND = SoundName.LaserShoot2;
     private static final float PROJECTILE_SPEED = 1200f;
-    private static final Color PROJECTILE_COLOR = Color.valueOf("FF6600"); // Neon Orange
+    private static final Color PROJECTILE_COLOR = Color.valueOf("FF7A26FF"); // Neon Orange
 
     public WeaponExplosiveBlaster(Unit unit) {
         super.setUnit(unit);
         super.setFireRate(280);
         super.setDamage(2.5f);
         super.setWeaponSound(WEAPON_SOUND);
+        super.setProjectileVisual(com.alexei.spaceshooter.utils.TextureRegistry.shotOrb, true);
     }
 
     @Override
@@ -77,18 +79,29 @@ public class WeaponExplosiveBlaster extends Weapon {
         Projectile[] projectiles = new Projectile[count];
         float baseDir = 90f;
         float size = 22f + (level * 1.0f); // larger plasma sphere size (22px - 29px)
+        // Piercing track: orbs punch through up to 3 enemies before vanishing.
+        int pierce = Math.min(3, 1 + level / 3);
 
         for (int i = 0; i < count; i++) {
             float dir = baseDir;
             if (count > 1) {
                 dir = baseDir + (i - (count - 1) / 2f) * (spread / (count - 1));
             }
-            projectiles[i] = new Projectile(
+            Projectile p = new Projectile(
                     unit.getCenterX(), unit.getTop(),
                     size, size,
                     dir, PROJECTILE_SPEED,
                     PROJECTILE_COLOR, damage, true);
+            p.setPierce(pierce);
+            applyProjectileVisual(p);
+            // Clamped ship-motion inheritance: orbs track the nose but never stall.
+            inheritShipMotion(p, PROJECTILE_SPEED);
+            projectiles[i] = p;
         }
+
+        // Neon-orange muzzle flash matching the blaster orb.
+        spawnMuzzleFlash(new com.badlogic.gdx.graphics.Color(1f, 0.55f, 0.2f, 1f));
+
         return projectiles;
     }
 }

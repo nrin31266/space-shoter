@@ -11,11 +11,11 @@ import com.badlogic.gdx.math.MathUtils;
 
 /**
  * Explosive Blaster Upgrade item (Track 1).
- * Visual: Orange-red ring with a solid orange diamond/rhombus inside.
+ * Visual: orange burst icon — distinct from blue bolt (plasma) and purple crosshair (homing).
  */
 public class ItemWeaponUpgradeExplosive extends Item {
-    public static final float ITEM_SIZE = 24f;
-    public static final Color ITEM_COLOR = Color.valueOf("ff6600");
+    public static final float ITEM_SIZE = 34f;
+    public static final Color ITEM_COLOR = Color.valueOf("ff7a26");
     public static final SoundName PICK_UP_SOUND = SoundName.PowerUp;
 
     private static final float RING_OUTER  = 22f;
@@ -41,12 +41,12 @@ public class ItemWeaponUpgradeExplosive extends Item {
         float scale = getPickUpAnimationScale();
         if (scale == 0) scale = 1f;
 
-        float w = getWidth() * scale * 2.2f;
-        float h = getHeight() * scale * 2.2f;
+        float w = getWidth() * scale * 2.4f;
+        float h = getHeight() * scale * 2.4f;
 
-        if (batch != null && batch.isDrawing() && TextureRegistry.itemUpgrade != null) {
-            batch.setColor(ITEM_COLOR);
-            batch.draw(TextureRegistry.itemUpgrade,
+        if (batch != null && batch.isDrawing() && TextureRegistry.itemUpgradeExplosive != null) {
+            batch.setColor(Color.WHITE);
+            batch.draw(TextureRegistry.itemUpgradeExplosive,
                     getCenterX() - w / 2f, getCenterY() - h / 2f,
                     w / 2f, h / 2f,
                     w, h,

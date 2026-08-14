@@ -12,10 +12,10 @@ import com.badlogic.gdx.math.MathUtils;
  * then slowly drifts sideways until killed. Resembles the Chicken Invaders style.
  */
 public class EnemyShipA extends Unit {
-    private static final float UNIT_WIDTH  = 80;
-    private static final float UNIT_HEIGHT = 80;
-    private static final float ENTER_SPEED = 380;     // speed while entering from top
-    private static final float HOVER_SPEED = 70;      // horizontal drift speed when hovering
+    private static final float UNIT_WIDTH  = 150;
+    private static final float UNIT_HEIGHT = 150;
+    private static final float ENTER_SPEED = 520;     // faster entry, keeps the screen active
+    private static final float HOVER_SPEED = 80;      // horizontal drift speed when hovering
     private static final Color UNIT_COLOR  = Color.valueOf("5DBBFFFF"); // ice blue
     private static final float MAX_LIFE    = 1f;
     private static final SoundName DEATH_SOUND = SoundName.Explode5;
@@ -29,6 +29,7 @@ public class EnemyShipA extends Unit {
 
     public EnemyShipA() {
         super(0, 0, UNIT_WIDTH, UNIT_HEIGHT);
+        setArrived(false); // don't fire until it reaches hover position
         // slight speed variation so rows don't arrive perfectly in sync
         float speed = ENTER_SPEED + MathUtils.random(-ENTER_SPEED * 0.12f, ENTER_SPEED * 0.12f);
         super.setVelocity(270, speed); // 270 = straight down
@@ -71,6 +72,7 @@ public class EnemyShipA extends Unit {
                 // Once we reach hover altitude, switch to hover mode
                 if (hoverY > 0 && getY() <= hoverY) {
                     moveState = MoveState.HOVERING;
+                    setArrived(true);
                 }
                 break;
 

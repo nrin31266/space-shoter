@@ -28,6 +28,8 @@ public class WeaponEnergyBallA extends Weapon {
         super.setFireRate(WEAPON_FIRE_RATE);
         super.setDamage(WEAPON_DAMAGE);
         super.setWeaponSound(WEAPON_SOUND);
+        // Green homing energy ball.
+        super.setProjectileVisual(com.alexei.spaceshooter.utils.TextureRegistry.orbGreen, true);
     }
 
     public void setTarget(Visual target) {
@@ -48,7 +50,9 @@ public class WeaponEnergyBallA extends Weapon {
                     target.getCenterY() - getUnit().getCenterY(),
                     target.getCenterX() - getUnit().getCenterX());
         }
-        projectiles[0] = new Projectile(unit.getCenterX(), unit.getCenterY(), PROJECTILE_WIDTH, PROJECTILE_HEIGHT, dir, PROJECTILE_SPEED, PROJECTILE_COLOR, getDamage());
+        Projectile p = new Projectile(unit.getCenterX(), unit.getCenterY(), PROJECTILE_WIDTH, PROJECTILE_HEIGHT, dir, PROJECTILE_SPEED, PROJECTILE_COLOR, getDamage());
+        applyProjectileVisual(p);
+        projectiles[0] = p;
         return projectiles;
     }
 }

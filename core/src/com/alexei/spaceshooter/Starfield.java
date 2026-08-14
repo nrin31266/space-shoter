@@ -172,13 +172,12 @@ public class Starfield extends Visual {
             }
         }
 
-        /** Batched draw: a tinted quad with a vertical motion streak. */
+        /** Batched draw: a clean round dot (no long streaks — keeps the background calm). */
         public void renderBatched(SpriteBatch batch) {
             wrapAround();
             float size = getWidth();
-            float streak = 1f + getSpeed() * 0.35f; // stretch along travel direction
             batch.setColor(color.r, color.g, color.b, alpha);
-            batch.draw(getWhiteTex(), getX(), getY(), size, size * streak);
+            batch.draw(getWhiteTex(), getX(), getY(), size, size);
             batch.setColor(Color.WHITE);
         }
 

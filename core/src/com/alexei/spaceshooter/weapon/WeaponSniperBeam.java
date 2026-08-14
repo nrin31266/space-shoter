@@ -17,8 +17,8 @@ public class WeaponSniperBeam extends Weapon {
     private static final int WEAPON_FIRE_RATE = 3500; // ms — ShipC sniper, aimed at player
     private static final float WEAPON_DAMAGE = 1f;
     private static final SoundName WEAPON_SOUND = SoundName.LaserShoot2;
-    private static final float PROJECTILE_WIDTH = 6;
-    private static final float PROJECTILE_HEIGHT = 18;
+    private static final float PROJECTILE_WIDTH = 15;
+    private static final float PROJECTILE_HEIGHT = 15;
     private static final float PROJECTILE_SPEED = 900;
     private static final Color PROJECTILE_COLOR = Color.valueOf("FF4FF4FF"); // hot pink
 
@@ -29,6 +29,8 @@ public class WeaponSniperBeam extends Weapon {
         super.setFireRate(WEAPON_FIRE_RATE);
         super.setDamage(WEAPON_DAMAGE);
         super.setWeaponSound(WEAPON_SOUND);
+        // Distinct hot-pink round shot (round, not a flat beam).
+        super.setProjectileVisual(com.alexei.spaceshooter.utils.TextureRegistry.orbPink, true);
     }
 
     public void setTarget(Visual target) {

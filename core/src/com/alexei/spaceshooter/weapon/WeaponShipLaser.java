@@ -12,18 +12,19 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 /**
  * Main Plasma Laser weapon (Track 0).
- * Features classic thin, sleek yellow/gold laser beams (up to 7 beams at Level 7) with low individual damage.
+ * Fires classic thin blue laser beams (up to 7 beams at Level 7) with low individual damage.
  */
 public class WeaponShipLaser extends Weapon {
     private static final SoundName WEAPON_SOUND = SoundName.LaserShoot2;
     private static final float PROJECTILE_SPEED = 1500f;
-    private static final Color PROJECTILE_COLOR = Color.valueOf("FFD700"); // Classic Gold-Yellow
+    private static final Color PROJECTILE_COLOR = Color.valueOf("00CCFFFF"); // Neon Cyan
 
     public WeaponShipLaser(Unit unit) {
         super.setUnit(unit);
         super.setFireRate(150);
         super.setDamage(0.8f);
         super.setWeaponSound(WEAPON_SOUND);
+        super.setProjectileVisual(com.alexei.spaceshooter.utils.TextureRegistry.laserBlue, false);
     }
     
     @Override
@@ -83,18 +84,19 @@ public class WeaponShipLaser extends Weapon {
                 dir = baseDir + (i - (count - 1) / 2f) * (totalSpread / (count - 1));
             }
             float xOffset = (i - (count - 1) / 2f) * 6f;
-            projectiles[i] = new Projectile(
+            Projectile p = new Projectile(
                     unit.getCenterX() + xOffset, unit.getTop(),
                     6f, 24f,
                     dir, PROJECTILE_SPEED,
                     PROJECTILE_COLOR, damage, true);
+            applyProjectileVisual(p);
+            // Clamped ship-motion inheritance: bullets track the nose but never stall.
+            inheritShipMotion(p, PROJECTILE_SPEED);
+            projectiles[i] = p;
         }
 
-        // Muzzle flash at the ship nose — reuses the shared effect list (no allocation).
-        com.alexei.spaceshooter.effect.EffectFlash flash =
-                new com.alexei.spaceshooter.effect.EffectFlash(unit.getCenterX(), unit.getTop(), unit);
-        flash.setColor(new com.badlogic.gdx.graphics.Color(0.4f, 0.85f, 1f, 1f));
-        com.alexei.spaceshooter.entity.Visual.addVisualEffect(flash);
+        // Muzzle flash at the ship nose — neon cyan (matches the beam).
+        spawnMuzzleFlash(new com.badlogic.gdx.graphics.Color(0.4f, 0.85f, 1f, 1f));
 
         return projectiles;
     }

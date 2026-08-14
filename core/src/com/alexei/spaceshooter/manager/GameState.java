@@ -15,20 +15,20 @@ public class GameState {
     public static final float GROUND_SCROLL_SPEED = 50;
     public static final int BUFFER_ZONE = 30;
 
-    // star fields
+    // star fields — kept calm & subordinate so gameplay stays readable.
     public Starfield starfield;
     public Starfield starfield2;
-    public static final int STAR_COUNT = 100;
+    public static final int STAR_COUNT = 42;
     public static final float STAR_SCROLL_ANGLE = 270;
-    public static final float STAR_SCROLL_SPEED = 50;
-    public static final float MIN_STAR_SIZE = 2;
-    public static final float MAX_STAR_SIZE = 3;
+    public static final float STAR_SCROLL_SPEED = 36;
+    public static final float MIN_STAR_SIZE = 1;
+    public static final float MAX_STAR_SIZE = 1.6f;
 
-    public static final int STAR_COUNT_2 = 10;
+    public static final int STAR_COUNT_2 = 5;
     public static final float STAR_SCROLL_ANGLE_2 = 270;
-    public static final float STAR_SCROLL_SPEED_2 = 100;
-    public static final float MIN_STAR_SIZE_2 = 8;
-    public static final float MAX_STAR_SIZE_2 = 13;
+    public static final float STAR_SCROLL_SPEED_2 = 60;
+    public static final float MIN_STAR_SIZE_2 = 2.2f;
+    public static final float MAX_STAR_SIZE_2 = 3.6f;
 
     // ship
     public Ship ship;
@@ -63,7 +63,7 @@ public class GameState {
         starfield2 = new Starfield((int) screenWidth, (int) screenHeight,
                 STAR_SCROLL_ANGLE_2, STAR_SCROLL_SPEED_2, STAR_COUNT_2, MIN_STAR_SIZE_2, MAX_STAR_SIZE_2);
         // Far layer carries the nebula; it is tinted dark so gameplay stays readable.
-        starfield.setNebula(com.alexei.spaceshooter.utils.TextureRegistry.nebula, 0.5f);
+        starfield.setNebula(com.alexei.spaceshooter.utils.TextureRegistry.nebula, 0.34f);
         ship = new Ship();
         scoreTracker = new ScoreTracker();
         currentWaveId = 1;

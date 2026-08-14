@@ -16,24 +16,29 @@ attribution obligations or license conflicts.
 | Identity SFX (pickup, power-up, wave, boss) | `assets/sounds/*.ogg` | Synthesized by `tools/gen_audio.py` | Original work (public domain) |
 | Legacy SFX | `assets/sounds/*.mp3` | Pre-existing in repository | Pre-existing project files |
 
-## Sprites (`tools/gen_sprites.py`)
+## Sprites (`tools/gen_sprites.py` + `tools/gen_projectiles_items.py`)
 
 Generated programmatically (offline, at build time — **not** at runtime) to produce
 a coherent "modern neon arcade" look with guaranteed clean alpha:
 
-- `ship.png` — player fighter
-- `enemy1.png` … `enemy_f.png` — six enemy silhouettes
-- `enemy_boss.png` — boss dreadnought
+- `ship.png` — player fighter *(author-owned, not regenerated)*
+- `enemy1.png` … `enemy_f.png` — six enemy silhouettes *(author-owned, not regenerated)*
+- `enemy_boss.png` — boss dreadnought *(author-owned, not regenerated)*
 - `laser_blue.png`, `laser_red.png`, `plasma_orb.png` — projectiles
-- `item_star.png` (emerald crystal currency), `item_hp.png`, `item_upgrade.png` — pickups
-- `nebula.png` — space background tile
+- `orb_red.png`, `orb_green.png`, `orb_gold.png`, `orb_purple.png`, `orb_pink.png` — round enemy shots
+- `shot_orb.png` (neon piercing orb), `shot_dart.png` (neon homing dart) — player weapon shots
+- `item_star.png` (gold star currency), `item_hp.png`, `item_upgrade.png` (plasma bolt),
+  `item_upgrade_explosive.png` (orange burst), `item_upgrade_homing.png` (purple crosshair),
+  `item_energy.png` (green energy power-up) — pickups
+- `nebula.png` — space background tile (dark, with faint halo rings)
 
 All sprites are rendered at 4× supersampling and downsampled with Lanczos
 filtering, which eliminates the horizontal "stretched-pixel" artifacts that
 plagued the previous hand-generated PNGs (those files contained hundreds of
 thousands of semi-transparent ghost pixels).
 
-To regenerate: `python3 tools/gen_sprites.py`
+To regenerate projectiles/items/stars: `python3 tools/gen_projectiles_items.py`
+(`gen_sprites.py` regenerates the whole set).
 
 ## Audio (`tools/gen_audio.py`)
 
@@ -43,7 +48,7 @@ so the files are original compositions.
 
 - `music/action_music.ogg` — clean synthwave loop (128 BPM, A minor) for gameplay
 - `music/ut.ogg` — calm ambient loop for menus
-- `sounds/pickup.ogg` — crystal chime
+- `sounds/pickup.ogg` — bright chime
 - `sounds/powerup.ogg` — rising arpeggio
 - `sounds/wave_start.ogg` — whoosh announcement
 - `sounds/wave_clear.ogg` — bright fanfare

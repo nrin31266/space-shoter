@@ -8,12 +8,15 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 
 /**
  * A projectile fired from a Weapon.
- * Renders with smooth anti-aliased GL_BLEND and vibrant 4-layer neon glow.
+ * Renders with smooth anti-aliased GL_BLEND and a sprite texture.
+ * Each weapon can assign its own texture (beam, orb, dart) so every shot type
+ * has a distinct visual identity.
  */
 public class Projectile extends Visual {
     protected Weapon weapon;
@@ -22,6 +25,13 @@ public class Projectile extends Visual {
     protected float angularSpeed = 0;
     protected Visual target = null;
     protected boolean isHoming = false;
+
+    /** Optional explicit projectile texture (set by the weapon). Null = auto-select. */
+    private TextureRegion visualRegion = null;
+    /** When true, draw as a round orb (no direction rotation). */
+    private boolean roundVisual = false;
+    /** Remaining enemies this projectile can pierce through before it is removed. 0 = single hit. */
+    private int pierce = 0;
 
     private static final int CIRCLE_SEGMENTS = 32;
 
@@ -38,6 +48,18 @@ public class Projectile extends Visual {
         super.setVelocity(direction, speed);
         super.setColor(color);
         this.damage = damage;
+    }
+
+    public void setVisualRegion(TextureRegion region) { this.visualRegion = region; }
+    public void setRoundVisual(boolean round) { this.roundVisual = round; }
+
+    public void setPierce(int pierce) { this.pierce = pierce; }
+    public int getPierce() { return pierce; }
+    /** Consume one pierce charge. Returns true if the projectile is spent. */
+    public boolean consumePierce() {
+        if (pierce <= 0) return true;
+        pierce--;
+        return pierce <= 0;
     }
 
     @Override
@@ -60,7 +82,12 @@ public class Projectile extends Visual {
 
     /**
      * Renders projectiles with sprite textures when batch is active, or shape glow fallback.
-     * Visual identities: player = blue beam, enemy light = red beam, enemy heavy/boss = plasma orb.
+     * Visual identities:
+     *  - Player LASER  → blue beam
+     *  - Player BLAST  → orange round orb
+     *  - Player HOMING → purple dart
+     *  - Enemy light   → round orb or thin beam (per weapon)
+     *  - Enemy heavy/boss → plasma orb
      */
     @Override
     public void render(ShapeRenderer sr, SpriteBatch batch) {
@@ -68,23 +95,25 @@ public class Projectile extends Visual {
         float cy = getCenterY();
 
         if (batch != null && batch.isDrawing()) {
-            com.badlogic.gdx.graphics.g2d.TextureRegion region;
-            if (isShipProjectile) {
-                region = TextureRegistry.laserBlue;
-            } else {
-                // Heavy/boss projectiles use the plasma orb, light enemy shots use red laser
-                boolean heavy = getWidth() > 26 || getHeight() > 26;
-                region = heavy ? TextureRegistry.plasmaOrb : TextureRegistry.laserRed;
+            TextureRegion region = visualRegion;
+            if (region == null) {
+                // Auto-select fallback
+                if (isShipProjectile) {
+                    region = TextureRegistry.laserBlue;
+                } else {
+                    boolean heavy = getWidth() > 26 || getHeight() > 26;
+                    region = heavy ? TextureRegistry.plasmaOrb : TextureRegistry.laserRed;
+                }
             }
             if (region != null) {
-                float w = getWidth() * 1.5f;
-                float h = getHeight() * 2.0f;
+                float w = getWidth() * 1.6f;
+                float h = roundVisual ? getWidth() * 1.6f : getHeight() * 2.0f;
                 batch.draw(region,
                         cx - w / 2f, cy - h / 2f,
                         w / 2f, h / 2f,
                         w, h,
                         1f, 1f,
-                        getDirection() - 90f);
+                        roundVisual ? 0f : getDirection() - 90f);
             }
         } else if (sr != null && sr.isDrawing()) {
             float r = Math.max(getWidth(), getHeight()) * 0.5f;

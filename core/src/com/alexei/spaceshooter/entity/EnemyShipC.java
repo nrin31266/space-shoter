@@ -14,11 +14,11 @@ import com.badlogic.gdx.math.MathUtils;
  * Hot-pink color, 1.5 HP. Appears from wave 3.
  */
 public class EnemyShipC extends Unit {
-    // Sniper must be readable on a phone — bumped from 44px to 60px.
-    private static final float UNIT_WIDTH   = 60;
-    private static final float UNIT_HEIGHT  = 60;
-    private static final float ENTER_SPEED  = 450;
-    private static final float HOVER_SPEED  = 95;
+    // Sniper must be readable on a phone — enlarged so it's clearly visible.
+    private static final float UNIT_WIDTH   = 140;
+    private static final float UNIT_HEIGHT  = 140;
+    private static final float ENTER_SPEED  = 600;
+    private static final float HOVER_SPEED  = 100;
     private static final Color UNIT_COLOR   = Color.valueOf("FF4FF4FF");
     private static final float MAX_LIFE     = 1.5f;
     private static final SoundName DEATH_SOUND = SoundName.Explode5;
@@ -34,6 +34,7 @@ public class EnemyShipC extends Unit {
 
     public EnemyShipC() {
         super(0, 0, UNIT_WIDTH, UNIT_HEIGHT);
+        setArrived(false); // don't fire until it reaches hover position
         float speed = ENTER_SPEED + MathUtils.random(-ENTER_SPEED * 0.15f, ENTER_SPEED * 0.15f);
         super.setVelocity(270, speed);
         super.setColor(UNIT_COLOR);
@@ -75,6 +76,7 @@ public class EnemyShipC extends Unit {
             case ENTERING:
                 if (hoverY > 0 && getY() <= hoverY) {
                     moveState = MoveState.HOVERING;
+                    setArrived(true);
                 }
                 break;
 

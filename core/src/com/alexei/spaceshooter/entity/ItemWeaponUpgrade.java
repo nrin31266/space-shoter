@@ -10,13 +10,14 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 
 /**
- * Weapon-upgrade pickup item.
- * Visual: blue ring (proper hollow ring) with a solid blue triangle centred inside.
+ * Plasma (Laser) weapon upgrade item (Track 0).
+ * Visual: blue lightning-bolt icon in a ring — vivid and distinct from the
+ * orange burst (explosive) and purple crosshair (homing) upgrades.
  */
 public class ItemWeaponUpgrade extends Item {
-    // Raised ~33% for mobile visibility.
-    public static final float ITEM_SIZE = 24f;
-    public static final Color ITEM_COLOR = Color.valueOf("0077ff");
+    // Sized up for mobile readability.
+    public static final float ITEM_SIZE = 34f;
+    public static final Color ITEM_COLOR = Color.valueOf("00aaff");
     public static final SoundName PICK_UP_SOUND = SoundName.PowerUp;
 
     private static final float RING_OUTER  = 22f;
@@ -47,16 +48,18 @@ public class ItemWeaponUpgrade extends Item {
         float scale = getPickUpAnimationScale();
         if (scale == 0) scale = 1f;
 
-        float w = getWidth() * scale * 2.2f;
-        float h = getHeight() * scale * 2.2f;
+        float w = getWidth() * scale * 2.4f;
+        float h = getHeight() * scale * 2.4f;
 
         if (batch != null && batch.isDrawing() && TextureRegistry.itemUpgrade != null) {
+            batch.setColor(Color.WHITE);
             batch.draw(TextureRegistry.itemUpgrade,
                     getCenterX() - w / 2f, getCenterY() - h / 2f,
                     w / 2f, h / 2f,
                     w, h,
                     1f, 1f,
                     0f);
+            batch.setColor(Color.WHITE);
         } else if (sr != null && sr.isDrawing()) {
             float cx = getCenterX();
             float cy = getCenterY();

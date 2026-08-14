@@ -12,10 +12,10 @@ import com.badlogic.gdx.math.MathUtils;
  * Created by Alex on 03/07/2015.
  */
 public class ItemStar extends Item {
-    // Emerald crystal currency. Base size raised ~30% for mobile visibility.
-    public static final float STAR_SIZE_OUTER = 26;
+    // Golden star currency — the space-fitting collectible. Sized up for mobile readability.
+    public static final float STAR_SIZE_OUTER = 32;
     public static final float STAR_SIZE_INNER = 10;
-    public static final Color STAR_COLOR = Color.valueOf("28d47c"); // emerald
+    public static final Color STAR_COLOR = Color.valueOf("ffcc3d"); // gold
     public static final SoundName PICK_UP_SOUND = SoundName.Pickup;
 
     private final int rotationSpeed = MathUtils.random(45, 135);
@@ -45,10 +45,11 @@ public class ItemStar extends Item {
 
         TextureRegion region = TextureRegistry.itemStar;
         if (region == null) return;
-        float w = getWidth() * scale * 1.6f;
-        float h = getHeight() * scale * 1.6f;
+        // Half the previous render scale: the star was oversized on mobile.
+        float w = getWidth() * scale * 0.85f;
+        float h = getHeight() * scale * 0.85f;
 
-        // Draw at full brightness so the emerald crystal colour reads clearly.
+        // Golden star at full brightness so it reads clearly.
         batch.setColor(Color.WHITE);
         batch.draw(region,
                 getCenterX() - w / 2f, getCenterY() - h / 2f,

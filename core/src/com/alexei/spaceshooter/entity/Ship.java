@@ -18,10 +18,10 @@ import com.badlogic.gdx.math.MathUtils;
 public class Ship extends Unit {
     private static final float UNIT_POSITION_X = 0;
     private static final float UNIT_POSITION_Y = 0;
-    // Player ship visual size (about 20-30% larger than the original 80px for
-    // mobile readability). Hitbox scales with it.
-    private static final float UNIT_WIDTH = 96;
-    private static final float UNIT_HEIGHT = 96;
+    // Player ship visual size — enlarged for mobile readability and a
+    // dominant "this is the player" presence. Hitbox scales with it.
+    private static final float UNIT_WIDTH = 160;
+    private static final float UNIT_HEIGHT = 160;
     public static final float INITIAL_LIFE = 5f;
     public static final float MAX_LIFE = 10f;
     private static final Color COLOR = Color.MAROON;
@@ -43,6 +43,14 @@ public class Ship extends Unit {
     private float invulnerabilityTimer = 0f;
     private boolean isCriticalLifeActivated = false;
     private AudioManager audioManager;
+
+    // Movement velocity (px/sec) derived from touch drag, so fired projectiles
+    // can inherit lateral ship motion and stay aligned with the ship nose.
+    private float lastMoveX = 0f;
+    private float lastMoveY = 0f;
+    private float moveVelX = 0f;
+    private float moveVelY = 0f;
+    private boolean moveBaseSet = false;
 
     private WeaponShipLaser weaponLaser;
     private WeaponExplosiveBlaster weaponExplosive;
@@ -127,6 +135,22 @@ public class Ship extends Unit {
      */
     public void upgradeWeaponType(int type) {
         this.activeWeaponType = MathUtils.clamp(type, 0, 2);
+        if (weaponLevel < MAX_WEAPON_LEVEL) {
+            weaponLevel++;
+        } else if (stockpile < MAX_STOCKPILE) {
+            stockpile++;
+        }
+        updateActiveWeaponState();
+    }
+
+    /** Switch the active weapon track WITHOUT changing level (used by weapon-switch pickups). */
+    public void switchWeaponType(int type) {
+        this.activeWeaponType = MathUtils.clamp(type, 0, 2);
+        updateActiveWeaponState();
+    }
+
+    /** Pure energy/power upgrade: raises the shared weapon level (no weapon switch). */
+    public void upgradeEnergy() {
         if (weaponLevel < MAX_WEAPON_LEVEL) {
             weaponLevel++;
         } else if (stockpile < MAX_STOCKPILE) {
@@ -225,12 +249,32 @@ public class Ship extends Unit {
 
     @Override
     public void update(float deltaTime) {
+        // Derive ship movement velocity (px/sec) from position delta so fired
+        // projectiles can inherit it (keeps bullets glued to the ship's nose).
+        if (!moveBaseSet) {
+            lastMoveX = getX();
+            lastMoveY = getY();
+            moveBaseSet = true;
+            moveVelX = 0f;
+            moveVelY = 0f;
+        } else {
+            float dtSec = Math.max(0.0001f, deltaTime / 1000f);
+            moveVelX = (getX() - lastMoveX) / dtSec;
+            moveVelY = (getY() - lastMoveY) / dtSec;
+        }
+        lastMoveX = getX();
+        lastMoveY = getY();
+
         if (invulnerabilityTimer > 0) {
             invulnerabilityTimer -= deltaTime / 1000f;
             if (invulnerabilityTimer < 0) invulnerabilityTimer = 0;
         }
         super.update(deltaTime);
     }
+
+    /** Lateral ship velocity in px/sec (from touch drag). Used to inherit motion into fired projectiles. */
+    public float getMoveVelX() { return moveVelX; }
+    public float getMoveVelY() { return moveVelY; }
 
     @Override
     public void receiveDamage(Projectile projectile) {

@@ -12,10 +12,10 @@ import com.badlogic.gdx.math.MathUtils;
  * Appears starting Wave 16.
  */
 public class EnemyShipE extends Unit {
-    private static final float UNIT_WIDTH  = 100;
-    private static final float UNIT_HEIGHT = 100;
-    private static final float ENTER_SPEED = 420;
-    private static final float HOVER_SPEED = 85;
+    private static final float UNIT_WIDTH  = 180;
+    private static final float UNIT_HEIGHT = 180;
+    private static final float ENTER_SPEED = 560;
+    private static final float HOVER_SPEED = 90;
     private static final Color UNIT_COLOR  = Color.valueOf("AA00FFFF"); // Purple
     private static final float MAX_LIFE    = 3.0f;
     private static final SoundName DEATH_SOUND = SoundName.Explode3;
@@ -28,6 +28,7 @@ public class EnemyShipE extends Unit {
 
     public EnemyShipE() {
         super(0, 0, UNIT_WIDTH, UNIT_HEIGHT);
+        setArrived(false); // don't fire until it reaches hover position
         float speed = ENTER_SPEED + MathUtils.random(-ENTER_SPEED * 0.10f, ENTER_SPEED * 0.10f);
         super.setVelocity(270, speed);
         super.setColor(UNIT_COLOR);
@@ -66,6 +67,7 @@ public class EnemyShipE extends Unit {
             case ENTERING:
                 if (hoverY > 0 && getY() <= hoverY) {
                     moveState = MoveState.HOVERING;
+                    setArrived(true);
                 }
                 break;
 

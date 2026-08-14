@@ -14,10 +14,10 @@ import com.badlogic.gdx.math.MathUtils;
  * fires energy balls at the player while drifting sideways.
  */
 public class EnemyShipB extends Unit {
-    private static final float UNIT_WIDTH   = 80;
-    private static final float UNIT_HEIGHT  = 80;
-    private static final float ENTER_SPEED  = 260;
-    private static final float HOVER_SPEED  = 55;
+    private static final float UNIT_WIDTH   = 160;
+    private static final float UNIT_HEIGHT  = 160;
+    private static final float ENTER_SPEED  = 380;
+    private static final float HOVER_SPEED  = 60;
     private static final Color UNIT_COLOR   = Color.CHARTREUSE;
     private static final float MAX_LIFE     = 5f;
     private static final SoundName DEATH_SOUND = SoundName.Explode2;
@@ -32,6 +32,7 @@ public class EnemyShipB extends Unit {
 
     public EnemyShipB() {
         super(0, 0, UNIT_WIDTH, UNIT_HEIGHT);
+        setArrived(false); // don't fire until it reaches hover position
         float speed = ENTER_SPEED + MathUtils.random(-ENTER_SPEED * 0.12f, ENTER_SPEED * 0.12f);
         super.setVelocity(270, speed);
         super.setColor(UNIT_COLOR);
@@ -73,6 +74,7 @@ public class EnemyShipB extends Unit {
             case ENTERING:
                 if (hoverY > 0 && getY() <= hoverY) {
                     moveState = MoveState.HOVERING;
+                    setArrived(true);
                 }
                 break;
 

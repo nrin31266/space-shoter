@@ -42,9 +42,16 @@ public class Unit extends Visual {
 
     private int starCount = 1; // the amount of stars this unit drops when destroyed
     private boolean isDenseAction = false; // set to true when spawned in action with count > 20
+    /** True once the enemy has reached its hover position and may start firing.
+     *  Enemies reset this to false on spawn and set it true when they arrive,
+     *  so they never shoot while still flying in (prevents "ngậm đạn" silliness). */
+    private boolean arrived = true;
 
     public boolean isDenseAction() { return isDenseAction; }
     public void setDenseAction(boolean isDenseAction) { this.isDenseAction = isDenseAction; }
+
+    public boolean hasArrived() { return arrived; }
+    public void setArrived(boolean arrived) { this.arrived = arrived; }
 
     public Unit(float x, float y, float width, float height) {
         super(x, y, width, height);
@@ -201,7 +208,7 @@ public class Unit extends Visual {
         }
 
         if (pityWeaponType >= 0) {
-            // Guaranteed Pity Drop for player's current weapon track!
+            // Guaranteed Pity Drop for player's current weapon track (weapon switch)
             switch (pityWeaponType) {
                 case 1:
                     SpaceShooter.items.add(new ItemWeaponUpgradeExplosive(getCenterX() - ItemWeaponUpgradeExplosive.ITEM_SIZE / 2, getCenterY() - ItemWeaponUpgradeExplosive.ITEM_SIZE / 2));
@@ -217,8 +224,10 @@ public class Unit extends Visual {
         } else {
             float rand = MathUtils.random(1f);
             float weaponRate = com.alexei.spaceshooter.utils.DebugConfig.DROP_RATE_WEAPON_UPGRADE;
+            float energyRate = com.alexei.spaceshooter.utils.DebugConfig.DROP_RATE_ENERGY;
             float hpRate     = com.alexei.spaceshooter.utils.DebugConfig.DROP_RATE_HP;
             if (rand < weaponRate) {
+                // Weapon switch (not a power-up): 3 icons pick the active track
                 int pick = MathUtils.random(0, 2);
                 if (pick == 1) {
                     SpaceShooter.items.add(new ItemWeaponUpgradeExplosive(getCenterX() - ItemWeaponUpgradeExplosive.ITEM_SIZE / 2, getCenterY() - ItemWeaponUpgradeExplosive.ITEM_SIZE / 2));
@@ -227,7 +236,10 @@ public class Unit extends Visual {
                 } else {
                     SpaceShooter.items.add(new ItemWeaponUpgrade(getCenterX() - ItemWeaponUpgrade.ITEM_SIZE / 2, getCenterY() - ItemWeaponUpgrade.ITEM_SIZE / 2));
                 }
-            } else if (rand < weaponRate + hpRate) {
+            } else if (rand < weaponRate + energyRate) {
+                // Pure energy/power upgrade — raises level without switching track.
+                SpaceShooter.items.add(new ItemEnergyUpgrade(getCenterX() - ItemEnergyUpgrade.ITEM_SIZE / 2, getCenterY() - ItemEnergyUpgrade.ITEM_SIZE / 2));
+            } else if (rand < weaponRate + energyRate + hpRate) {
                 SpaceShooter.items.add(new ItemHP(getCenterX() - ItemHP.ITEM_SIZE / 2, getCenterY() - ItemHP.ITEM_SIZE / 2));
             }
         }

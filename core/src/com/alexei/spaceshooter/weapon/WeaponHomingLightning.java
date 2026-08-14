@@ -15,18 +15,19 @@ import com.badlogic.gdx.math.MathUtils;
 import java.util.List;
 
 /**
- * Homing Lightning Darts — Track 2 player weapon.
- * Fires auto-seeking purple lightning darts with focused launch spread and balanced power.
+ * Homing Lightning Darts — Track 2 player weapon ("đạn dí" / homing).
+ * Fires auto-seeking purple darts with focused launch spread and balanced power.
  */
 public class WeaponHomingLightning extends Weapon {
     private static final SoundName WEAPON_SOUND = SoundName.LaserShoot;
-    private static final Color PROJECTILE_COLOR = Color.valueOf("CC00FF"); // Neon Purple
+    private static final Color PROJECTILE_COLOR = Color.valueOf("C64DFFFF"); // Neon Purple
 
     public WeaponHomingLightning(Unit unit) {
         super.setUnit(unit);
         super.setFireRate(240);
         super.setDamage(0.8f);
         super.setWeaponSound(WEAPON_SOUND);
+        super.setProjectileVisual(com.alexei.spaceshooter.utils.TextureRegistry.shotDart, false);
     }
 
     @Override
@@ -92,7 +93,7 @@ public class WeaponHomingLightning extends Weapon {
             }
 
             final Unit finalTarget = target;
-            projectiles[i] = new Projectile(
+            Projectile p = new Projectile(
                     unit.getCenterX(), unit.getTop(),
                     15f, 15f,
                     dir, speed,
@@ -111,7 +112,16 @@ public class WeaponHomingLightning extends Weapon {
                     super.update(deltaTime);
                 }
             };
+            p.setVisualRegion(com.alexei.spaceshooter.utils.TextureRegistry.shotDart);
+            p.setRoundVisual(false);
+            // Clamped ship-motion inheritance: darts track the nose but never stall.
+            inheritShipMotion(p, speed);
+            projectiles[i] = p;
         }
+
+        // Neon-purple muzzle flash matching the homing dart.
+        spawnMuzzleFlash(new com.badlogic.gdx.graphics.Color(0.85f, 0.4f, 1f, 1f));
+
         return projectiles;
     }
 }

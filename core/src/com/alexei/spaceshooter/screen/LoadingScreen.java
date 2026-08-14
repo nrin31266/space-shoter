@@ -36,9 +36,35 @@ public class LoadingScreen implements Screen {
     @Override
     public void show() {
         AssetManager assetManager = game.getAssetManager();
+        // Ships (author-owned)
         assetManager.load("ship.png", Texture.class);
         assetManager.load("enemy1.png", Texture.class);
         assetManager.load("enemy2.png", Texture.class);
+        assetManager.load("enemy_c.png", Texture.class);
+        assetManager.load("enemy_d.png", Texture.class);
+        assetManager.load("enemy_e.png", Texture.class);
+        assetManager.load("enemy_f.png", Texture.class);
+        assetManager.load("enemy_boss.png", Texture.class);
+        // Items
+        assetManager.load("item_star.png", Texture.class);
+        assetManager.load("item_hp.png", Texture.class);
+        assetManager.load("item_energy.png", Texture.class);
+        assetManager.load("item_upgrade.png", Texture.class);
+        assetManager.load("item_upgrade_explosive.png", Texture.class);
+        assetManager.load("item_upgrade_homing.png", Texture.class);
+        // Projectiles
+        assetManager.load("laser_blue.png", Texture.class);
+        assetManager.load("laser_red.png", Texture.class);
+        assetManager.load("plasma_orb.png", Texture.class);
+        assetManager.load("orb_red.png", Texture.class);
+        assetManager.load("orb_green.png", Texture.class);
+        assetManager.load("orb_gold.png", Texture.class);
+        assetManager.load("orb_purple.png", Texture.class);
+        assetManager.load("orb_pink.png", Texture.class);
+        assetManager.load("shot_orb.png", Texture.class);
+        assetManager.load("shot_dart.png", Texture.class);
+        // Background
+        assetManager.load("nebula.png", Texture.class);
         audioManager.loadSounds(assetManager);
         audioManager.loadMusic(assetManager);
     }

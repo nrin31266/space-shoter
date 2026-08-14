@@ -285,6 +285,34 @@ public class GamePlayScreen implements Screen {
         }
         audioManager.playSound(SoundName.WaveStart);
         Gdx.app.log("[GamePlay]", "Launched Wave " + waveId + " (Loop " + waveLoopCount + ", Effective " + effectiveWaveId + ")");
+
+        // Boss-wave pity (Section: demo-first design). On boss showcase waves
+        // (5, 10, 15, 20) if the player's weapon is too weak (< Lv5), drop a
+        // guaranteed energy power-up + a weapon-switch so they can keep up.
+        boolean isBossWave = (waveId % 5 == 0);
+        if (isBossWave && state.ship.getWeaponLevel() < 5) {
+            float sw = Gdx.graphics.getWidth();
+            float sh = Gdx.graphics.getHeight();
+            float bx = sw / 2f;
+            float by = sh * 0.78f;
+            com.alexei.spaceshooter.entity.ItemEnergyUpgrade energy =
+                    new com.alexei.spaceshooter.entity.ItemEnergyUpgrade(bx - com.alexei.spaceshooter.entity.ItemEnergyUpgrade.ITEM_SIZE / 2f, by);
+            energy.setScatterVelocity(90f, 160f);
+            state.items.add(energy);
+
+            int activeType = state.ship.getActiveWeaponType();
+            com.alexei.spaceshooter.entity.Item weaponItem;
+            if (activeType == com.alexei.spaceshooter.entity.Ship.WEAPON_TYPE_EXPLOSIVE) {
+                weaponItem = new com.alexei.spaceshooter.entity.ItemWeaponUpgradeExplosive(bx - com.alexei.spaceshooter.entity.ItemWeaponUpgradeExplosive.ITEM_SIZE / 2f, by - 90f);
+            } else if (activeType == com.alexei.spaceshooter.entity.Ship.WEAPON_TYPE_HOMING) {
+                weaponItem = new com.alexei.spaceshooter.entity.ItemWeaponUpgradeHoming(bx - com.alexei.spaceshooter.entity.ItemWeaponUpgradeHoming.ITEM_SIZE / 2f, by - 90f);
+            } else {
+                weaponItem = new com.alexei.spaceshooter.entity.ItemWeaponUpgrade(bx - com.alexei.spaceshooter.entity.ItemWeaponUpgrade.ITEM_SIZE / 2f, by - 90f);
+            }
+            weaponItem.setScatterVelocity(90f, 160f);
+            state.items.add(weaponItem);
+            Gdx.app.log("[GamePlay]", "Boss-wave pity: dropped energy + weapon switch for Lv" + state.ship.getWeaponLevel());
+        }
     }
 
     /** Wire weapons, add to the active list, and announce boss entrances. */
@@ -311,25 +339,10 @@ public class GamePlayScreen implements Screen {
     // HUD
     // ─────────────────────────────────────────────────────────────────
     private void buildHUD() {
-        // ── Top-right: currency + score + pause ─────────────────────
+        // ── Top-right: ONLY the pause button (clean, unobtrusive) ──
         Table topRight = new Table();
         topRight.setFillParent(true);
         topRight.top().padTop(12).padRight(16);
-
-        Table cur = new Table();
-        Image crystal = new Image(com.alexei.spaceshooter.utils.TextureRegistry.itemStar);
-        crystal.setScaling(com.badlogic.gdx.utils.Scaling.fit);
-        itemsLabel = new Label("0", uiSkin);
-        itemsLabel.setColor(new Color(0.45f, 1f, 0.6f, 1f));
-        itemsLabel.setFontScale(0.85f);
-        cur.add(crystal).size(30, 30).padRight(8);
-        cur.add(itemsLabel).padTop(6);
-        topRight.add(cur).right().padBottom(4).row();
-
-        scoreLabel = new Label("SCORE 0", uiSkin);
-        scoreLabel.setColor(new Color(1f, 0.85f, 0.2f, 1f));
-        scoreLabel.setFontScale(0.7f);
-        topRight.add(scoreLabel).right().padBottom(8).row();
 
         Button pauseBtn = CustomUI.createButton("\uf04c", null, false);
         pauseBtn.addListener(new ClickListener() {
@@ -341,7 +354,7 @@ public class GamePlayScreen implements Screen {
         topRight.add(pauseBtn).size(84, 76).right();
         uiStage.addActor(topRight);
 
-        // ── Bottom-left: weapon info ────────────────────────────────
+        // ── Bottom-left: weapon info ───────────────────────────────
         Table bottom = new Table();
         bottom.setFillParent(true);
         bottom.bottom().pad(18).padLeft(20);
@@ -350,6 +363,27 @@ public class GamePlayScreen implements Screen {
         weaponLabel.setFontScale(0.72f);
         bottom.add(weaponLabel).left();
         uiStage.addActor(bottom);
+
+        // ── Bottom-right: star currency + score ────────────────────
+        Table bottomRight = new Table();
+        bottomRight.setFillParent(true);
+        bottomRight.bottom().pad(14).padRight(20);
+
+        Table cur = new Table();
+        Image starIcon = new Image(com.alexei.spaceshooter.utils.TextureRegistry.itemStar);
+        starIcon.setScaling(com.badlogic.gdx.utils.Scaling.fit);
+        itemsLabel = new Label("0", uiSkin);
+        itemsLabel.setColor(new Color(1f, 0.85f, 0.3f, 1f)); // gold — star currency
+        itemsLabel.setFontScale(0.85f);
+        cur.add(starIcon).size(30, 30).padRight(8);
+        cur.add(itemsLabel).padTop(6);
+        bottomRight.add(cur).right().padBottom(4).row();
+
+        scoreLabel = new Label("SCORE 0", uiSkin);
+        scoreLabel.setColor(new Color(1f, 0.85f, 0.2f, 1f));
+        scoreLabel.setFontScale(0.7f);
+        bottomRight.add(scoreLabel).right();
+        uiStage.addActor(bottomRight);
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -462,10 +496,10 @@ public class GamePlayScreen implements Screen {
         bestVal.setFontScale(1.2f);
         stats.add(bestVal).left().padBottom(10).row();
 
-        Label crystalsLbl = CustomUI.createTitle("CRYSTALS", new Color(0.55f, 0.6f, 0.8f, 1f));
+        Label crystalsLbl = CustomUI.createTitle("STARS", new Color(0.55f, 0.6f, 0.8f, 1f));
         crystalsLbl.setFontScale(0.9f);
         stats.add(crystalsLbl).left().row();
-        Label crystalsVal = CustomUI.createTitle("" + stars, new Color(0.4f, 1f, 0.6f, 1f));
+        Label crystalsVal = CustomUI.createTitle("" + stars, new Color(1f, 0.85f, 0.3f, 1f));
         crystalsVal.setFontScale(1.2f);
         stats.add(crystalsVal).left().padBottom(10).row();
 
@@ -696,12 +730,14 @@ public class GamePlayScreen implements Screen {
                     item.pickUp(); 
                     if (item instanceof com.alexei.spaceshooter.entity.ItemHP) {
                         ship.addLife(1f);
+                    } else if (item instanceof com.alexei.spaceshooter.entity.ItemEnergyUpgrade) {
+                        ship.upgradeEnergy();
                     } else if (item instanceof com.alexei.spaceshooter.entity.ItemWeaponUpgradeExplosive) {
-                        ship.upgradeWeaponType(com.alexei.spaceshooter.entity.Ship.WEAPON_TYPE_EXPLOSIVE);
+                        ship.switchWeaponType(com.alexei.spaceshooter.entity.Ship.WEAPON_TYPE_EXPLOSIVE);
                     } else if (item instanceof com.alexei.spaceshooter.entity.ItemWeaponUpgradeHoming) {
-                        ship.upgradeWeaponType(com.alexei.spaceshooter.entity.Ship.WEAPON_TYPE_HOMING);
+                        ship.switchWeaponType(com.alexei.spaceshooter.entity.Ship.WEAPON_TYPE_HOMING);
                     } else if (item instanceof com.alexei.spaceshooter.entity.ItemWeaponUpgrade) {
-                        ship.upgradeWeaponType(com.alexei.spaceshooter.entity.Ship.WEAPON_TYPE_PLASMA);
+                        ship.switchWeaponType(com.alexei.spaceshooter.entity.Ship.WEAPON_TYPE_PLASMA);
                     } else {
                         state.scoreTracker.collectStar();
                     }
@@ -772,6 +808,7 @@ public class GamePlayScreen implements Screen {
         // Enemies
         for (Unit e : state.enemies) {
             e.update(dt);
+            if (!e.hasArrived()) continue; // don't fire while still flying in ("ngậm đạn")
             for (Weapon w : e.getWeapons()) {
                 if (w instanceof WeaponEnergyBallA) ((WeaponEnergyBallA) w).setTarget(ship);
                 if (w instanceof WeaponSniperBeam)  ((WeaponSniperBeam)  w).setTarget(ship);
@@ -790,12 +827,14 @@ public class GamePlayScreen implements Screen {
                 item.pickUp(); 
                 if (item instanceof com.alexei.spaceshooter.entity.ItemHP) {
                     ship.addLife(1f);
+                } else if (item instanceof com.alexei.spaceshooter.entity.ItemEnergyUpgrade) {
+                    ship.upgradeEnergy();
                 } else if (item instanceof com.alexei.spaceshooter.entity.ItemWeaponUpgradeExplosive) {
-                    ship.upgradeWeaponType(com.alexei.spaceshooter.entity.Ship.WEAPON_TYPE_EXPLOSIVE);
+                    ship.switchWeaponType(com.alexei.spaceshooter.entity.Ship.WEAPON_TYPE_EXPLOSIVE);
                 } else if (item instanceof com.alexei.spaceshooter.entity.ItemWeaponUpgradeHoming) {
-                    ship.upgradeWeaponType(com.alexei.spaceshooter.entity.Ship.WEAPON_TYPE_HOMING);
+                    ship.switchWeaponType(com.alexei.spaceshooter.entity.Ship.WEAPON_TYPE_HOMING);
                 } else if (item instanceof com.alexei.spaceshooter.entity.ItemWeaponUpgrade) {
-                    ship.upgradeWeaponType(com.alexei.spaceshooter.entity.Ship.WEAPON_TYPE_PLASMA);
+                    ship.switchWeaponType(com.alexei.spaceshooter.entity.Ship.WEAPON_TYPE_PLASMA);
                 } else {
                     state.scoreTracker.collectStar();
                 }
@@ -915,23 +954,23 @@ public class GamePlayScreen implements Screen {
 
 
 
-    /** Draws the player health bar (top-left) and the wave badge (top-centre). */
+    /** Draws the player health bar (bottom-left) and the wave badge (bottom-centre). */
     private void renderPlayerHudTop(float sw, float sh) {
         Ship ship = state.ship;
         float pct = MathUtils.clamp(ship.getLife() / ship.getMaxLife(), 0f, 1f);
 
-        float barW = sw * 0.30f;
-        float barH = 18f;
+        float barW = sw * 0.28f;
+        float barH = 16f;
         float barX = 16f;
-        float barY = sh - 44f;
+        float barY = sh * 0.075f;
 
-        // Wave badge geometry
+        // Wave badge geometry (bottom-centre, above the ship)
         String waveText = "WAVE " + state.currentWaveId;
         cachedLayout.setText(overlayFont, waveText);
-        float pillW = cachedLayout.width + 46f;
-        float pillH = 34f;
+        float pillW = cachedLayout.width + 40f;
+        float pillH = 30f;
         float pillX = (sw - pillW) / 2f;
-        float pillY = sh - 54f;
+        float pillY = sh * 0.075f;
 
         // ── Shape pass: bar + pill backgrounds ────────────────────
         shapeRenderer.begin(com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType.Filled);
@@ -963,7 +1002,7 @@ public class GamePlayScreen implements Screen {
         hudFont.draw(batch, hpText, barX + (barW - cachedLayout.width) / 2f, barY + barH - 3f);
 
         overlayFont.setColor(0f, 0.92f, 1f, 1f);
-        overlayFont.draw(batch, waveText, pillX + 23f, pillY + pillH - 9f);
+        overlayFont.draw(batch, waveText, pillX + 20f, pillY + pillH - 8f);
         batch.end();
     }
 
@@ -1106,7 +1145,10 @@ public class GamePlayScreen implements Screen {
                 Projectile p = state.projectiles.get(j);
                 if (p.isShipProjectile() && p.isColliding(e)) {
                     p.doDamage(e);
-                    state.projectiles.remove(j);
+                    // Piercing projectiles punch through; otherwise remove on hit.
+                    if (p.consumePierce()) {
+                        state.projectiles.remove(j);
+                    }
                     if (e.isDead()) {
                         state.scoreTracker.addEnemyKilled();
                         state.enemies.remove(i);
