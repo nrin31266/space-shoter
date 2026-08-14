@@ -89,6 +89,13 @@ public class WeaponShipLaser extends Weapon {
                     dir, PROJECTILE_SPEED,
                     PROJECTILE_COLOR, damage, true);
         }
+
+        // Muzzle flash at the ship nose — reuses the shared effect list (no allocation).
+        com.alexei.spaceshooter.effect.EffectFlash flash =
+                new com.alexei.spaceshooter.effect.EffectFlash(unit.getCenterX(), unit.getTop(), unit);
+        flash.setColor(new com.badlogic.gdx.graphics.Color(0.4f, 0.85f, 1f, 1f));
+        com.alexei.spaceshooter.entity.Visual.addVisualEffect(flash);
+
         return projectiles;
     }
 }

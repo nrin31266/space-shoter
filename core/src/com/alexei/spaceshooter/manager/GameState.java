@@ -62,6 +62,8 @@ public class GameState {
                 STAR_SCROLL_ANGLE, STAR_SCROLL_SPEED, STAR_COUNT, MIN_STAR_SIZE, MAX_STAR_SIZE);
         starfield2 = new Starfield((int) screenWidth, (int) screenHeight,
                 STAR_SCROLL_ANGLE_2, STAR_SCROLL_SPEED_2, STAR_COUNT_2, MIN_STAR_SIZE_2, MAX_STAR_SIZE_2);
+        // Far layer carries the nebula; it is tinted dark so gameplay stays readable.
+        starfield.setNebula(com.alexei.spaceshooter.utils.TextureRegistry.nebula, 0.5f);
         ship = new Ship();
         scoreTracker = new ScoreTracker();
         currentWaveId = 1;

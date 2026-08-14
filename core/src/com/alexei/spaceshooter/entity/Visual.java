@@ -92,6 +92,12 @@ public class Visual {
         Visual.visuals.addAll(effects);
     }
 
+    /** Add a single effect to the shared list (zero extra allocation). */
+    public static void addVisualEffect(Visual effect) {
+        if (visuals == null || effect == null) return;
+        Visual.visuals.add(effect);
+    }
+
     public static ArrayList<Visual> getVisualEffects() { return Visual.visuals; }
 
     /**
@@ -215,6 +221,9 @@ public class Visual {
     }
     public void setTextureRegion(Texture texture) {
         this.region = new TextureRegion(texture, 0, 0, texture.getWidth(), texture.getHeight());
+    }
+    public void setTextureRegion(TextureRegion textureRegion) {
+        this.region = textureRegion;
     }
     public boolean isOrientInDirectionOfVelocity() {
         return orientInDirectionOfVelocity;

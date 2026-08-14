@@ -18,8 +18,10 @@ import com.badlogic.gdx.math.MathUtils;
 public class Ship extends Unit {
     private static final float UNIT_POSITION_X = 0;
     private static final float UNIT_POSITION_Y = 0;
-    private static final float UNIT_WIDTH = 80;
-    private static final float UNIT_HEIGHT = 80;
+    // Player ship visual size (about 20-30% larger than the original 80px for
+    // mobile readability). Hitbox scales with it.
+    private static final float UNIT_WIDTH = 96;
+    private static final float UNIT_HEIGHT = 96;
     public static final float INITIAL_LIFE = 5f;
     public static final float MAX_LIFE = 10f;
     private static final Color COLOR = Color.MAROON;
@@ -58,7 +60,7 @@ public class Ship extends Unit {
 
         // Apply ship sprite if available
         if (TextureRegistry.ship != null) {
-            this.setTextureRegion(TextureRegistry.ship.getTexture());
+            this.setTextureRegion(TextureRegistry.ship);
             setOrientInDirectionOfVelocity(false); // ship faces up, not in direction of motion
         }
 

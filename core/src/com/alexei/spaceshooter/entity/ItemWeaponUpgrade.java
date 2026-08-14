@@ -14,9 +14,10 @@ import com.badlogic.gdx.math.MathUtils;
  * Visual: blue ring (proper hollow ring) with a solid blue triangle centred inside.
  */
 public class ItemWeaponUpgrade extends Item {
-    public static final float ITEM_SIZE = 18f;
+    // Raised ~33% for mobile visibility.
+    public static final float ITEM_SIZE = 24f;
     public static final Color ITEM_COLOR = Color.valueOf("0077ff");
-    public static final SoundName PICK_UP_SOUND = SoundName.Hit7;
+    public static final SoundName PICK_UP_SOUND = SoundName.PowerUp;
 
     private static final float RING_OUTER  = 22f;
     private static final float RING_INNER  = 16f;

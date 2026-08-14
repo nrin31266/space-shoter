@@ -9,6 +9,13 @@
           "pattern": "GRID",
           "count": 6,
           "hoverYPct": 0.65
+        },
+        {
+          "delay": 5.0,
+          "enemyType": "EnemyShipA",
+          "pattern": "LINE",
+          "count": 4,
+          "hoverYPct": 0.6
         }
       ]
     },
@@ -23,11 +30,11 @@
           "hoverYPct": 0.7
         },
         {
-          "delay": 3.5,
-          "enemyType": "EnemyShipC",
-          "pattern": "CHEVRON",
-          "count": 4,
-          "hoverYPct": 0.55
+          "delay": 4.5,
+          "enemyType": "EnemyShipA",
+          "pattern": "LINE",
+          "count": 5,
+          "hoverYPct": 0.62
         }
       ]
     },
@@ -36,16 +43,16 @@
       "actions": [
         {
           "delay": 0.5,
-          "enemyType": "EnemyShipD",
-          "pattern": "GRID",
-          "count": 2,
-          "hoverYPct": 0.75
+          "enemyType": "EnemyShipC",
+          "pattern": "CHEVRON",
+          "count": 5,
+          "hoverYPct": 0.55
         },
         {
-          "delay": 4.0,
+          "delay": 4.5,
           "enemyType": "EnemyShipE",
           "pattern": "CHEVRON",
-          "count": 6,
+          "count": 4,
           "hoverYPct": 0.6
         }
       ]
@@ -55,17 +62,25 @@
       "actions": [
         {
           "delay": 0.5,
-          "enemyType": "EnemyShipF",
+          "enemyType": "EnemyShipD",
           "pattern": "GRID",
-          "count": 3,
-          "hoverYPct": 0.7
+          "count": 2,
+          "hoverYPct": 0.75
         },
         {
-          "delay": 4.5,
-          "enemyType": "EnemyShipC",
+          "delay": 3.5,
+          "enemyType": "EnemyShipB",
           "pattern": "INTERLEAVED_ROWS",
           "count": 4,
-          "hoverYPct": 0.55
+          "secondaryEnemyType": "EnemyShipA",
+          "hoverYPct": 0.6
+        },
+        {
+          "delay": 7.0,
+          "enemyType": "EnemyShipF",
+          "pattern": "GRID",
+          "count": 1,
+          "hoverYPct": 0.7
         }
       ]
     },
@@ -81,17 +96,16 @@
         },
         {
           "delay": 3.0,
-          "enemyType": "EnemyShipD",
+          "enemyType": "EnemyShipC",
           "pattern": "CHEVRON",
-          "count": 2,
-          "hoverYPct": 0.75
+          "count": 3,
+          "hoverYPct": 0.55
         },
         {
           "delay": 6.0,
-          "enemyType": "EnemyShipE",
-          "pattern": "INTERLEAVED_ROWS",
-          "count": 4,
-          "hoverYPct": 0.6
+          "enemyType": "BOSS",
+          "pattern": "BOSS",
+          "count": 1
         }
       ]
     },

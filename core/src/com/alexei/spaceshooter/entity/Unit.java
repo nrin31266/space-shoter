@@ -2,6 +2,7 @@ package com.alexei.spaceshooter.entity;
 
 import com.alexei.spaceshooter.SpaceShooter;
 import com.alexei.spaceshooter.effect.EffectExplosion;
+import com.alexei.spaceshooter.effect.EffectFlash;
 import com.alexei.spaceshooter.effect.EffectSpawrksSpawner;
 import com.alexei.spaceshooter.effect.ParticleEmitter;
 import com.alexei.spaceshooter.utils.SoundName;
@@ -182,15 +183,9 @@ public class Unit extends Visual {
     }*/
 
     public void generateDamagePoints(Visual visual) {
-        // generate a damage mark on the unit
-        int spots = MathUtils.random(1, 5);
-        for (int i = 0; i < spots; i++) {
-            int dx = MathUtils.random(0, 15);
-            int dy = MathUtils.random(0, 5);
-            int xsize = MathUtils.random(10, 20);
-            int ysize = MathUtils.random(10, 20);
-            damagePoints.add(new DamagePoint(new Vector2(visual.getX() - position.x + dx, dy), new Vector2(xsize, ysize)));
-        }
+        // No-op: every unit now renders a texture sprite, so the legacy
+        // "black damage decal" overlay was never drawn. Skipping it removes
+        // per-hit Vector2/DamagePoint allocations during combat.
     }
 
     private int pityWeaponType = -1;
@@ -259,6 +254,11 @@ public class Unit extends Visual {
 
     ArrayList<Visual> getDeathEffect(Visual visual) {
         ArrayList<Visual> effects = new ArrayList<Visual>();
+
+        // White-hot flash core + fireball explosion + directional sparks.
+        ParticleEmitter flash = new EffectFlash(getCenterX(), getCenterY(), this);
+        flash.setColor(new com.badlogic.gdx.graphics.Color(1f, 0.95f, 0.7f, 1f));
+        effects.add(flash);
 
         ParticleEmitter sparks = new EffectExplosion(getCenterX(), getCenterY(), this);
         sparks.setColor(getColor().cpy());

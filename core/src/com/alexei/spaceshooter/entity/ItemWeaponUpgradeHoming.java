@@ -14,9 +14,9 @@ import com.badlogic.gdx.math.MathUtils;
  * Visual: Purple ring with a solid purple/magenta 4-pointed crystal inside.
  */
 public class ItemWeaponUpgradeHoming extends Item {
-    public static final float ITEM_SIZE = 18f;
+    public static final float ITEM_SIZE = 24f;
     public static final Color ITEM_COLOR = Color.valueOf("cc00ff");
-    public static final SoundName PICK_UP_SOUND = SoundName.Hit7;
+    public static final SoundName PICK_UP_SOUND = SoundName.PowerUp;
 
     private static final float RING_OUTER  = 22f;
     private static final float RING_INNER  = 16f;

@@ -7,15 +7,15 @@ import com.alexei.spaceshooter.entity.Visual;
  */
 public class EffectExplosion extends ParticleEmitter {
 
-    public static final float PARTICLE_SIZE = 6;
-    public static final float PARTICLE_SIZE_VARIATION = 2;
+    public static final float PARTICLE_SIZE = 9;
+    public static final float PARTICLE_SIZE_VARIATION = 5;
 
     public static final float PARTICLE_DIRECTION_ANGLE_FROM = 0;
     public static final float PARTICLE_DIRECTION_ANGLE_TO = 360;
     public static final float PARTICLE_DIRECTION_ANGLE_VARIATION = 0;
 
-    public static final float PARTICLE_SPEED = 250;
-    public static final float PARTICLE_SPEED_VARIATION = 100;
+    public static final float PARTICLE_SPEED = 320;
+    public static final float PARTICLE_SPEED_VARIATION = 140;
 
     public static final float PARTICLE_ROTATION_SPEED = 0;
     public static final float PARTICLE_ROTATION_SPEED_VARIATION = 0;
@@ -27,19 +27,18 @@ public class EffectExplosion extends ParticleEmitter {
     public static final float PARTICLE_ALPHA = 1;
     public static final float PARTICLE_ALPHA_VARIATION = 0;
 
-    public static final int PARTICLE_LIFE_PERIOD = 450;
-    public static final int PARTICLE_LIFE_PERIOD_VARIATION = 100;
+    public static final int PARTICLE_LIFE_PERIOD = 500;
+    public static final int PARTICLE_LIFE_PERIOD_VARIATION = 120;
 
     public static final ParticleEmitter.ParticleShape PARTICLE_SHAPE = ParticleShape.Rect;
 
     public static final int EMISSION_EVENTS_IN_CYCLE = 1;
-    public static final int EMISSION_AMOUNT_PER_EVENT = 40;
+    public static final int EMISSION_AMOUNT_PER_EVENT = 50;
     public static final int EMISSION_EVENT_DELAY = 0;
     public static final int EMISSION_CYCLES = 1;
     public static final int EMISSION_CYCLE_DELAY = 0;
 
-
-    public EffectExplosion(float x, float y, Visual visual) {
+    public EffectExplosion(float x, float y, Visual visual, int particleCount, float size, float speed) {
         super(x, y);
 
         // assume the passed visual's velocity
@@ -47,22 +46,20 @@ public class EffectExplosion extends ParticleEmitter {
             this.setVelocity(visual.getVelocity());
         }
 
-        setParticleSize(PARTICLE_SIZE);
+        setParticleSize(size);
         setParticleSizeVariation(PARTICLE_SIZE_VARIATION);
 
         setParticleDirectionAngleFrom(PARTICLE_DIRECTION_ANGLE_FROM);
         setParticleDirectionAngleTo(PARTICLE_DIRECTION_ANGLE_TO);
         setParticleDirectionAngleVariation(PARTICLE_DIRECTION_ANGLE_VARIATION);
 
-        setParticleSpeed(PARTICLE_SPEED);
+        setParticleSpeed(speed);
         setParticleSpeedVariation(PARTICLE_SPEED_VARIATION);
 
         setParticleRotationSpeed(PARTICLE_ROTATION_SPEED);
         setParticleRotationSpeedVariation(PARTICLE_ROTATION_SPEED_VARIATION);
 
         setColor(PARTICLE_COLOR);
-        setParticleSize(PARTICLE_SIZE);
-
         getColor().a = PARTICLE_ALPHA;
 
         // particle life
@@ -74,13 +71,17 @@ public class EffectExplosion extends ParticleEmitter {
 
         // emission timing variables
         setEmissionEventsInCycle(EMISSION_EVENTS_IN_CYCLE);
-        setEmissionAmountPerEvent(EMISSION_AMOUNT_PER_EVENT);
+        setEmissionAmountPerEvent(particleCount);
         setEmissionEventDelay(EMISSION_EVENT_DELAY);
         setEmissionCycles(EMISSION_CYCLES);
         setEmissionCycleDelay(EMISSION_CYCLE_DELAY);
     }
 
+    public EffectExplosion(float x, float y, Visual visual) {
+        this(x, y, visual, EMISSION_AMOUNT_PER_EVENT, PARTICLE_SIZE, PARTICLE_SPEED);
+    }
+
     public EffectExplosion(float x, float y) {
-        this(x, y,null);
+        this(x, y, null);
     }
 }

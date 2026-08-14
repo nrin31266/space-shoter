@@ -12,8 +12,8 @@ import com.badlogic.gdx.math.MathUtils;
  * Appears starting Wave 16.
  */
 public class EnemyShipF extends Unit {
-    private static final float UNIT_WIDTH  = 125;
-    private static final float UNIT_HEIGHT = 125;
+    private static final float UNIT_WIDTH  = 140;
+    private static final float UNIT_HEIGHT = 140;
     private static final float ENTER_SPEED = 150;
     private static final float HOVER_SPEED = 35;
     private static final Color UNIT_COLOR  = Color.valueOf("FFD700FF"); // Heavy Gold
@@ -38,7 +38,7 @@ public class EnemyShipF extends Unit {
 
         // Apply enemy sprite
         if (TextureRegistry.enemyF != null) {
-            this.setTextureRegion(TextureRegistry.enemyF.getTexture());
+            this.setTextureRegion(TextureRegistry.enemyF);
             setOrientInDirectionOfVelocity(false);
             setOrientation(180f);
         }

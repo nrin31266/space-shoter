@@ -14,8 +14,9 @@ import com.badlogic.gdx.math.MathUtils;
  * Hot-pink color, 1.5 HP. Appears from wave 3.
  */
 public class EnemyShipC extends Unit {
-    private static final float UNIT_WIDTH   = 44;
-    private static final float UNIT_HEIGHT  = 44;
+    // Sniper must be readable on a phone — bumped from 44px to 60px.
+    private static final float UNIT_WIDTH   = 60;
+    private static final float UNIT_HEIGHT  = 60;
     private static final float ENTER_SPEED  = 450;
     private static final float HOVER_SPEED  = 95;
     private static final Color UNIT_COLOR   = Color.valueOf("FF4FF4FF");
@@ -43,7 +44,7 @@ public class EnemyShipC extends Unit {
         sniperWeapon = new WeaponSniperBeam(this);
         // Apply enemy sprite
         if (TextureRegistry.enemyC != null) {
-            this.setTextureRegion(TextureRegistry.enemyC.getTexture());
+            this.setTextureRegion(TextureRegistry.enemyC);
             setOrientInDirectionOfVelocity(false);
             setOrientation(180f);
         }

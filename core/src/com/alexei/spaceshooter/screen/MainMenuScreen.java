@@ -71,6 +71,7 @@ public class MainMenuScreen implements Screen {
         this.starfield2 = new Starfield((int) sw, (int) sh,
                 GameState.STAR_SCROLL_ANGLE_2, GameState.STAR_SCROLL_SPEED_2,
                 GameState.STAR_COUNT_2, GameState.MIN_STAR_SIZE_2, GameState.MAX_STAR_SIZE_2);
+        this.starfield.setNebula(com.alexei.spaceshooter.utils.TextureRegistry.nebula, 0.55f);
     }
 
     @Override
@@ -365,11 +366,20 @@ public class MainMenuScreen implements Screen {
         starfield.update(deltaTime);
         starfield2.update(deltaTime);
 
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        // Background: batched nebula + starfields + floating ship art
+        batch.begin();
         starfield.render(shapeRenderer, batch);
         starfield2.render(shapeRenderer, batch);
+        // Large hero ship art, gently bobbing, above the title
+        if (com.alexei.spaceshooter.utils.TextureRegistry.ship != null) {
+            float shipSize = screenHeight * 0.16f;
+            float bob = MathUtils.sin(titlePulse * 2.2f) * 10f;
+            batch.draw(com.alexei.spaceshooter.utils.TextureRegistry.ship,
+                    (screenWidth - shipSize) / 2f, screenHeight * 0.56f + bob,
+                    shipSize, shipSize);
+        }
         ship.render(shapeRenderer, batch);
-        shapeRenderer.end();
+        batch.end();
 
         // ─── Animated title (drawn manually for glow effect) ─────
         renderTitle(screenWidth, screenHeight);

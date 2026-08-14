@@ -14,8 +14,8 @@ import com.badlogic.gdx.math.MathUtils;
  * Orange color, 8 HP, drops 3 stars. Appears from wave 4.
  */
 public class EnemyShipD extends Unit {
-    private static final float UNIT_WIDTH   = 90;
-    private static final float UNIT_HEIGHT  = 90;
+    private static final float UNIT_WIDTH   = 100;
+    private static final float UNIT_HEIGHT  = 100;
     private static final float ENTER_SPEED  = 170;
     private static final float HOVER_SPEED  = 40;
     private static final Color UNIT_COLOR   = Color.valueOf("FF7700FF");
@@ -42,7 +42,7 @@ public class EnemyShipD extends Unit {
         super.setStarCount(STARS_COUNT);
         // Apply enemy sprite
         if (TextureRegistry.enemyD != null) {
-            this.setTextureRegion(TextureRegistry.enemyD.getTexture());
+            this.setTextureRegion(TextureRegistry.enemyD);
             setOrientInDirectionOfVelocity(false);
             setOrientation(180f);
         }

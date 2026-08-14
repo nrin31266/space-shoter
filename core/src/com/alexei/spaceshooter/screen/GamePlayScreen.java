@@ -36,6 +36,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.alexei.spaceshooter.utils.CustomUI;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -112,10 +113,8 @@ public class GamePlayScreen implements Screen {
     private Stage  uiStage;
     private Skin   uiSkin;
     private Label  scoreLabel;
-    private Label  healthLabel;
     private Label  itemsLabel;
     private Label  weaponLabel;
-    private Label  waveLabel;
 
     // ─────────────────────────────────────────────────────────────────
     // Constructors
@@ -284,7 +283,19 @@ public class GamePlayScreen implements Screen {
             showWaveAnnouncement = true;
             waveAnnouncementTimer = 0f;
         }
+        audioManager.playSound(SoundName.WaveStart);
         Gdx.app.log("[GamePlay]", "Launched Wave " + waveId + " (Loop " + waveLoopCount + ", Effective " + effectiveWaveId + ")");
+    }
+
+    /** Wire weapons, add to the active list, and announce boss entrances. */
+    private void addSpawnedEnemies(java.util.List<Unit> newEnemies) {
+        for (Unit e : newEnemies) {
+            wireEnemyWeapons(e);
+            state.enemies.add(e);
+            if (e instanceof com.alexei.spaceshooter.entity.EnemyBoss) {
+                audioManager.playSound(SoundName.BossWarning);
+            }
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -300,51 +311,26 @@ public class GamePlayScreen implements Screen {
     // HUD
     // ─────────────────────────────────────────────────────────────────
     private void buildHUD() {
-        Table hud = new Table();
-        hud.setFillParent(true);
-        hud.top().pad(14);
+        // ── Top-right: currency + score + pause ─────────────────────
+        Table topRight = new Table();
+        topRight.setFillParent(true);
+        topRight.top().padTop(12).padRight(16);
 
-        Table left = new Table().left();
-
-        Table hpTable = new Table();
-        Label hpIcon = new Label("\uf004 ", uiSkin, "icon");
-        hpIcon.setColor(new Color(1f, 0.3f, 0.35f, 1f));
-        hpIcon.setFontScale(0.70f);
-        healthLabel = new Label("5/10", uiSkin);
-        healthLabel.setColor(new Color(1f, 0.3f, 0.35f, 1f));
-        healthLabel.setFontScale(0.70f);
-        hpTable.add(hpIcon).padRight(2); hpTable.add(healthLabel);
-        left.add(hpTable).left().padBottom(2).row();
-
-        Table starTable = new Table();
-        Label starIcon = new Label("\uf005 ", uiSkin, "icon");
-        starIcon.setColor(new Color(1f, 0.88f, 0f, 1f));
-        starIcon.setFontScale(0.70f);
+        Table cur = new Table();
+        Image crystal = new Image(com.alexei.spaceshooter.utils.TextureRegistry.itemStar);
+        crystal.setScaling(com.badlogic.gdx.utils.Scaling.fit);
         itemsLabel = new Label("0", uiSkin);
-        itemsLabel.setColor(new Color(1f, 0.88f, 0f, 1f));
-        itemsLabel.setFontScale(0.70f);
-        starTable.add(starIcon).padRight(2); starTable.add(itemsLabel);
-        left.add(starTable).left().padBottom(2).row();
+        itemsLabel.setColor(new Color(0.45f, 1f, 0.6f, 1f));
+        itemsLabel.setFontScale(0.85f);
+        cur.add(crystal).size(30, 30).padRight(8);
+        cur.add(itemsLabel).padTop(6);
+        topRight.add(cur).right().padBottom(4).row();
 
-        scoreLabel = new Label("Score: 0", uiSkin);
-        scoreLabel.setColor(new Color(0f, 1f, 0.65f, 1f));
-        scoreLabel.setFontScale(0.70f);
-        left.add(scoreLabel).left().padBottom(2).row();
-        
-        weaponLabel = new Label("LASER Lv: 1", uiSkin);
-        weaponLabel.setColor(new Color(0f, 1f, 1f, 1f));
-        weaponLabel.setFontScale(0.70f);
-        left.add(weaponLabel).left().padBottom(2).row();
+        scoreLabel = new Label("SCORE 0", uiSkin);
+        scoreLabel.setColor(new Color(1f, 0.85f, 0.2f, 1f));
+        scoreLabel.setFontScale(0.7f);
+        topRight.add(scoreLabel).right().padBottom(8).row();
 
-        waveLabel = new Label("WAVE: 1/20", uiSkin);
-        waveLabel.setColor(new Color(1f, 0.85f, 0.1f, 1f));
-        waveLabel.setFontScale(0.70f);
-        left.add(waveLabel).left().row();
-
-        hud.add(left).expandX().left();
-
-        // Pause button — TextButton with Unicode pause bars (works on all devices,
-        // no external icon library needed).
         Button pauseBtn = CustomUI.createButton("\uf04c", null, false);
         pauseBtn.addListener(new ClickListener() {
             @Override public void clicked(InputEvent event, float x, float y) {
@@ -352,8 +338,18 @@ public class GamePlayScreen implements Screen {
                 saveCurrentGame();
             }
         });
-        hud.add(pauseBtn).size(110, 100).right().top();
-        uiStage.addActor(hud);
+        topRight.add(pauseBtn).size(84, 76).right();
+        uiStage.addActor(topRight);
+
+        // ── Bottom-left: weapon info ────────────────────────────────
+        Table bottom = new Table();
+        bottom.setFillParent(true);
+        bottom.bottom().pad(18).padLeft(20);
+        weaponLabel = new Label("LASER Lv:1", uiSkin);
+        weaponLabel.setColor(new Color(0f, 0.95f, 1f, 1f));
+        weaponLabel.setFontScale(0.72f);
+        bottom.add(weaponLabel).left();
+        uiStage.addActor(bottom);
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -438,18 +434,49 @@ public class GamePlayScreen implements Screen {
 
         // Commit stats ONLY when game session ends (player death on Game Over)
         saveManager.commitGameStats(score, stars);
+        long bestScore = saveManager.getHighScore();
 
         VisDialog d = createBaseDialog();
         d.getContentTable().add(dialogTitle("GAME OVER", new Color(1f, 0.25f, 0.25f, 1f)))
-                           .padBottom(30).row();
+                           .padBottom(24).row();
         addDivider(d, new Color(0.8f, 0.2f, 0.2f, 0.5f));
 
-        Label titleLabel = CustomUI.createTitle("WAVE " + state.currentWaveId + " FAILED", new Color(1f, 0.4f, 0.4f, 1f));
-        d.getContentTable().add(titleLabel).padBottom(30).row();
+        Label waveLabel = CustomUI.createTitle("WAVE " + state.currentWaveId + " REACHED", new Color(1f, 0.45f, 0.45f, 1f));
+        waveLabel.setFontScale(1.1f);
+        d.getContentTable().add(waveLabel).padBottom(26).row();
 
-        Label detailLbl = CustomUI.createTitle("Killed: " + killed + "    Score: " + score, new Color(0.68f, 0.68f, 0.88f, 1f));
-        detailLbl.setFontScale(1.0f);
-        d.getContentTable().add(detailLbl).padTop(8).padBottom(30).row();
+        // Stats block
+        Table stats = new Table();
+        stats.defaults().pad(4);
+        Label scoreLbl = CustomUI.createTitle("SCORE", new Color(0.55f, 0.6f, 0.8f, 1f));
+        scoreLbl.setFontScale(0.9f);
+        stats.add(scoreLbl).left().row();
+        Label scoreVal = CustomUI.createTitle("" + score, new Color(1f, 0.85f, 0.3f, 1f));
+        scoreVal.setFontScale(1.4f);
+        stats.add(scoreVal).left().padBottom(10).row();
+
+        Label bestLbl = CustomUI.createTitle("BEST SCORE", new Color(0.55f, 0.6f, 0.8f, 1f));
+        bestLbl.setFontScale(0.9f);
+        stats.add(bestLbl).left().row();
+        Label bestVal = CustomUI.createTitle("" + bestScore, new Color(0.8f, 0.85f, 1f, 1f));
+        bestVal.setFontScale(1.2f);
+        stats.add(bestVal).left().padBottom(10).row();
+
+        Label crystalsLbl = CustomUI.createTitle("CRYSTALS", new Color(0.55f, 0.6f, 0.8f, 1f));
+        crystalsLbl.setFontScale(0.9f);
+        stats.add(crystalsLbl).left().row();
+        Label crystalsVal = CustomUI.createTitle("" + stars, new Color(0.4f, 1f, 0.6f, 1f));
+        crystalsVal.setFontScale(1.2f);
+        stats.add(crystalsVal).left().padBottom(10).row();
+
+        Label killsLbl = CustomUI.createTitle("ENEMIES DESTROYED", new Color(0.55f, 0.6f, 0.8f, 1f));
+        killsLbl.setFontScale(0.9f);
+        stats.add(killsLbl).left().row();
+        Label killsVal = CustomUI.createTitle("" + killed, new Color(0.8f, 0.85f, 1f, 1f));
+        killsVal.setFontScale(1.2f);
+        stats.add(killsVal).left().row();
+
+        d.getContentTable().add(stats).padBottom(22).row();
 
         addDivider(d, new Color(0.8f, 0.2f, 0.2f, 0.4f));
 
@@ -460,7 +487,7 @@ public class GamePlayScreen implements Screen {
                 resetGame();
             }
         });
-        d.getContentTable().add(restartBtn).width(720).height(160).padTop(22).row();
+        d.getContentTable().add(restartBtn).width(720).height(150).padTop(20).row();
 
         Button menuBtn = dangerBtn("<  Menu");
         menuBtn.addListener(new ClickListener() {
@@ -468,7 +495,7 @@ public class GamePlayScreen implements Screen {
                 game.setScreen(new MainMenuScreen(game, audioManager));
             }
         });
-        d.getContentTable().add(menuBtn).width(720).height(160).padTop(18).row();
+        d.getContentTable().add(menuBtn).width(720).height(150).padTop(16).row();
         showCentered(d);
     }
 
@@ -528,6 +555,34 @@ public class GamePlayScreen implements Screen {
     // ─────────────────────────────────────────────────────────────────
     // render()
     // ─────────────────────────────────────────────────────────────────
+
+    /** Batched background pass: nebula + both starfields in a single SpriteBatch. */
+    private void renderBackground() {
+        batch.begin();
+        state.starfield.render(shapeRenderer, batch);
+        state.starfield2.render(shapeRenderer, batch);
+        batch.end();
+    }
+
+    /** ShapeRenderer pass for primitives such as the invulnerability shield. */
+    private void renderShapePass() {
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        state.ship.render(shapeRenderer, batch); // shield circle if invulnerable
+        if (shapeRenderer.isDrawing()) shapeRenderer.end();
+    }
+
+    /** Single SpriteBatch pass for all textured game entities. */
+    private void renderEntityPass() {
+        Ship ship = state.ship;
+        batch.begin();
+        ship.render(shapeRenderer, batch);
+        for (Unit      e : state.enemies)      e.render(shapeRenderer, batch);
+        for (Item      i : state.items)        i.render(shapeRenderer, batch);
+        for (Projectile p : state.projectiles) p.render(shapeRenderer, batch);
+        for (Visual    v : state.visualEffects) v.render(shapeRenderer, batch);
+        batch.end();
+    }
+
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0.02f, 1);
@@ -542,12 +597,9 @@ public class GamePlayScreen implements Screen {
 
         // ── Game Over ─────────────────────────────────────────────
         if (isGameOver) {
-            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
             state.starfield.update(dt);
             state.starfield2.update(dt);
-            state.starfield.render(shapeRenderer, batch);
-            state.starfield2.render(shapeRenderer, batch);
-            if (shapeRenderer.isDrawing()) shapeRenderer.end();
+            renderBackground();
             showGameOverPopup();
             updateHUD();
             uiStage.act(delta);
@@ -557,11 +609,8 @@ public class GamePlayScreen implements Screen {
 
         // ── Paused ────────────────────────────────────────────────
         if (isPaused) {
-            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-            state.starfield.render(shapeRenderer, batch);
-            state.starfield2.render(shapeRenderer, batch);
-            ship.render(shapeRenderer, batch);
-            if (shapeRenderer.isDrawing()) shapeRenderer.end();
+            renderBackground();
+            renderShapePass();
             showPauseDialog();
             uiStage.act(delta);
             uiStage.draw();
@@ -602,8 +651,7 @@ public class GamePlayScreen implements Screen {
 
             // Spawn enemies if wave is started (even during intro's tail)
             if (waveManager.isWaveStarted()) {
-                java.util.List<Unit> newEnemies = waveManager.update(dt, sw, sh);
-                for (Unit e : newEnemies) { wireEnemyWeapons(e); state.enemies.add(e); }
+                addSpawnedEnemies(waveManager.update(dt, sw, sh));
             }
 
             if (introTimer >= INTRO_DURATION) {
@@ -611,11 +659,8 @@ public class GamePlayScreen implements Screen {
             }
 
             // Render
-            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-            state.starfield.render(shapeRenderer, batch);
-            state.starfield2.render(shapeRenderer, batch);
-            ship.render(shapeRenderer, batch);
-            if (shapeRenderer.isDrawing()) shapeRenderer.end();
+            renderBackground();
+            renderShapePass();
 
             batch.begin();
             ship.render(shapeRenderer, batch);
@@ -679,11 +724,8 @@ public class GamePlayScreen implements Screen {
             }
 
             // Render everything that's still around
-            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-            state.starfield.render(shapeRenderer, batch);
-            state.starfield2.render(shapeRenderer, batch);
-            ship.render(shapeRenderer, batch);
-            if (shapeRenderer.isDrawing()) shapeRenderer.end();
+            renderBackground();
+            renderShapePass();
 
             batch.begin();
             ship.render(shapeRenderer, batch);
@@ -709,8 +751,7 @@ public class GamePlayScreen implements Screen {
         }
 
         // Spawn
-        java.util.List<Unit> newEnemies = waveManager.update(dt, sw, sh);
-        for (Unit e : newEnemies) { wireEnemyWeapons(e); state.enemies.add(e); }
+        addSpawnedEnemies(waveManager.update(dt, sw, sh));
 
         // Score
         state.scoreTracker.update(dt);
@@ -798,6 +839,7 @@ public class GamePlayScreen implements Screen {
             saveCurrentGame();
             showWaveClear  = true;
             waveClearTimer = 0f;
+            audioManager.playSound(SoundName.WaveClear);
             pendingNextWave = true;
             nextWaveDelay   = NEXT_WAVE_DELAY;
             Gdx.app.log("[GamePlay]", "Wave " + state.currentWaveId + " cleared!");
@@ -805,24 +847,18 @@ public class GamePlayScreen implements Screen {
 
         // ══ RENDER ════════════════════════════════════════════════
 
-        // Pass 1: Background & Shape primitives
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        state.starfield.render(shapeRenderer, batch);
-        state.starfield2.render(shapeRenderer, batch);
-        ship.render(shapeRenderer, batch); // Renders shield circle if invulnerable
-        if (shapeRenderer.isDrawing()) shapeRenderer.end();
+        // Pass 1: Background (batched nebula + starfield)
+        renderBackground();
 
-        // Pass 2: All game entity sprites (Single SpriteBatch pass!)
-        batch.begin();
-        ship.render(shapeRenderer, batch);
-        for (Unit      e : state.enemies)     e.render(shapeRenderer, batch);
-        for (Item      i : state.items)       i.render(shapeRenderer, batch);
-        for (Projectile p : state.projectiles) p.render(shapeRenderer, batch);
-        for (Visual    v : state.visualEffects) v.render(shapeRenderer, batch);
-        batch.end();
+        // Pass 2: Shape primitives (shield circle, etc.)
+        renderShapePass();
 
-        // Pass 3: Overlays & UI
+        // Pass 3: All game entity sprites (Single SpriteBatch pass!)
+        renderEntityPass();
+
+        // Pass 4: Overlays & UI
         renderBossHealthBar(sw, sh);
+        renderPlayerHudTop(sw, sh);
 
         batch.begin();
         if (showWaveAnnouncement) renderWaveAnnouncement(sw, sh);
@@ -852,30 +888,84 @@ public class GamePlayScreen implements Screen {
         float pct = MathUtils.clamp(totalHp / totalMaxHp, 0f, 1f);
 
         float barW = sw * 0.70f;
-        float barH = 16f;
+        float barH = 18f;
         float barX = (sw - barW) / 2f;
-        float barY = sh - 75f;
+        float barY = sh - 92f;
 
         shapeRenderer.begin(com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(0.1f, 0.1f, 0.1f, 0.8f);
+        shapeRenderer.setColor(0.06f, 0.02f, 0.05f, 0.9f);
         shapeRenderer.rect(barX - 4, barY - 4, barW + 8, barH + 8);
-        shapeRenderer.setColor(0.3f, 0.0f, 0.1f, 1.0f);
+        shapeRenderer.setColor(0.35f, 0.02f, 0.10f, 1.0f);
         shapeRenderer.rect(barX, barY, barW, barH);
-        shapeRenderer.setColor(1.0f, 0.1f, 0.3f, 1.0f);
+        shapeRenderer.setColor(1.0f, 0.15f, 0.35f, 1.0f);
         shapeRenderer.rect(barX, barY, barW * pct, barH);
+        shapeRenderer.setColor(1f, 1f, 1f, 0.3f);
+        shapeRenderer.rect(barX, barY + barH - 4f, barW * pct, 4f);
         shapeRenderer.end();
 
         batch.begin();
         String label = (bossCount > 1)
-                ? "BOSS x" + bossCount + " (" + (int)(pct * 100) + "%)"
-                : "BOSS (" + (int)(pct * 100) + "%)";
-        hudFont.setColor(Color.WHITE);
+                ? "DREADNOUGHT x" + bossCount
+                : "DREADNOUGHT  ·  " + (int) (pct * 100) + "%";
+        hudFont.setColor(1f, 0.4f, 0.55f, 1f);
         cachedLayout.setText(hudFont, label);
-        hudFont.draw(batch, label, (sw - cachedLayout.width) / 2f, barY + barH + 18f);
+        hudFont.draw(batch, label, (sw - cachedLayout.width) / 2f, barY + barH + 16f);
         batch.end();
     }
 
 
+
+    /** Draws the player health bar (top-left) and the wave badge (top-centre). */
+    private void renderPlayerHudTop(float sw, float sh) {
+        Ship ship = state.ship;
+        float pct = MathUtils.clamp(ship.getLife() / ship.getMaxLife(), 0f, 1f);
+
+        float barW = sw * 0.30f;
+        float barH = 18f;
+        float barX = 16f;
+        float barY = sh - 44f;
+
+        // Wave badge geometry
+        String waveText = "WAVE " + state.currentWaveId;
+        cachedLayout.setText(overlayFont, waveText);
+        float pillW = cachedLayout.width + 46f;
+        float pillH = 34f;
+        float pillX = (sw - pillW) / 2f;
+        float pillY = sh - 54f;
+
+        // ── Shape pass: bar + pill backgrounds ────────────────────
+        shapeRenderer.begin(com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType.Filled);
+        // HP bar frame
+        shapeRenderer.setColor(0.05f, 0.05f, 0.10f, 0.85f);
+        shapeRenderer.rect(barX - 3, barY - 3, barW + 6, barH + 6);
+        shapeRenderer.setColor(0.35f, 0.08f, 0.10f, 1f);
+        shapeRenderer.rect(barX, barY, barW, barH);
+        // HP fill color by threshold
+        if (pct > 0.5f)      shapeRenderer.setColor(0.20f, 1f, 0.45f, 1f);
+        else if (pct > 0.25f) shapeRenderer.setColor(1f, 0.78f, 0.20f, 1f);
+        else                 shapeRenderer.setColor(1f, 0.25f, 0.25f, 1f);
+        shapeRenderer.rect(barX, barY, barW * pct, barH);
+        shapeRenderer.setColor(1f, 1f, 1f, 0.25f);
+        shapeRenderer.rect(barX, barY + barH - 4f, barW * pct, 4f); // top highlight
+
+        // Wave pill
+        shapeRenderer.setColor(0.04f, 0.08f, 0.15f, 0.82f);
+        shapeRenderer.rect(pillX, pillY, pillW, pillH);
+        shapeRenderer.setColor(0f, 0.85f, 1f, 0.9f);
+        shapeRenderer.rect(pillX, pillY + pillH - 3f, pillW, 3f);
+        shapeRenderer.end();
+
+        // ── Batch pass: text ───────────────────────────────────────
+        batch.begin();
+        hudFont.setColor(1f, 1f, 1f, 0.95f);
+        String hpText = (int) Math.ceil(ship.getLife()) + "/" + (int) ship.getMaxLife();
+        cachedLayout.setText(hudFont, hpText);
+        hudFont.draw(batch, hpText, barX + (barW - cachedLayout.width) / 2f, barY + barH - 3f);
+
+        overlayFont.setColor(0f, 0.92f, 1f, 1f);
+        overlayFont.draw(batch, waveText, pillX + 23f, pillY + pillH - 9f);
+        batch.end();
+    }
 
     private void renderIntroOverlay(float sw, float sh) {
         float progress = MathUtils.clamp(introTimer / INTRO_DURATION, 0f, 1f);
@@ -935,20 +1025,14 @@ public class GamePlayScreen implements Screen {
 
     private void updateHUD() {
         Ship ship = state.ship;
-        scoreLabel.setText("Score: " + state.scoreTracker.getTotalPoints());
+        scoreLabel.setText("SCORE " + state.scoreTracker.getTotalPoints());
         itemsLabel.setText("" + state.scoreTracker.getStarsCollected());
-        healthLabel.setText((int) ship.getLife() + "/" + (int) ship.getMaxLife());
 
         String wpnTypeStr = (ship.getActiveWeaponType() == Ship.WEAPON_TYPE_PLASMA) ? "LASER" :
                 (ship.getActiveWeaponType() == Ship.WEAPON_TYPE_EXPLOSIVE) ? "BLAST" : "HOMING";
         int stock = ship.getStockpile();
-        String stockStr = (stock > 0) ? " [" + stock + "★]" : "";
+        String stockStr = (stock > 0) ? "  [x" + stock + " stock]" : "";
         weaponLabel.setText(wpnTypeStr + " Lv:" + ship.getWeaponLevel() + stockStr);
-
-        if (waveLabel != null) {
-            String loopStr = (waveLoopCount > 0) ? " (L" + (waveLoopCount + 1) + ")" : "";
-            waveLabel.setText("WAVE: " + state.currentWaveId + "/20" + loopStr);
-        }
     }
 
     private void saveCurrentGame() {

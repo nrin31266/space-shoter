@@ -14,9 +14,9 @@ import com.badlogic.gdx.math.MathUtils;
  * Visual: Orange-red ring with a solid orange diamond/rhombus inside.
  */
 public class ItemWeaponUpgradeExplosive extends Item {
-    public static final float ITEM_SIZE = 18f;
+    public static final float ITEM_SIZE = 24f;
     public static final Color ITEM_COLOR = Color.valueOf("ff6600");
-    public static final SoundName PICK_UP_SOUND = SoundName.Hit7;
+    public static final SoundName PICK_UP_SOUND = SoundName.PowerUp;
 
     private static final float RING_OUTER  = 22f;
     private static final float RING_INNER  = 16f;

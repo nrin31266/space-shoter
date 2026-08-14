@@ -8,9 +8,12 @@ import com.alexei.spaceshooter.weapon.WeaponSpreadShot;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 
+import java.util.ArrayList;
+
 public class EnemyBoss extends Unit {
-    private static final float UNIT_WIDTH  = 320;
-    private static final float UNIT_HEIGHT = 320;
+    // Boss must feel dominant — enlarged from 320 to 400px.
+    private static final float UNIT_WIDTH  = 400;
+    private static final float UNIT_HEIGHT = 400;
     private static final float ENTER_SPEED = 150;     
     private static final float HOVER_SPEED = 100;      
     private static final Color UNIT_COLOR  = Color.valueOf("ff0055"); 
@@ -39,7 +42,7 @@ public class EnemyBoss extends Unit {
 
         // Apply boss sprite
         if (TextureRegistry.boss != null) {
-            this.setTextureRegion(TextureRegistry.boss.getTexture());
+            this.setTextureRegion(TextureRegistry.boss);
             setOrientInDirectionOfVelocity(false);
             setOrientation(180f);
         }
@@ -80,6 +83,42 @@ public class EnemyBoss extends Unit {
                 }
                 break;
         }
+    }
+    
+    /**
+     * Boss death: a massive multi-burst explosion fitting a boss climax.
+     */
+    @Override
+    ArrayList<com.alexei.spaceshooter.entity.Visual> getDeathEffect(Visual visual) {
+        java.util.ArrayList<com.alexei.spaceshooter.entity.Visual> effects =
+                new java.util.ArrayList<com.alexei.spaceshooter.entity.Visual>();
+
+        float cx = getCenterX();
+        float cy = getCenterY();
+
+        // Giant fireball (scaled up)
+        com.alexei.spaceshooter.effect.EffectExplosion big =
+                new com.alexei.spaceshooter.effect.EffectExplosion(cx, cy, this, 90, 16f, 420f);
+        big.setColor(new com.badlogic.gdx.graphics.Color(1f, 0.45f, 0.05f, 1f));
+        effects.add(big);
+
+        // White-hot core flash
+        com.alexei.spaceshooter.effect.EffectFlash flash =
+                new com.alexei.spaceshooter.effect.EffectFlash(cx, cy, this);
+        flash.setColor(new com.badlogic.gdx.graphics.Color(1f, 0.95f, 0.75f, 1f));
+        effects.add(flash);
+
+        // Second delayed burst (offscreen-scaling, all directions)
+        com.alexei.spaceshooter.effect.EffectExplosion burst =
+                new com.alexei.spaceshooter.effect.EffectExplosion(cx, cy, this, 60, 10f, 500f);
+        burst.setColor(new com.badlogic.gdx.graphics.Color(1f, 0.7f, 0.2f, 1f));
+        effects.add(burst);
+
+        // Radial debris sparks
+        effects.addAll(com.alexei.spaceshooter.effect.EffectSpawrksSpawner.makeSparks(
+                this, cx, cy, new float[]{0, 60, 120, 180, 240, 300}, new float[]{20, 20, 20, 20, 20, 20}));
+
+        return effects;
     }
     
     @Override

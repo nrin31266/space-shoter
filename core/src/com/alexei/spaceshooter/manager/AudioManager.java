@@ -93,6 +93,13 @@ public class AudioManager {
         assetManager.load(folder + "/ready.mp3", Sound.class);
         assetManager.load(folder + "/go.mp3", Sound.class);
         assetManager.load(folder + "/warning.mp3", Sound.class);
+
+        // Synthesized identity SFX (clean .ogg)
+        assetManager.load(folder + "/powerup.ogg", Sound.class);
+        assetManager.load(folder + "/pickup.ogg", Sound.class);
+        assetManager.load(folder + "/wave_start.ogg", Sound.class);
+        assetManager.load(folder + "/wave_clear.ogg", Sound.class);
+        assetManager.load(folder + "/boss_warning.ogg", Sound.class);
     }
 
     /**
@@ -100,8 +107,8 @@ public class AudioManager {
      */
     public void loadMusic(AssetManager assetManager) {
         String musicFolder = "music";
-        assetManager.load(musicFolder + "/ut.mp3", Music.class);
-        assetManager.load(musicFolder + "/action_music.mp3", Music.class);
+        assetManager.load(musicFolder + "/ut.ogg", Music.class);
+        assetManager.load(musicFolder + "/action_music.ogg", Music.class);
     }
 
     /**
@@ -128,6 +135,13 @@ public class AudioManager {
         getLoadedSound(assetManager, SoundName.Go, folder + "/go.mp3");
         getLoadedSound(assetManager, SoundName.Warning, folder + "/warning.mp3");
 
+        // Synthesized identity SFX
+        getLoadedSound(assetManager, SoundName.PowerUp, folder + "/powerup.ogg");
+        getLoadedSound(assetManager, SoundName.Pickup, folder + "/pickup.ogg");
+        getLoadedSound(assetManager, SoundName.WaveStart, folder + "/wave_start.ogg");
+        getLoadedSound(assetManager, SoundName.WaveClear, folder + "/wave_clear.ogg");
+        getLoadedSound(assetManager, SoundName.BossWarning, folder + "/boss_warning.ogg");
+
         // sound categories
         ArrayList<SoundName> soundsHit     = new ArrayList<>();
         ArrayList<SoundName> soundsExplode = new ArrayList<>();
@@ -147,16 +161,18 @@ public class AudioManager {
         soundMinIntervals.put(SoundName.Explode3,     180L);
         soundMinIntervals.put(SoundName.Explode4,     180L);
         soundMinIntervals.put(SoundName.Explode8,     180L);
+        soundMinIntervals.put(SoundName.PowerUp,      100L);
+        soundMinIntervals.put(SoundName.Pickup,       90L);
 
         String musicFolder = "music";
-        if (assetManager.isLoaded(musicFolder + "/ut.mp3")) {
-            Music utMusic = assetManager.get(musicFolder + "/ut.mp3", Music.class);
+        if (assetManager.isLoaded(musicFolder + "/ut.ogg")) {
+            Music utMusic = assetManager.get(musicFolder + "/ut.ogg", Music.class);
             utMusic.setLooping(true);
-            utMusic.setVolume(0.4f);
+            utMusic.setVolume(0.5f);
             musicMap.put(SoundName.Ut, utMusic);
         }
-        if (assetManager.isLoaded(musicFolder + "/action_music.mp3")) {
-            Music actionMusic = assetManager.get(musicFolder + "/action_music.mp3", Music.class);
+        if (assetManager.isLoaded(musicFolder + "/action_music.ogg")) {
+            Music actionMusic = assetManager.get(musicFolder + "/action_music.ogg", Music.class);
             actionMusic.setLooping(true);
             actionMusic.setVolume(1.0f);
             musicMap.put(SoundName.ActionMusic, actionMusic);

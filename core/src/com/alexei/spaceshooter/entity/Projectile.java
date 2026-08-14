@@ -60,22 +60,25 @@ public class Projectile extends Visual {
 
     /**
      * Renders projectiles with sprite textures when batch is active, or shape glow fallback.
+     * Visual identities: player = blue beam, enemy light = red beam, enemy heavy/boss = plasma orb.
      */
     @Override
     public void render(ShapeRenderer sr, SpriteBatch batch) {
         float cx = getCenterX();
         float cy = getCenterY();
-        float w = getWidth() * 1.5f;
-        float h = getHeight() * 1.8f;
 
         if (batch != null && batch.isDrawing()) {
             com.badlogic.gdx.graphics.g2d.TextureRegion region;
             if (isShipProjectile) {
                 region = TextureRegistry.laserBlue;
             } else {
-                region = (w > 30 || h > 30) ? TextureRegistry.plasmaOrb : TextureRegistry.laserRed;
+                // Heavy/boss projectiles use the plasma orb, light enemy shots use red laser
+                boolean heavy = getWidth() > 26 || getHeight() > 26;
+                region = heavy ? TextureRegistry.plasmaOrb : TextureRegistry.laserRed;
             }
             if (region != null) {
+                float w = getWidth() * 1.5f;
+                float h = getHeight() * 2.0f;
                 batch.draw(region,
                         cx - w / 2f, cy - h / 2f,
                         w / 2f, h / 2f,

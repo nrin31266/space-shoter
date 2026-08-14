@@ -14,9 +14,10 @@ import com.badlogic.gdx.math.MathUtils;
  * Visual: red ring (proper hollow ring) with a thick red "+" cross centred inside.
  */
 public class ItemHP extends Item {
-    public static final float ITEM_SIZE = 18f;
+    // Raised ~33% for mobile visibility.
+    public static final float ITEM_SIZE = 24f;
     public static final Color ITEM_COLOR = Color.valueOf("ff2233");
-    public static final SoundName PICK_UP_SOUND = SoundName.Hit7;
+    public static final SoundName PICK_UP_SOUND = SoundName.Pickup;
 
     // Ring geometry
     private static final float RING_OUTER  = 22f; // outer radius of the ring

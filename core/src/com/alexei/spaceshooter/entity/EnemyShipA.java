@@ -12,8 +12,8 @@ import com.badlogic.gdx.math.MathUtils;
  * then slowly drifts sideways until killed. Resembles the Chicken Invaders style.
  */
 public class EnemyShipA extends Unit {
-    private static final float UNIT_WIDTH  = 75;
-    private static final float UNIT_HEIGHT = 75;
+    private static final float UNIT_WIDTH  = 80;
+    private static final float UNIT_HEIGHT = 80;
     private static final float ENTER_SPEED = 380;     // speed while entering from top
     private static final float HOVER_SPEED = 70;      // horizontal drift speed when hovering
     private static final Color UNIT_COLOR  = Color.valueOf("5DBBFFFF"); // ice blue
@@ -40,7 +40,7 @@ public class EnemyShipA extends Unit {
 
         // Apply enemy sprite (rotate 180° so it faces down toward player)
         if (TextureRegistry.enemy1 != null) {
-            this.setTextureRegion(TextureRegistry.enemy1.getTexture());
+            this.setTextureRegion(TextureRegistry.enemy1);
             setOrientInDirectionOfVelocity(false);
             setOrientation(180f); // sprite faces up; flip 180° to face down
         }

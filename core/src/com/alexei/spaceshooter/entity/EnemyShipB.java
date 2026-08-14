@@ -14,8 +14,8 @@ import com.badlogic.gdx.math.MathUtils;
  * fires energy balls at the player while drifting sideways.
  */
 public class EnemyShipB extends Unit {
-    private static final float UNIT_WIDTH   = 70;
-    private static final float UNIT_HEIGHT  = 70;
+    private static final float UNIT_WIDTH   = 80;
+    private static final float UNIT_HEIGHT  = 80;
     private static final float ENTER_SPEED  = 260;
     private static final float HOVER_SPEED  = 55;
     private static final Color UNIT_COLOR   = Color.CHARTREUSE;
@@ -43,7 +43,7 @@ public class EnemyShipB extends Unit {
         // Apply enemy sprite (rotate 180° so it faces down toward player)
         com.badlogic.gdx.graphics.g2d.TextureRegion reg = TextureRegistry.enemy2 != null ? TextureRegistry.enemy2 : TextureRegistry.enemy1;
         if (reg != null) {
-            this.setTextureRegion(reg.getTexture());
+            this.setTextureRegion(reg);
             setOrientInDirectionOfVelocity(false);
             setOrientation(180f);
         }

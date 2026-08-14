@@ -3,8 +3,6 @@ package com.alexei.spaceshooter.entity;
 import com.alexei.spaceshooter.utils.SoundName;
 import com.alexei.spaceshooter.utils.TextureRegistry;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -14,12 +12,11 @@ import com.badlogic.gdx.math.MathUtils;
  * Created by Alex on 03/07/2015.
  */
 public class ItemStar extends Item {
-    public static final float STAR_SIZE_OUTER = 20;
+    // Emerald crystal currency. Base size raised ~30% for mobile visibility.
+    public static final float STAR_SIZE_OUTER = 26;
     public static final float STAR_SIZE_INNER = 10;
-    public static final Color STAR_COLOR = Color.YELLOW;
-    public static final SoundName PICK_UP_SOUND = SoundName.Hit7;
-
-    private static TextureRegion starTextureRegion;
+    public static final Color STAR_COLOR = Color.valueOf("28d47c"); // emerald
+    public static final SoundName PICK_UP_SOUND = SoundName.Pickup;
 
     private final int rotationSpeed = MathUtils.random(45, 135);
     private int multiplier = 1;
@@ -31,10 +28,6 @@ public class ItemStar extends Item {
         super.setOrientation(MathUtils.random(0, 359));
         super.setPickUpSound(PICK_UP_SOUND);
         this.multiplier = multiplier;
-
-        if (starTextureRegion == null) {
-            starTextureRegion = createStarTexture();
-        }
     }
 
     @Override
@@ -50,11 +43,13 @@ public class ItemStar extends Item {
         float scale = getPickUpAnimationScale();
         if (scale == 0) scale = 1;
 
-        TextureRegion region = (TextureRegistry.itemStar != null) ? TextureRegistry.itemStar : starTextureRegion;
-        float w = getWidth() * scale;
-        float h = getHeight() * scale;
+        TextureRegion region = TextureRegistry.itemStar;
+        if (region == null) return;
+        float w = getWidth() * scale * 1.6f;
+        float h = getHeight() * scale * 1.6f;
 
-        batch.setColor(STAR_COLOR);
+        // Draw at full brightness so the emerald crystal colour reads clearly.
+        batch.setColor(Color.WHITE);
         batch.draw(region,
                 getCenterX() - w / 2f, getCenterY() - h / 2f,
                 w / 2f, h / 2f,
@@ -62,46 +57,5 @@ public class ItemStar extends Item {
                 1f, 1f,
                 getOrientation());
         batch.setColor(Color.WHITE);
-    }
-
-    /**
-     * Generate a 5-pointed star texture using Pixmap.
-     * Computes star polygon vertices (5 outer + 5 inner points)
-     * and fills triangles radiating from center.
-     */
-    private static TextureRegion createStarTexture() {
-        int size = 40;
-        float cx = size / 2f;
-        float cy = size / 2f;
-        float outerR = size / 2f - 2;
-        float innerR = outerR * 0.4f;
-        int arms = 5;
-
-        // compute all 10 vertices (alternating outer/inner)
-        float[] verts = new float[arms * 4];
-        double angleStep = Math.PI / arms;
-        for (int i = 0; i < arms * 2; i++) {
-            float r = (i % 2 == 0) ? outerR : innerR;
-            double a = i * angleStep - Math.PI / 2; // start from top
-            verts[i * 2] = cx + (float) Math.cos(a) * r;
-            verts[i * 2 + 1] = cy + (float) Math.sin(a) * r;
-        }
-
-        Pixmap pixmap = new Pixmap(size, size, Pixmap.Format.RGBA8888);
-        pixmap.setColor(STAR_COLOR);
-
-        // fill each triangle: center + two adjacent vertices
-        for (int i = 0; i < arms * 2; i++) {
-            int next = (i + 1) % (arms * 2);
-            pixmap.fillTriangle(
-                    (int) cx, (int) cy,
-                    (int) verts[i * 2], (int) verts[i * 2 + 1],
-                    (int) verts[next * 2], (int) verts[next * 2 + 1]);
-        }
-
-        Texture texture = new Texture(pixmap);
-        pixmap.dispose();
-        texture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-        return new TextureRegion(texture);
     }
 }
