@@ -502,3 +502,135 @@ Prefer POLISHED UX over default widgets.
 Do not break the protected gameplay rules (see section 4).
 
 The objective is a polished, modern mobile arcade game — not merely a technically working LibGDX prototype.
+
+---
+
+## 21. BUILD & RUN
+
+The project targets **Android** (primary) and **iOS**. Desktop/web targets are intentionally disabled.
+
+### Build the Android APK
+
+```
+./gradlew :android:assembleDebug
+```
+
+Output APK: `android/build/outputs/apk/debug/android-debug.apk`
+(also mirrored at the repo root as `space-shooter-debug.apk` for easy install).
+
+### Install on a connected device/emulator
+
+```
+adb install -r android/build/outputs/apk/debug/android-debug.apk
+```
+
+### Run on the Android emulator (Pixel AVD)
+
+There are two convenience scripts at the repo root:
+
+- `./start_pixel_emu.sh` — boots the `pixel_emu` AVD (headless, software GPU).
+- `./build_run_spaceshooter.sh` — builds the debug APK, starts the emulator (if needed),
+  installs and launches the game.
+
+Manual emulator steps:
+
+```
+export ANDROID_SDK_ROOT=$HOME/Android/Sdk
+nohup $HOME/Android/Sdk/emulator/emulator -avd pixel_emu -no-snapshot-save -no-audio -gpu swiftshader_indirect > /tmp/emu.log 2>&1 &
+adb wait-for-device
+# wait for sys.boot_completed == 1
+adb install -r android/build/outputs/apk/debug/android-debug.apk
+adb shell monkey -p com.alexei.spaceshooter -c android.intent.category.LAUNCHER 1
+```
+
+### iOS
+
+```
+./gradlew :ios:build     # requires Xcode + MobiVM plugin
+```
+
+> Known limitation: the iOS build may not run on the simulator for some Xcode versions.
+
+### Verify after changes
+
+After meaningful changes, at minimum run:
+
+```
+./gradlew :android:assembleDebug
+```
+
+Then install on the emulator and sanity-check: menu, Wave 1–5 progression, firing/effects,
+HUD layout, pause, game-over, and audio (see section 18).
+
+---
+
+## 22. DEBUG / TEST MODE
+
+All debug/test knobs live in ONE file: `core/src/com/alexei/spaceshooter/utils/DebugConfig.java`.
+
+- `ENABLE_DEBUG = true` — apply the debug values below on NEW GAME.
+- `DEBUG_START_WAVE` — start at a specific wave (1–20).
+- `DEBUG_START_WEAPON_LEVEL` — start weapon level (1–7).
+- `DEBUG_START_WEAPON_TYPE` — 0=Laser, 1=Blast, 2=Homing.
+- `DEBUG_START_HP` — starting HP.
+- `DEBUG_TEST_SINGLE_ENEMY` — spawn a single enemy type to study its pattern.
+- `DROP_RATE_*` — weapon/energy/HP/star drop rates.
+
+Production defaults: `ENABLE_DEBUG = false`, start Wave 1, weapon level 1.
+To test a specific weapon/level, flip `ENABLE_DEBUG` and adjust the values, then revert.
+
+---
+
+## 23. ASSET PIPELINE (RECENT WORK)
+
+Sprites and identity audio are **generated offline** by Python scripts in `tools/` (never at runtime):
+
+- `tools/gen_sprites.py` — ships, boss, beams, orbs, items, nebula.
+- `tools/gen_projectiles_items.py` — projectile/item/star/nebula textures (neon set incl. `item_energy.png`, `orb_pink.png`).
+- `tools/gen_audio.py` — synthesized soundtrack + SFX.
+
+Regenerate with:
+
+```
+python3 tools/gen_projectiles_items.py
+python3 tools/gen_audio.py
+```
+
+Ship PNGs (`ship.png`, `enemy*.png`, `enemy_boss.png`) are **author-owned hand art** — do NOT regenerate
+or overwrite them. Licensing/attribution is recorded in `assets/ATTRIBUTIONS.md`.
+
+Textures are loaded once through `AssetManager` + `TextureRegistry` (see `LoadingScreen`), never
+re-loaded per frame.
+
+---
+
+## 24. RECENT IMPLEMENTATION (this modernization pass)
+
+Summary of the substantial work already done — read the source for exact behavior:
+
+- **Visual overhaul** — neon arcade look: real ship/boss/projectile/item sprites, dark nebula
+  background (calm: few small stars, faint halo rings, no falling streaks), neon HUD.
+- **Player** — 3 weapon tracks (Laser fan / Blast pierce / Homing darts), single shared level 1→7,
+  stockpile up to 3, invulnerability shield bubble, damage decals.
+- **Weapons** — per-level tables (max 5 laser beams, max 3 blast orbs, max 3 homing darts),
+  single-origin fan for the laser (never crosses at the nose), muzzle flash + smoke on all 3,
+  clamped ship-motion inheritance (single shot always fires straight).
+- **Enemies** — 6 distinct types + boss, each with unique projectile identity (red orb, homing
+  green, sniper pink, tank gold spread, twin purple, ring burst, boss plasma volley + aimed
+  plasma). Enemies only fire after reaching their hover spot (no "ngậm đạn"). HP ×2 / boss ×3,
+  fly-in speed ×2.
+- **Boss waves 5/10/15/20** — pity drop (energy + weapon switch) if player weapon < Lv5.
+- **Items** — Star (gold currency, half-size), HP, weapon-switch (3 icons), Energy (pure level-up).
+  Same-track weapon pickup also grants +1 level.
+- **HUD** — clean left/centre/right layout: HP (red) + weapon left, WAVE top-centre, gold star icon
+  + white SCORE right, pause top-right. No health bar. Font ×1.5. Always visible (intro & wave
+  transitions included).
+- **Audio** — original synthesized soundtrack + distinct SFX per event (fire/hit/explosion/pickup/
+  power-up/boss/wave). No crackle/clipping.
+- **Waves 1–7** — showcase progression (one new enemy type per wave, boss at 5, E at 6, F at 7),
+  wave 8+ multi-squad. New formations: DIAMOND, CHECKERBOARD. Width-aware clamping so enemies
+  stay on screen.
+- **Performance** — batched background, cached GlyphLayout, reusable vectors, no per-frame asset
+  loads, particle effects render batched (no hidden explosions).
+
+See `README.md` for the human-facing feature/credits overview.
