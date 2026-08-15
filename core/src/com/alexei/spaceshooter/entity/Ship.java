@@ -18,10 +18,10 @@ import com.badlogic.gdx.math.MathUtils;
 public class Ship extends Unit {
     private static final float UNIT_POSITION_X = 0;
     private static final float UNIT_POSITION_Y = 0;
-    // Player ship visual size — enlarged for mobile readability and a
-    // dominant "this is the player" presence. Hitbox scales with it.
-    private static final float UNIT_WIDTH = 160;
-    private static final float UNIT_HEIGHT = 160;
+    // Player ship visual size — slightly trimmed for a more balanced on-screen
+    // presence (was 160). Hitbox scales with it.
+    private static final float UNIT_WIDTH = 150;
+    private static final float UNIT_HEIGHT = 150;
     public static final float INITIAL_LIFE = 5f;
     public static final float MAX_LIFE = 10f;
     private static final Color COLOR = Color.MAROON;

@@ -649,6 +649,14 @@ public class GamePlayScreen implements Screen {
             state.starfield.update(dt);
             state.starfield2.update(dt);
 
+            // Update visual effects (muzzle flashes etc.) so the smoke/shock
+            // effects emit particles even during the intro/wave-1 roll-in.
+            for (int i = state.visualEffects.size() - 1; i >= 0; i--) {
+                Visual v = state.visualEffects.get(i);
+                v.update(dt);
+                if (v.isDead()) state.visualEffects.remove(i);
+            }
+
             // After spawn delay, actually start the wave (enemies begin spawning)
             if (introTimer >= INTRO_SPAWN_DELAY && !waveManager.isWaveStarted()) {
                 waveManager.startWave(state.currentWaveId);

@@ -95,8 +95,10 @@ public class WeaponExplosiveBlaster extends Weapon {
                     PROJECTILE_COLOR, damage, true);
             p.setPierce(pierce);
             applyProjectileVisual(p);
-            // Clamped ship-motion inheritance: orbs track the nose but never stall.
-            inheritShipMotion(p, PROJECTILE_SPEED);
+            // Single orb always flies straight; multi-orbs track the nose while dodging.
+            if (count > 1) {
+                inheritShipMotion(p, PROJECTILE_SPEED);
+            }
             projectiles[i] = p;
         }
 

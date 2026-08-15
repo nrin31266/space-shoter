@@ -94,8 +94,11 @@ public class WeaponShipLaser extends Weapon {
                     dir, PROJECTILE_SPEED,
                     PROJECTILE_COLOR, damage, true);
             applyProjectileVisual(p);
-            // Clamped ship-motion inheritance: bullets track the nose but never stall.
-            inheritShipMotion(p, PROJECTILE_SPEED);
+            // A SINGLE beam always fires perfectly straight up (no inherited
+            // ship drift). Only the multi-beam fan tracks the nose while dodging.
+            if (count > 1) {
+                inheritShipMotion(p, PROJECTILE_SPEED);
+            }
             projectiles[i] = p;
         }
 
