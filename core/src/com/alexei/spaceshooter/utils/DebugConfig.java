@@ -14,19 +14,19 @@ public class DebugConfig {
     public static final boolean ENABLE_DEBUG = false;
 
     /** Wave bắt đầu test khi chọn NEW GAME (từ 1 đến 20, VD: 16 hoặc 20) */
-    public static final int DEBUG_START_WAVE = 20;
+    public static final int DEBUG_START_WAVE = 1;
 
     /** Vòng Loop bắt đầu test khi chọn NEW GAME (0 = Loop 1 [Wave 1-20], 1 = Loop 2 [Wave 21-40], 2 = Loop 3 [Wave 41-60]...) */
     public static final int DEBUG_START_WAVE_LOOP_COUNT = 0;
 
     /** Lượng máu khởi đầu khi test (VD: 10f, tối đa maxLife là 10f) */
-    public static final float DEBUG_START_HP = 3f;
+    public static final float DEBUG_START_HP = 5f;
 
     /** Loại đạn khởi đầu khi test (0=Plasma, 1=Explosive, 2=Homing) */
     public static final int DEBUG_START_WEAPON_TYPE = 0;
 
     /** Level đạn khởi đầu khi test (từ 1 đến 7, VD: 7) */
-    public static final int DEBUG_START_WEAPON_LEVEL = 7;
+    public static final int DEBUG_START_WEAPON_LEVEL = 1;
 
     // ── Single Enemy Playtest Mode (Chế độ test quan sát riêng quái mới) ──
 

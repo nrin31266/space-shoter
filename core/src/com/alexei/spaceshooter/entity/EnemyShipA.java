@@ -14,7 +14,7 @@ import com.badlogic.gdx.math.MathUtils;
 public class EnemyShipA extends Unit {
     private static final float UNIT_WIDTH  = 150;
     private static final float UNIT_HEIGHT = 150;
-    private static final float ENTER_SPEED = 520;     // faster entry, keeps the screen active
+    private static final float ENTER_SPEED = 1040;    // very fast entry — prep must be quick
     private static final float HOVER_SPEED = 80;      // horizontal drift speed when hovering
     private static final Color UNIT_COLOR  = Color.valueOf("5DBBFFFF"); // ice blue
     private static final float MAX_LIFE    = 1f;

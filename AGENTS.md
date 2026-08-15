@@ -5,8 +5,8 @@
 > This file defines how agents must work on the project.
 > It does NOT duplicate detailed gameplay specifications.
 >
-> Detailed gameplay/system rules are defined in `SYSTEM.md`.
 > Human-facing project information is defined in `README.md`.
+> The actual gameplay/system behavior is defined by the source code itself.
 
 ---
 
@@ -34,9 +34,8 @@ When determining existing behavior, use this priority:
 
 1. Actual source code
 2. `AGENTS.md`
-3. `SYSTEM.md`
-4. `README.md`
-5. Historical documentation
+3. `README.md`
+4. Historical documentation
 
 If these disagree:
 
@@ -45,9 +44,9 @@ If these disagree:
 - do not blindly overwrite working behavior
 - preserve working behavior unless the task explicitly changes it
 
-`SYSTEM.md` is the authoritative specification for gameplay/system invariants.
+**The authoritative specification for gameplay/system invariants is the source code itself.**
 
-Do NOT duplicate the detailed wave tables, enemy statistics, weapon statistics, save schema, formulas, or item rules from `SYSTEM.md` into this file.
+Do NOT duplicate detailed wave tables, enemy statistics, weapon statistics, save schema, formulas, or item rules into this file.
 
 ---
 
@@ -56,7 +55,7 @@ Do NOT duplicate the detailed wave tables, enemy statistics, weapon statistics, 
 Before modifying code:
 
 1. Read `AGENTS.md`.
-2. Read `SYSTEM.md`.
+2. Read `README.md` for project context.
 3. Inspect the actual source code relevant to the task.
 4. Inspect existing assets before creating replacements.
 5. Understand how the affected system currently works.
@@ -71,7 +70,7 @@ Do not assume documentation perfectly describes the current implementation.
 
 The existing gameplay systems are valuable and must not be accidentally destroyed during visual or architectural refactoring.
 
-Treat the gameplay rules documented in `SYSTEM.md` as protected unless the user explicitly asks to change them.
+Treat the gameplay rules in the source code as protected unless the user explicitly asks to change them.
 
 This includes, among other things:
 
@@ -432,11 +431,8 @@ Keep documentation responsibilities separated:
 ### `AGENTS.md`
 AI behavior, engineering rules, architecture boundaries and project conventions.
 
-### `SYSTEM.md`
-Detailed gameplay/system specification and invariants.
-
 ### `README.md`
-Human-facing project information, setup, features and usage.
+Human-facing project information, setup, features, usage and credits.
 
 ### `docs/ASSETS.md`
 External asset sources, licenses and attribution information.
@@ -445,7 +441,7 @@ Do not duplicate large sections between these documents.
 
 When architecture changes materially, update `AGENTS.md`.
 
-When gameplay rules change, update `SYSTEM.md`.
+When gameplay behavior changes materially, update `README.md` and the relevant source code.
 
 ---
 
@@ -503,6 +499,6 @@ Prefer SMOOTH AUDIO over noisy or broken audio.
 
 Prefer POLISHED UX over default widgets.
 
-Do not break the gameplay rules defined in `SYSTEM.md`.
+Do not break the protected gameplay rules (see section 4).
 
 The objective is a polished, modern mobile arcade game — not merely a technically working LibGDX prototype.

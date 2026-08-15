@@ -17,7 +17,7 @@ public class EnemyShipC extends Unit {
     // Sniper must be readable on a phone — enlarged so it's clearly visible.
     private static final float UNIT_WIDTH   = 140;
     private static final float UNIT_HEIGHT  = 140;
-    private static final float ENTER_SPEED  = 600;
+    private static final float ENTER_SPEED  = 1200;
     private static final float HOVER_SPEED  = 100;
     private static final Color UNIT_COLOR   = Color.valueOf("FF4FF4FF");
     private static final float MAX_LIFE     = 1.5f;

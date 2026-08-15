@@ -7,15 +7,15 @@ import com.alexei.spaceshooter.entity.Visual;
  */
 public class EffectFlash extends ParticleEmitter {
 
-    public static final float PARTICLE_SIZE = 10;
-    public static final float PARTICLE_SIZE_VARIATION = 5;
+    public static final float PARTICLE_SIZE = 12;
+    public static final float PARTICLE_SIZE_VARIATION = 6;
 
     public static final float PARTICLE_DIRECTION_ANGLE_FROM = 0;
     public static final float PARTICLE_DIRECTION_ANGLE_TO = 360;
     public static final float PARTICLE_DIRECTION_ANGLE_VARIATION = 0;
 
-    public static final float PARTICLE_SPEED = 150;
-    public static final float PARTICLE_SPEED_VARIATION = 50;
+    public static final float PARTICLE_SPEED = 170;
+    public static final float PARTICLE_SPEED_VARIATION = 55;
 
     public static final float PARTICLE_ROTATION_SPEED = 0;
     public static final float PARTICLE_ROTATION_SPEED_VARIATION = 0;
@@ -26,13 +26,13 @@ public class EffectFlash extends ParticleEmitter {
     public static final float PARTICLE_ALPHA = 1;
     public static final float PARTICLE_ALPHA_VARIATION = 0;
 
-    public static final int PARTICLE_LIFE_PERIOD = 400;
-    public static final int PARTICLE_LIFE_PERIOD_VARIATION = 50;
+    public static final int PARTICLE_LIFE_PERIOD = 420;
+    public static final int PARTICLE_LIFE_PERIOD_VARIATION = 60;
 
     public static final ParticleEmitter.ParticleShape PARTICLE_SHAPE = ParticleShape.Rect;
 
     public static final int EMISSION_EVENTS_IN_CYCLE = 1;
-    public static final int EMISSION_AMOUNT_PER_EVENT = 30;
+    public static final int EMISSION_AMOUNT_PER_EVENT = 42;
     public static final int EMISSION_EVENT_DELAY = 0;
     public static final int EMISSION_CYCLES = 1;
     public static final int EMISSION_CYCLE_DELAY = 0;

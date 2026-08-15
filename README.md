@@ -1,139 +1,136 @@
 # Space Shooter
 
- A vertical scrolling space shooter game for `Android` and `iOS` inspired by [Sky Force](https://play.google.com/store/apps/details?id=pl.idreams.skyforcehd&hl=en&gl=US) written using [LibGDX](https://libgdx.com/).
+A modern, polished **vertical-scrolling arcade space shooter** for Android & iOS, built with
+[LibGDX](https://libgdx.com/). You pilot a neon fighter, fight waves of increasingly varied alien
+ships, collect stars/currency, upgrade weapons, and take down bosses.
 
- LibGDX is a cross-platform Java game development framework based on OpenGL (ES) that works on Windows, Linux, macOS, Android, iOS, and the browser.
- 
+> Inspired by classic mobile shooters such as Sky Force.
+
+---
+
 ## Install Android app
 
-- [download and instal the Android apk](space-shooter-debug.apk)
-or
-- clone the repo and build from source
+- [Download and install the Android APK](space-shooter-debug.apk)
+- Or clone the repo and build from source:
+
+```
+./gradlew :android:assembleDebug
+```
+
+The resulting APK is written to `android/build/outputs/apk/debug/android-debug.apk`.
 
 ## Install iOS app
 
-- clone the repo and build from source
+- Clone the repo and build from source.
+- > There's a known bug preventing the iOS build from running on the simulator for some Xcode versions.
 
-> There's a bug which is preventing the iOS version from running on the simulator for some XCode versions
+## Desktop / Web
 
-## Desktop and Web app
-
-- Although libGDX supports compilation into desktop and web app, the Space Shooter project explicitly disables this functionality and targets the mobile platforms exclusively
+- Although LibGDX supports desktop & web targets, this project intentionally targets mobile only.
 
 ## Requirements
 
-- XCode - for building and running the iOS app
+- **Android Studio** — building & running the Android app
+- **Xcode** — building & running the iOS app
+- **MobiVM plugin** for Android Studio — AOT compiler for Java → iOS
 
-- Android Studio - for building and running the Android app
-
-- [MobiVM plugin](https://plugins.jetbrains.com/plugin/14440-mobivm) for Android Studio - an ahead-of-time compiler for Java bytecode, targeting Linux, Mac OS X and iOS.
-
+---
 
 # Game Features
 
-- Control the space ship by dragging your finger on the screen
-- 2 Weapons
-  - laser
-    - fires often
-  - rocket launcher 
-    - fires homing rockets
-    - the rocket pursues moving targets
-- 2 enemy types
-  - Pink 
-    - 1 hit to kill
-    - doesn't shoot
-    - drops 1 star when killed
-  - Green 
-    - 5 hits to kill
-    - aims at you and shoots a simple energy ball 
-    - drops 3 stars when killed
-- Stars are magnetically attracted to the ship when you are close enough 
-- Slow-mo
-  - Activated when you lift your finger off the screen
+## Controls
 
+- **Drag** anywhere on the screen to move the ship
+- **Hold** the screen to shoot continuously
 
-## TODO 
+## Weapons (3 tracks, single shared level 1→7)
 
-- Levels
+| Track | Style | Max shots | Identity |
+|-------|-------|-----------|----------|
+| **Laser** | Neon blue beam fan | 5 beams | Fast, spread, low per-hit damage |
+| **Blast** | Neon orange orbs (pierce) | 3 orbs | Pierces through enemies |
+| **Homing** | Neon purple darts | 3 darts | Auto-tracks the nearest enemy |
 
-- More enemy types
+- Eating a **weapon-switch** item changes your active track (eating the SAME track also +1 level).
+- Eating a **power-up (energy)** item raises your weapon level without switching tracks.
+- At boss waves (5/10/15/20) a pity drop guarantees an energy + weapon item if you're under Lv5.
 
-- More weapons types
+## Enemies (6 types + boss)
 
-- Bosses
+Every enemy has a distinct silhouette, fire pattern, HP, and speed:
 
-- Upgrades
+- **EnemyShipA** — basic grunt, slow red orb
+- **EnemyShipB** — elite gunner, homing green orb
+- **EnemyShipC** — sniper, aimed hot-pink orb
+- **EnemyShipD** — tank, 3-way gold spread
+- **EnemyShipE** — fast striker, twin purple pulses
+- **EnemyShipF** — heavy dragoon, 4-way ring burst
+- **Boss (Dreadnought)** — huge, 3 weapons: plasma fan + fast volley + aimed plasma sniper
 
-- Items which can be picked up
+## Items
 
-- Cool physics, explosions and texture graphics
+- **Star** (gold) — currency; magnetizes toward you
+- **HP** (red cross) — heals +1 (only magnetizes when very close)
+- **Weapon switch** (blue bolt / orange burst / purple crosshair) — change active track
+- **Energy** (green cell) — raise weapon level
 
-## Soundtrack
+## Waves
 
-- the soundtrack music is taken from  Unreal Tournament
+- Data-driven from `assets/data/waves.json` (20 waves + endless loop).
+- Wave 1–5 is a showcase progression: one new enemy per wave, boss climax at Wave 5.
+- Enemy HP scales exponentially per wave/loop.
 
-## Screenshots
+## Visuals & Feedback
 
-[<img src="assets/screenshots/space-shooter.gif" width="200"/>](assets/screenshots/space-shooter.gif) [<img src="assets/screenshots/space-shooter-01.png" width="200"/>](assets/screenshots/space-shooter-01.png) [<img src="assets/screenshots/space-shooter-02.png" width="200"/>](assets/screenshots/space-shooter-02.png) [<img src="assets/screenshots/space-shooter-03.png" width="200"/>](assets/screenshots/space-shooter-03.png) [<img src="assets/screenshots/space-shooter-04.png" width="200"/>](assets/screenshots/space-shooter-04.png) [<img src="assets/screenshots/space-shooter-05.png" width="200"/>](assets/screenshots/space-shooter-05.png)
+- Real neon sprites (ships, projectiles, items), dark nebula space background.
+- Muzzle flashes, layered explosions, hit sparks, screen shake, damage decals.
+- Clean neon HUD: HP (red) + weapon left, WAVE top-center, star + score right, pause top-right.
 
+## Audio
 
-# How to record game play video and make into a gif
+- Original synthesized soundtrack + distinct SFX for firing, hits, explosions, pickups,
+  power-ups, boss warnings, wave start/clear — see `assets/ATTRIBUTIONS.md`.
 
-## Record Android screen using Screen Recorder (Android 11+)
+---
 
-- `Screen Record` function is available on Android 11+ by default. No need to install third party apps
+# Credits
 
-- Swipe down from Android system tray and select `Screen Record`. If you don't see this option, `edit` your system tray to show it. You can `edit` by swiping down the system tray and clicking the `pencil` edit button
+- **Author / Developer:** [Nguyễn Văn Rin](mailto:nrin31266@gmail.com) (Rin Nguyen)
+- Original prototype & engine work; this repository has been progressively modernized into a
+  polished neon arcade shooter (visuals, audio, assets, HUD, wave design, combat feedback).
 
-- Do not confuse `Screen Record` with `Recorder`. The later is a just voice recorder
+All sprites, music and identity SFX are original/synthesized assets generated by the scripts in
+`tools/` (see `assets/ATTRIBUTIONS.md` for full details).
 
-- Configure screen recorder by optionally selecting to record `System Audio` and/or `Microphone`
+---
 
-- It's handy to also enable recording of `screen touches`
+# Building / Recording gameplay
 
-- To stop recording, swipe down from the system tray and click `Stop Recording`
+## Record Android screen (Android 11+)
 
-- The video file will be saved to your internal storage after a short processing time
+Use the system **Screen Record** in the quick-settings tray (enable *screen touches* if desired).
 
-## Extract frames from video with VLC player 
+## Extract frames from video with VLC
 
-- install [VLC](https://www.videolan.org/vlc/) player
-
-- Open VLC settings, click `Show All` settings, open the `Scene filter` under `Video -> Filter`
-
-- Configure the filter by entering the filename prefix to use for each image file that will be extracted, and the directory to save them to
-
-- Set `Recording ratio` - how often to extract a frame. For example, a setting of `12` will extract every `12th` frame. The lower the setting the more images will be created in the output folder
-
-- Go to `Video -> Filters` and check the `Scene filter` checkbox to actually enable the filter after configuring it
-
-- Click `Save`
-
-- Might need to close VLC and reopen it
-
-- With `Scene filter` setting enabled, VLC will extract frames from every video _while it's playing_.
-
-> Remember, frames are extracted `only while the video is playing`. You can stop and seek the video to any position and play it to begin extraction. Stop playing to stop extraction.
-
-- To stop VLC from extracting frames in the future, disable the filter by unchecking the `Scene filter` checkbox in settings
+Install VLC → Settings → `Show All` → `Video → Filters` → `Scene filter` → set prefix/output dir
+and a recording ratio → enable the filter → play the video. Frames are extracted while playing.
 
 [<img src="assets/vlc/vlc-settings.png" width="500"/>](assets/vlc/vlc-settings.png)
-[<img src="assets/vlc/vlc-scene-filter-settings-1.png" width="500"/>](assets/vlc/vlc-scene-filter-settings-1.png) 
-[<img src="assets/vlc/vlc-scene-filter-settings-2.png" width="500"/>](assets/vlc/vlc-scene-filter-settings-2.png) 
 
-
-## Make a GIF from a set of images using ffmpeg
-
-- install [ffmpeg](https://www.ffmpeg.org/). Can use `homebrew`.
-
-- The command below will make all `png` files inside the script folder into a gif called `output.gif`
-
-- The filename pattern is specified with, `-pattern_type glob -i '*.png'`
-
-- Framerate is set to 12 frames per second with, `-framerate 12`, default framerate is `25`.
-
-- The images will be scaled to `640 pixels wide` while maintaining aspect ratio, `-2` syntax means `"maintain aspect ratio"`
+## Make a GIF from a set of images with ffmpeg
 
 ```
 ffmpeg -framerate 12 -pattern_type glob -i '*.png' -filter_complex "[0:v]scale=640:-2,split[x][z];[x]palettegen[y];[z][y]paletteuse" output.gif
-```# space-shoter
+```
+
+---
+
+# Screenshots
+
+[<img src="assets/screenshots/space-shooter.gif" width="200"/>](assets/screenshots/space-shooter.gif)
+[<img src="assets/screenshots/space-shooter-01.png" width="200"/>](assets/screenshots/space-shooter-01.png)
+[<img src="assets/screenshots/space-shooter-02.png" width="200"/>](assets/screenshots/space-shooter-02.png)
+[<img src="assets/screenshots/space-shooter-03.png" width="200"/>](assets/screenshots/space-shooter-03.png)
+[<img src="assets/screenshots/space-shooter-04.png" width="200"/>](assets/screenshots/space-shooter-04.png)
+[<img src="assets/screenshots/space-shooter-05.png" width="200"/>](assets/screenshots/space-shooter-05.png)
+

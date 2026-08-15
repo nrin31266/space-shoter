@@ -22,8 +22,8 @@ public class WeaponExplosiveBlaster extends Weapon {
 
     public WeaponExplosiveBlaster(Unit unit) {
         super.setUnit(unit);
-        super.setFireRate(280);
-        super.setDamage(2.5f);
+        super.setFireRate(300);
+        super.setDamage(1.8f);
         super.setWeaponSound(WEAPON_SOUND);
         super.setProjectileVisual(com.alexei.spaceshooter.utils.TextureRegistry.shotOrb, true);
     }
@@ -35,14 +35,14 @@ public class WeaponExplosiveBlaster extends Weapon {
             int level = ((Ship) unit).getWeaponLevel();
             int targetFireRate;
             switch (level) {
-                case 1: targetFireRate = 280; break;
-                case 2: targetFireRate = 240; break;
-                case 3: targetFireRate = 220; break;
-                case 4: targetFireRate = 190; break;
-                case 5: targetFireRate = 170; break;
-                case 6: targetFireRate = 150; break;
+                case 1: targetFireRate = 300; break;
+                case 2: targetFireRate = 260; break;
+                case 3: targetFireRate = 240; break;
+                case 4: targetFireRate = 215; break;
+                case 5: targetFireRate = 195; break;
+                case 6: targetFireRate = 180; break;
                 case 7:
-                default: targetFireRate = 130; break;
+                default: targetFireRate = 165; break;
             }
             if (getFireRate() != targetFireRate) {
                 setFireRate(targetFireRate);
@@ -65,15 +65,16 @@ public class WeaponExplosiveBlaster extends Weapon {
         float damage;
         float spread;
 
+        // Max 3 orbs — clear 1→2→2→3→3→3→3 progression.
         switch (level) {
-            case 1: count = 1; damage = 2.5f; spread = 0f; break;
-            case 2: count = 2; damage = 2.8f; spread = 4f; break; // ultra-slight spread
-            case 3: count = 2; damage = 3.2f; spread = 4f; break;
-            case 4: count = 3; damage = 3.5f; spread = 6f; break;
-            case 5: count = 3; damage = 3.8f; spread = 6f; break;
-            case 6: count = 3; damage = 4.0f; spread = 8f; break;
+            case 1: count = 1; damage = 2.0f; spread = 0f; break;
+            case 2: count = 2; damage = 1.8f; spread = 5f; break;
+            case 3: count = 2; damage = 2.0f; spread = 5f; break;
+            case 4: count = 3; damage = 1.8f; spread = 7f; break;
+            case 5: count = 3; damage = 2.0f; spread = 7f; break;
+            case 6: count = 3; damage = 2.2f; spread = 9f; break;
             case 7:
-            default: count = 3; damage = 4.2f; spread = 8f; break;
+            default: count = 3; damage = 2.4f; spread = 9f; break;
         }
 
         Projectile[] projectiles = new Projectile[count];
@@ -88,7 +89,7 @@ public class WeaponExplosiveBlaster extends Weapon {
                 dir = baseDir + (i - (count - 1) / 2f) * (spread / (count - 1));
             }
             Projectile p = new Projectile(
-                    unit.getCenterX(), unit.getTop(),
+                    unit.getCenterX(), unit.getTop() + 10f,
                     size, size,
                     dir, PROJECTILE_SPEED,
                     PROJECTILE_COLOR, damage, true);

@@ -149,6 +149,18 @@ public class Ship extends Unit {
         updateActiveWeaponState();
     }
 
+    /**
+     * Weapon-item pickup handler: if the item is for the weapon track ALREADY
+     * active, it raises the level (+1 / stockpile). Otherwise it switches track.
+     */
+    public void onWeaponPickup(int type) {
+        if (activeWeaponType == MathUtils.clamp(type, 0, 2)) {
+            upgradeEnergy();
+        } else {
+            switchWeaponType(type);
+        }
+    }
+
     /** Pure energy/power upgrade: raises the shared weapon level (no weapon switch). */
     public void upgradeEnergy() {
         if (weaponLevel < MAX_WEAPON_LEVEL) {

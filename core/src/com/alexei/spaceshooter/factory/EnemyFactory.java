@@ -102,12 +102,15 @@ public class EnemyFactory {
 
     /**
      * HP Scaling formula (Section 5 Exponential Scaling):
-     * HP_wave = HP_base * (1 + growthRate)^(waveId - firstAppearWave)
+     * HP_wave = HP_base * multiplier * (1 + growthRate)^(waveId - firstAppearWave)
+     *
+     * Enemies get 2x base HP, bosses 3x — they were dying too quickly.
      */
     private float calculateScaledHP(Unit enemy, int waveId) {
         float hpBase = enemy.getMaxLife();
         int firstWave = 1;
         float growthRate = 0.04f;
+        float hpMult = (enemy instanceof EnemyBoss) ? 3f : 2f;
 
         if (enemy instanceof EnemyShipA) {
             firstWave = 1; growthRate = 0.04f;
@@ -126,7 +129,7 @@ public class EnemyFactory {
         }
 
         int waveDiff = Math.max(0, waveId - firstWave);
-        return hpBase * (float) Math.pow(1.0f + growthRate, waveDiff);
+        return hpBase * hpMult * (float) Math.pow(1.0f + growthRate, waveDiff);
     }
 
     /**

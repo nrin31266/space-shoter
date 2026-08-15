@@ -112,9 +112,10 @@ public class GamePlayScreen implements Screen {
     // ─── Scene2D ─────────────────────────────────────────────────────
     private Stage  uiStage;
     private Skin   uiSkin;
-    private Label  scoreLabel;
-    private Label  itemsLabel;
-    private Label  weaponLabel;
+    // HUD text is drawn manually (absolute coords) for reliable layout.
+    private String hudScoreText  = "SCORE 0";
+    private String hudItemsText  = "0";
+    private String hudWeaponText = "LASER Lv:1";
 
     // ─────────────────────────────────────────────────────────────────
     // Constructors
@@ -153,7 +154,7 @@ public class GamePlayScreen implements Screen {
 
         hudFont = FontUtil.generateRoboto(60);
         hudFont.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-        hudFont.getData().setScale(0.45f);
+        hudFont.getData().setScale(0.68f);
 
         overlayFont = FontUtil.generateRoboto(60);
         overlayFont.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
@@ -339,51 +340,23 @@ public class GamePlayScreen implements Screen {
     // HUD
     // ─────────────────────────────────────────────────────────────────
     private void buildHUD() {
-        // ── Top-right: ONLY the pause button (clean, unobtrusive) ──
-        Table topRight = new Table();
-        topRight.setFillParent(true);
-        topRight.top().padTop(12).padRight(16);
-
+        // ── Top-right: ONLY the pause button (explicit absolute position) ──
         Button pauseBtn = CustomUI.createButton("\uf04c", null, false);
+        pauseBtn.setSize(84, 76);
+        float sw = Gdx.graphics.getWidth();
+        float sh = Gdx.graphics.getHeight();
+        pauseBtn.setPosition(sw - 84 - 14f, sh - 76 - 12f);
         pauseBtn.addListener(new ClickListener() {
             @Override public void clicked(InputEvent event, float x, float y) {
                 isPaused = true;
                 saveCurrentGame();
             }
         });
-        topRight.add(pauseBtn).size(84, 76).right();
-        uiStage.addActor(topRight);
+        uiStage.addActor(pauseBtn);
 
-        // ── Bottom-left: weapon info ───────────────────────────────
-        Table bottom = new Table();
-        bottom.setFillParent(true);
-        bottom.bottom().pad(18).padLeft(20);
-        weaponLabel = new Label("LASER Lv:1", uiSkin);
-        weaponLabel.setColor(new Color(0f, 0.95f, 1f, 1f));
-        weaponLabel.setFontScale(0.72f);
-        bottom.add(weaponLabel).left();
-        uiStage.addActor(bottom);
-
-        // ── Bottom-right: star currency + score ────────────────────
-        Table bottomRight = new Table();
-        bottomRight.setFillParent(true);
-        bottomRight.bottom().pad(14).padRight(20);
-
-        Table cur = new Table();
-        Image starIcon = new Image(com.alexei.spaceshooter.utils.TextureRegistry.itemStar);
-        starIcon.setScaling(com.badlogic.gdx.utils.Scaling.fit);
-        itemsLabel = new Label("0", uiSkin);
-        itemsLabel.setColor(new Color(1f, 0.85f, 0.3f, 1f)); // gold — star currency
-        itemsLabel.setFontScale(0.85f);
-        cur.add(starIcon).size(30, 30).padRight(8);
-        cur.add(itemsLabel).padTop(6);
-        bottomRight.add(cur).right().padBottom(4).row();
-
-        scoreLabel = new Label("SCORE 0", uiSkin);
-        scoreLabel.setColor(new Color(1f, 0.85f, 0.2f, 1f));
-        scoreLabel.setFontScale(0.7f);
-        bottomRight.add(scoreLabel).right();
-        uiStage.addActor(bottomRight);
+        // All other HUD text (HP, weapon, WAVE, star, score) is drawn in
+        // renderPlayerHudTop() with absolute coordinates for a reliable
+        // left / centre / right layout on any device.
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -704,6 +677,9 @@ public class GamePlayScreen implements Screen {
             if (showWaveAnnouncement) renderWaveAnnouncement(sw, sh);
             batch.end();
 
+            // HUD stays visible during the intro too.
+            renderPlayerHudTop(sw, sh);
+
             updateHUD();
             uiStage.act(delta);
             uiStage.draw();
@@ -733,11 +709,11 @@ public class GamePlayScreen implements Screen {
                     } else if (item instanceof com.alexei.spaceshooter.entity.ItemEnergyUpgrade) {
                         ship.upgradeEnergy();
                     } else if (item instanceof com.alexei.spaceshooter.entity.ItemWeaponUpgradeExplosive) {
-                        ship.switchWeaponType(com.alexei.spaceshooter.entity.Ship.WEAPON_TYPE_EXPLOSIVE);
+                        ship.onWeaponPickup(com.alexei.spaceshooter.entity.Ship.WEAPON_TYPE_EXPLOSIVE);
                     } else if (item instanceof com.alexei.spaceshooter.entity.ItemWeaponUpgradeHoming) {
-                        ship.switchWeaponType(com.alexei.spaceshooter.entity.Ship.WEAPON_TYPE_HOMING);
+                        ship.onWeaponPickup(com.alexei.spaceshooter.entity.Ship.WEAPON_TYPE_HOMING);
                     } else if (item instanceof com.alexei.spaceshooter.entity.ItemWeaponUpgrade) {
-                        ship.switchWeaponType(com.alexei.spaceshooter.entity.Ship.WEAPON_TYPE_PLASMA);
+                        ship.onWeaponPickup(com.alexei.spaceshooter.entity.Ship.WEAPON_TYPE_PLASMA);
                     } else {
                         state.scoreTracker.collectStar();
                     }
@@ -771,6 +747,9 @@ public class GamePlayScreen implements Screen {
             if (showWaveClear)        renderWaveClear(sw, sh);
             if (showWaveAnnouncement) renderWaveAnnouncement(sw, sh);
             batch.end();
+
+            // HUD stays visible between waves.
+            renderPlayerHudTop(sw, sh);
 
             updateHUD();
             uiStage.act(delta);
@@ -830,11 +809,11 @@ public class GamePlayScreen implements Screen {
                 } else if (item instanceof com.alexei.spaceshooter.entity.ItemEnergyUpgrade) {
                     ship.upgradeEnergy();
                 } else if (item instanceof com.alexei.spaceshooter.entity.ItemWeaponUpgradeExplosive) {
-                    ship.switchWeaponType(com.alexei.spaceshooter.entity.Ship.WEAPON_TYPE_EXPLOSIVE);
+                    ship.onWeaponPickup(com.alexei.spaceshooter.entity.Ship.WEAPON_TYPE_EXPLOSIVE);
                 } else if (item instanceof com.alexei.spaceshooter.entity.ItemWeaponUpgradeHoming) {
-                    ship.switchWeaponType(com.alexei.spaceshooter.entity.Ship.WEAPON_TYPE_HOMING);
+                    ship.onWeaponPickup(com.alexei.spaceshooter.entity.Ship.WEAPON_TYPE_HOMING);
                 } else if (item instanceof com.alexei.spaceshooter.entity.ItemWeaponUpgrade) {
-                    ship.switchWeaponType(com.alexei.spaceshooter.entity.Ship.WEAPON_TYPE_PLASMA);
+                    ship.onWeaponPickup(com.alexei.spaceshooter.entity.Ship.WEAPON_TYPE_PLASMA);
                 } else {
                     state.scoreTracker.collectStar();
                 }
@@ -954,55 +933,72 @@ public class GamePlayScreen implements Screen {
 
 
 
-    /** Draws the player health bar (bottom-left) and the wave badge (bottom-centre). */
+    /**
+     * Draws the full gameplay HUD with absolute coordinates so the layout is
+     * reliably distributed (never clumped):
+     *   LEFT    → HP (red) + weapon label
+     *   CENTRE  → WAVE pill
+     *   RIGHT   → star currency + score
+     *   TOP-RIGHT → pause button (Scene2D, positioned in buildHUD)
+     */
     private void renderPlayerHudTop(float sw, float sh) {
         Ship ship = state.ship;
-        float pct = MathUtils.clamp(ship.getLife() / ship.getMaxLife(), 0f, 1f);
 
-        float barW = sw * 0.28f;
-        float barH = 16f;
-        float barX = 16f;
-        float barY = sh * 0.075f;
-
-        // Wave badge geometry (bottom-centre, above the ship)
+        // ── Wave pill (top-centre) ─────────────────────────────────
         String waveText = "WAVE " + state.currentWaveId;
         cachedLayout.setText(overlayFont, waveText);
-        float pillW = cachedLayout.width + 40f;
-        float pillH = 30f;
+        float pillW = cachedLayout.width + 44f;
+        float pillH = 32f;
         float pillX = (sw - pillW) / 2f;
-        float pillY = sh * 0.075f;
+        float pillY = sh - 56f;
 
-        // ── Shape pass: bar + pill backgrounds ────────────────────
         shapeRenderer.begin(com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType.Filled);
-        // HP bar frame
-        shapeRenderer.setColor(0.05f, 0.05f, 0.10f, 0.85f);
-        shapeRenderer.rect(barX - 3, barY - 3, barW + 6, barH + 6);
-        shapeRenderer.setColor(0.35f, 0.08f, 0.10f, 1f);
-        shapeRenderer.rect(barX, barY, barW, barH);
-        // HP fill color by threshold
-        if (pct > 0.5f)      shapeRenderer.setColor(0.20f, 1f, 0.45f, 1f);
-        else if (pct > 0.25f) shapeRenderer.setColor(1f, 0.78f, 0.20f, 1f);
-        else                 shapeRenderer.setColor(1f, 0.25f, 0.25f, 1f);
-        shapeRenderer.rect(barX, barY, barW * pct, barH);
-        shapeRenderer.setColor(1f, 1f, 1f, 0.25f);
-        shapeRenderer.rect(barX, barY + barH - 4f, barW * pct, 4f); // top highlight
-
-        // Wave pill
         shapeRenderer.setColor(0.04f, 0.08f, 0.15f, 0.82f);
         shapeRenderer.rect(pillX, pillY, pillW, pillH);
         shapeRenderer.setColor(0f, 0.85f, 1f, 0.9f);
         shapeRenderer.rect(pillX, pillY + pillH - 3f, pillW, 3f);
         shapeRenderer.end();
 
-        // ── Batch pass: text ───────────────────────────────────────
+        // ── Batch pass: all HUD text ───────────────────────────────
         batch.begin();
-        hudFont.setColor(1f, 1f, 1f, 0.95f);
-        String hpText = (int) Math.ceil(ship.getLife()) + "/" + (int) ship.getMaxLife();
-        cachedLayout.setText(hudFont, hpText);
-        hudFont.draw(batch, hpText, barX + (barW - cachedLayout.width) / 2f, barY + barH - 3f);
 
+        // LEFT: HP in red (bottom-left)
+        hudFont.setColor(1f, 0.22f, 0.22f, 1f);
+        String hpText = "HP " + (int) Math.ceil(ship.getLife()) + "/" + (int) ship.getMaxLife();
+        hudFont.draw(batch, hpText, 16f, sh * 0.055f);
+
+        // LEFT: weapon label (cyan, above HP)
+        hudFont.setColor(0f, 0.85f, 1f, 1f);
+        hudFont.draw(batch, hudWeaponText, 16f, sh * 0.055f + 56f);
+
+        // RIGHT: gold star icon + star count, score below it in white
+        com.badlogic.gdx.graphics.g2d.TextureRegion starReg = com.alexei.spaceshooter.utils.TextureRegistry.itemStar;
+        if (starReg != null) {
+            float iconSize = 34f;
+            float iconY = sh * 0.055f + 50f;
+            float iconX = sw - iconSize - 16f;
+            batch.setColor(1f, 0.85f, 0.3f, 1f); // gold tint
+            batch.draw(starReg, iconX, iconY, iconSize, iconSize);
+            batch.setColor(Color.WHITE);
+            // Count text sits to the left of the icon, right-aligned at iconX.
+            hudFont.setColor(1f, 0.88f, 0.2f, 1f);
+            cachedLayout.setText(hudFont, hudItemsText);
+            hudFont.draw(batch, hudItemsText, iconX - cachedLayout.width - 8f, iconY + 26f);
+        } else {
+            hudFont.setColor(1f, 0.88f, 0.2f, 1f);
+            hudFont.draw(batch, "\u2605 " + hudItemsText, sw - 16f - 60f, sh * 0.055f + 56f);
+        }
+
+        // Score — white text, right side
+        hudFont.setColor(1f, 1f, 1f, 1f);
+        String scoreText = "SCORE " + hudScoreText;
+        cachedLayout.setText(hudFont, scoreText);
+        hudFont.draw(batch, scoreText, sw - cachedLayout.width - 16f, sh * 0.055f + 6f);
+
+        // CENTRE: WAVE text on the pill
         overlayFont.setColor(0f, 0.92f, 1f, 1f);
-        overlayFont.draw(batch, waveText, pillX + 20f, pillY + pillH - 8f);
+        overlayFont.draw(batch, waveText, pillX + 22f, pillY + pillH - 8f);
+
         batch.end();
     }
 
@@ -1064,14 +1060,14 @@ public class GamePlayScreen implements Screen {
 
     private void updateHUD() {
         Ship ship = state.ship;
-        scoreLabel.setText("SCORE " + state.scoreTracker.getTotalPoints());
-        itemsLabel.setText("" + state.scoreTracker.getStarsCollected());
+        hudScoreText = "" + state.scoreTracker.getTotalPoints();
+        hudItemsText = "" + state.scoreTracker.getStarsCollected();
 
         String wpnTypeStr = (ship.getActiveWeaponType() == Ship.WEAPON_TYPE_PLASMA) ? "LASER" :
                 (ship.getActiveWeaponType() == Ship.WEAPON_TYPE_EXPLOSIVE) ? "BLAST" : "HOMING";
         int stock = ship.getStockpile();
         String stockStr = (stock > 0) ? "  [x" + stock + " stock]" : "";
-        weaponLabel.setText(wpnTypeStr + " Lv:" + ship.getWeaponLevel() + stockStr);
+        hudWeaponText = wpnTypeStr + " Lv:" + ship.getWeaponLevel() + stockStr;
     }
 
     private void saveCurrentGame() {

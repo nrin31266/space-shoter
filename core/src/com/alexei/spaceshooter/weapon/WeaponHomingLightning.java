@@ -24,8 +24,8 @@ public class WeaponHomingLightning extends Weapon {
 
     public WeaponHomingLightning(Unit unit) {
         super.setUnit(unit);
-        super.setFireRate(240);
-        super.setDamage(0.8f);
+        super.setFireRate(260);
+        super.setDamage(0.6f);
         super.setWeaponSound(WEAPON_SOUND);
         super.setProjectileVisual(com.alexei.spaceshooter.utils.TextureRegistry.shotDart, false);
     }
@@ -37,14 +37,14 @@ public class WeaponHomingLightning extends Weapon {
             int level = ((Ship) unit).getWeaponLevel();
             int targetFireRate;
             switch (level) {
-                case 1: targetFireRate = 240; break;
-                case 2: targetFireRate = 190; break;
-                case 3: targetFireRate = 190; break;
-                case 4: targetFireRate = 160; break;
-                case 5: targetFireRate = 160; break;
-                case 6: targetFireRate = 130; break;
+                case 1: targetFireRate = 280; break;
+                case 2: targetFireRate = 230; break;
+                case 3: targetFireRate = 210; break;
+                case 4: targetFireRate = 190; break;
+                case 5: targetFireRate = 175; break;
+                case 6: targetFireRate = 160; break;
                 case 7:
-                default: targetFireRate = 100; break;
+                default: targetFireRate = 150; break;
             }
             if (getFireRate() != targetFireRate) {
                 setFireRate(targetFireRate);
@@ -67,15 +67,16 @@ public class WeaponHomingLightning extends Weapon {
         float damage;
         float speed;
 
+        // Max 3 homing darts — clear 1→2→3 progression per level.
         switch (level) {
-            case 1: count = 2; damage = 0.8f; speed = 750f; break;
-            case 2: count = 2; damage = 0.9f; speed = 850f; break;
-            case 3: count = 3; damage = 1.0f; speed = 950f; break;
-            case 4: count = 3; damage = 1.1f; speed = 1050f; break;
-            case 5: count = 4; damage = 1.2f; speed = 1150f; break;
-            case 6: count = 4; damage = 1.3f; speed = 1250f; break;
+            case 1: count = 1; damage = 0.8f; speed = 750f; break;
+            case 2: count = 2; damage = 0.7f; speed = 850f; break;
+            case 3: count = 2; damage = 0.8f; speed = 950f; break;
+            case 4: count = 3; damage = 0.8f; speed = 1050f; break;
+            case 5: count = 3; damage = 0.9f; speed = 1150f; break;
+            case 6: count = 3; damage = 1.0f; speed = 1250f; break;
             case 7:
-            default: count = 5; damage = 1.4f; speed = 1350f; break;
+            default: count = 3; damage = 1.1f; speed = 1350f; break;
         }
 
         List<Unit> enemies = SpaceShooter.getActiveEnemiesList();
@@ -94,8 +95,8 @@ public class WeaponHomingLightning extends Weapon {
 
             final Unit finalTarget = target;
             Projectile p = new Projectile(
-                    unit.getCenterX(), unit.getTop(),
-                    15f, 15f,
+                    unit.getCenterX(), unit.getTop() + 10f,
+                    20f, 20f,
                     dir, speed,
                     PROJECTILE_COLOR, damage, true) {
 

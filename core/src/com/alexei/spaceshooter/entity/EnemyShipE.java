@@ -14,7 +14,7 @@ import com.badlogic.gdx.math.MathUtils;
 public class EnemyShipE extends Unit {
     private static final float UNIT_WIDTH  = 180;
     private static final float UNIT_HEIGHT = 180;
-    private static final float ENTER_SPEED = 560;
+    private static final float ENTER_SPEED = 1120;
     private static final float HOVER_SPEED = 90;
     private static final Color UNIT_COLOR  = Color.valueOf("AA00FFFF"); // Purple
     private static final float MAX_LIFE    = 3.0f;

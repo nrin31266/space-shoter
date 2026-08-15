@@ -14,7 +14,7 @@ public class EnemyBoss extends Unit {
     // Boss must feel dominant — enlarged from 320 to 400px.
     private static final float UNIT_WIDTH  = 400;
     private static final float UNIT_HEIGHT = 400;
-    private static final float ENTER_SPEED = 150;     
+    private static final float ENTER_SPEED = 280;     
     private static final float HOVER_SPEED = 100;      
     private static final Color UNIT_COLOR  = Color.valueOf("ff0055"); 
     private static final float MAX_LIFE    = 100f;
@@ -28,6 +28,8 @@ public class EnemyBoss extends Unit {
     private float hoverDir     = 1f;   
     /** N1 fix: prevent double-drop when multiple projectiles kill the boss in the same frame. */
     private boolean hasDropped = false;
+    /** Boss's aimed plasma shot (updated with the player target each frame). */
+    private com.alexei.spaceshooter.weapon.WeaponSniperBeam sniperWeapon = null;
 
     public EnemyBoss() {
         super(0, 0, UNIT_WIDTH, UNIT_HEIGHT);
@@ -48,19 +50,27 @@ public class EnemyBoss extends Unit {
             setOrientation(180f);
         }
         super.addWeapon(new WeaponSpreadShot(this));
-        
+
         // Boss heavy shots use the menacing plasma orb.
         for (com.alexei.spaceshooter.weapon.Weapon w : getWeapons()) {
             w.setProjectileVisual(com.alexei.spaceshooter.utils.TextureRegistry.plasmaOrb, true);
-            w.setDamage(2f); // boss shots hit harder
+            w.setDamage(1.8f); // boss shots hit harder
         }
 
-        // Let's add a second weapon to make it more boss-like
+        // Second weapon: fast straight-down plasma volley (harder to dodge).
         com.alexei.spaceshooter.weapon.Weapon w2 = new com.alexei.spaceshooter.weapon.WeaponEnemyLaser(this);
-        w2.setFireRate(800);
+        w2.setFireRate(650);
         w2.setProjectileVisual(com.alexei.spaceshooter.utils.TextureRegistry.plasmaOrb, true);
-        w2.setDamage(1.5f);
+        w2.setDamage(1.3f);
         super.addWeapon(w2);
+
+        // Third weapon: aimed sniper plasma shot that tracks the player.
+        com.alexei.spaceshooter.weapon.WeaponSniperBeam w3 = new com.alexei.spaceshooter.weapon.WeaponSniperBeam(this);
+        w3.setFireRate(2200);
+        w3.setProjectileVisual(com.alexei.spaceshooter.utils.TextureRegistry.plasmaOrb, true);
+        w3.setDamage(1.5f);
+        super.addWeapon(w3);
+        this.sniperWeapon = w3;
     }
 
     public void setScreenDimensions(float screenWidth, float screenHeight) {

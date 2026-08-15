@@ -12,7 +12,9 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 /**
  * Main Plasma Laser weapon (Track 0).
- * Fires classic thin blue laser beams (up to 7 beams at Level 7) with low individual damage.
+ * Fires thin blue laser beams in a FAN (up to 5 beams at Level 7).
+ * ALL beams originate from a SINGLE point at the ship's muzzle and fan
+ * outward — a classic single-origin spread.
  */
 public class WeaponShipLaser extends Weapon {
     private static final SoundName WEAPON_SOUND = SoundName.LaserShoot2;
@@ -22,7 +24,7 @@ public class WeaponShipLaser extends Weapon {
     public WeaponShipLaser(Unit unit) {
         super.setUnit(unit);
         super.setFireRate(150);
-        super.setDamage(0.8f);
+        super.setDamage(0.7f);
         super.setWeaponSound(WEAPON_SOUND);
         super.setProjectileVisual(com.alexei.spaceshooter.utils.TextureRegistry.laserBlue, false);
     }
@@ -36,12 +38,12 @@ public class WeaponShipLaser extends Weapon {
             switch (level) {
                 case 1: targetFireRate = 150; break;
                 case 2: targetFireRate = 130; break;
-                case 3: targetFireRate = 110; break;
-                case 4: targetFireRate = 95; break;
-                case 5: targetFireRate = 85; break;
-                case 6: targetFireRate = 75; break;
+                case 3: targetFireRate = 115; break;
+                case 4: targetFireRate = 100; break;
+                case 5: targetFireRate = 90; break;
+                case 6: targetFireRate = 80; break;
                 case 7:
-                default: targetFireRate = 65; break;
+                default: targetFireRate = 70; break;
             }
             if (getFireRate() != targetFireRate) {
                 setFireRate(targetFireRate);
@@ -62,31 +64,33 @@ public class WeaponShipLaser extends Weapon {
 
         int count;
         float damage;
-        float totalSpread;
+        float totalFan; // total angle (deg) swept by the whole fan
 
+        // Max 5 beams (Level 7). All beams share ONE origin at the muzzle.
+        // The fan is kept TIGHT so beams don't spread too far apart.
         switch (level) {
-            case 1: count = 1; damage = 0.8f; totalSpread = 0f; break;
-            case 2: count = 2; damage = 0.7f; totalSpread = 6f; break;
-            case 3: count = 3; damage = 0.6f; totalSpread = 10f; break;
-            case 4: count = 4; damage = 0.55f; totalSpread = 12f; break;
-            case 5: count = 5; damage = 0.5f; totalSpread = 14f; break;
-            case 6: count = 6; damage = 0.5f; totalSpread = 16f; break;
+            case 1: count = 1; damage = 0.7f;  totalFan = 0f;  break;
+            case 2: count = 2; damage = 0.65f; totalFan = 12f; break;
+            case 3: count = 3; damage = 0.6f;  totalFan = 18f; break;
+            case 4: count = 3; damage = 0.6f;  totalFan = 20f; break;
+            case 5: count = 4; damage = 0.55f; totalFan = 24f; break;
+            case 6: count = 4; damage = 0.55f; totalFan = 26f; break;
             case 7:
-            default: count = 7; damage = 0.5f; totalSpread = 18f; break;
+            default: count = 5; damage = 0.5f;  totalFan = 30f; break;
         }
 
         Projectile[] projectiles = new Projectile[count];
-        float baseDir = 90f;
+        // ONE shared origin point — the muzzle at the nose of the ship.
+        float originX = unit.getCenterX();
+        float originY = unit.getTop() + 12f;
 
         for (int i = 0; i < count; i++) {
-            float dir = baseDir;
-            if (count > 1) {
-                dir = baseDir + (i - (count - 1) / 2f) * (totalSpread / (count - 1));
-            }
-            float xOffset = (i - (count - 1) / 2f) * 6f;
+            // Evenly spaced angles sweeping around straight-up (90°).
+            float t = (count == 1) ? 0f : (i - (count - 1) / 2f) / ((count - 1) / 2f);
+            float dir = 90f + t * (totalFan / 2f);
             Projectile p = new Projectile(
-                    unit.getCenterX() + xOffset, unit.getTop(),
-                    6f, 24f,
+                    originX, originY,
+                    6f, 20f,
                     dir, PROJECTILE_SPEED,
                     PROJECTILE_COLOR, damage, true);
             applyProjectileVisual(p);

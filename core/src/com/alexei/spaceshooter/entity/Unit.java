@@ -82,6 +82,17 @@ public class Unit extends Visual {
             if (flashRunning) {
                 batch.setColor(Color.WHITE);
             }
+            // Damage decals: dark scorch marks where the unit was hit.
+            // Drawn in the SAME batch (single draw call) so they overlay the sprite.
+            if (!damagePoints.isEmpty() && getWhitePixel() != null) {
+                batch.setColor(0f, 0f, 0f, 0.30f);
+                for (DamagePoint p : damagePoints) {
+                    batch.draw(getWhitePixel(),
+                            position.x + p.pos.x + dx, position.y + p.pos.y + dy,
+                            p.dim.x, p.dim.y);
+                }
+                batch.setColor(Color.WHITE);
+            }
             return;
         }
 
@@ -190,9 +201,33 @@ public class Unit extends Visual {
     }*/
 
     public void generateDamagePoints(Visual visual) {
-        // No-op: every unit now renders a texture sprite, so the legacy
-        // "black damage decal" overlay was never drawn. Skipping it removes
-        // per-hit Vector2/DamagePoint allocations during combat.
+        // Damage decals: dark scorch marks where the unit was hit.
+        // Capped so a heavily-hit unit doesn't allocate forever.
+        if (damagePoints.size() >= 8) return;
+        int spots = MathUtils.random(1, 3);
+        for (int i = 0; i < spots; i++) {
+            int dx = MathUtils.random(0, 15);
+            int dy = MathUtils.random(0, 5);
+            int xsize = MathUtils.random(8, 18);
+            int ysize = MathUtils.random(8, 18);
+            damagePoints.add(new DamagePoint(new Vector2(visual.getX() - position.x + dx, dy), new Vector2(xsize, ysize)));
+        }
+    }
+
+    /** Shared 1×1 white texture used for damage-decal quads in the SpriteBatch. */
+    private static com.badlogic.gdx.graphics.Texture whitePixelTex;
+    private static com.badlogic.gdx.graphics.g2d.TextureRegion whitePixelRegion;
+    private static com.badlogic.gdx.graphics.g2d.TextureRegion getWhitePixel() {
+        if (whitePixelTex == null) {
+            com.badlogic.gdx.graphics.Pixmap pm =
+                    new com.badlogic.gdx.graphics.Pixmap(1, 1, com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888);
+            pm.setColor(1f, 1f, 1f, 1f);
+            pm.fill();
+            whitePixelTex = new com.badlogic.gdx.graphics.Texture(pm);
+            whitePixelRegion = new com.badlogic.gdx.graphics.g2d.TextureRegion(whitePixelTex);
+            pm.dispose();
+        }
+        return whitePixelRegion;
     }
 
     private int pityWeaponType = -1;
