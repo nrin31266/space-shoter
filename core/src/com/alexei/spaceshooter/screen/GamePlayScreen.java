@@ -1171,15 +1171,21 @@ public class GamePlayScreen implements Screen {
             }
         }
 
-        // Enemy vs ship collision
-        for (int i = state.enemies.size() - 1; i >= 0; i--) {
-            Unit e = state.enemies.get(i);
-            if (e.isColliding(ship)) {
-                e.receiveDamage(ship);
-                ship.receiveDamage(e);
-                if (e.isDead()) {
-                    state.enemies.remove(i);
-                    state.scoreTracker.addEnemyKilled();
+        // Enemy vs ship collision (only active when ship is NOT invulnerable)
+        if (!ship.isInvulnerable()) {
+            for (int i = state.enemies.size() - 1; i >= 0; i--) {
+                Unit e = state.enemies.get(i);
+                if (e.isColliding(ship)) {
+                    e.receiveDamage(ship);
+                    ship.receiveDamage(e);
+                    if (e.isDead()) {
+                        state.enemies.remove(i);
+                        state.scoreTracker.addEnemyKilled();
+                    }
+                    // Ship gained invulnerability from damage; stop processing further enemy collisions this frame
+                    if (ship.isInvulnerable()) {
+                        break;
+                    }
                 }
             }
         }

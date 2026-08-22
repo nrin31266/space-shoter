@@ -290,15 +290,53 @@ public class EnemyFactory {
         List<Unit> enemies = new ArrayList<>();
         int bossCount = Math.max(1, action.count);
         float spawnY = screenHeight + SPAWN_Y_OFFSET;
-        float slotWidth = screenWidth / bossCount;
 
-        for (int i = 0; i < bossCount; i++) {
-            float cx = slotWidth * i + slotWidth / 2f;
-            Unit u = createEnemy("BOSS", cx, spawnY, screenWidth, screenHeight);
-            u.setX(clampX(u, u.getX(), screenWidth));
-            float yStagger = i * (screenHeight * 0.05f);
-            u.setY(u.getY() + yStagger);
-            enemies.add(u);
+        if (bossCount == 1) {
+            float cx = screenWidth / 2f;
+            EnemyBoss boss = (EnemyBoss) createEnemy("BOSS", cx - 170f, spawnY, screenWidth, screenHeight);
+            boss.setX(clampX(boss, boss.getX(), screenWidth));
+            float hoverY = (action != null && action.hoverYPct > 0)
+                    ? screenHeight * action.hoverYPct
+                    : screenHeight * 0.75f;
+            boss.setHoverY(hoverY);
+            boss.setPatrolBounds(16f, screenWidth - boss.getWidth() - 16f, MathUtils.randomBoolean() ? 1f : -1f);
+            enemies.add(boss);
+        } else if (bossCount == 2) {
+            // Twin bosses: cleanly separated left & right sectors with different altitudes so they never overlap
+            float mid = screenWidth / 2f;
+            float[] cxList = new float[] { screenWidth * 0.25f, screenWidth * 0.75f };
+            float[] hoverList = new float[] { screenHeight * 0.78f, screenHeight * 0.65f };
+
+            for (int i = 0; i < 2; i++) {
+                float startX = cxList[i] - 170f;
+                EnemyBoss boss = (EnemyBoss) createEnemy("BOSS", startX, spawnY + (i * 50f), screenWidth, screenHeight);
+                boss.setX(clampX(boss, boss.getX(), screenWidth));
+                boss.setHoverY(hoverList[i]);
+                if (i == 0) {
+                    boss.setPatrolBounds(16f, mid - boss.getWidth() * 0.5f - 8f, -1f);
+                } else {
+                    boss.setPatrolBounds(mid + 8f, screenWidth - boss.getWidth() - 16f, 1f);
+                }
+                enemies.add(boss);
+            }
+        } else {
+            // 3 or more bosses: partition screen horizontally and alternate altitudes
+            float slotW = screenWidth / bossCount;
+            for (int i = 0; i < bossCount; i++) {
+                float cx = slotW * i + slotW / 2f;
+                float hoverY = (i % 2 == 0) ? screenHeight * 0.78f : screenHeight * 0.64f;
+                float startX = cx - 170f;
+                EnemyBoss boss = (EnemyBoss) createEnemy("BOSS", startX, spawnY + (i * 40f), screenWidth, screenHeight);
+                boss.setX(clampX(boss, boss.getX(), screenWidth));
+                boss.setHoverY(hoverY);
+                float minBound = Math.max(16f, slotW * i + 8f);
+                float maxBound = Math.min(screenWidth - boss.getWidth() - 16f, slotW * (i + 1) - boss.getWidth() - 8f);
+                if (maxBound <= minBound) {
+                    maxBound = minBound + 30f;
+                }
+                boss.setPatrolBounds(minBound, maxBound, (i % 2 == 0) ? 1f : -1f);
+                enemies.add(boss);
+            }
         }
         return enemies;
     }
@@ -453,5 +491,6 @@ public class EnemyFactory {
         else if (enemy instanceof EnemyShipD) ((EnemyShipD) enemy).setHoverY(finalHover);
         else if (enemy instanceof EnemyShipE) ((EnemyShipE) enemy).setHoverY(finalHover);
         else if (enemy instanceof EnemyShipF) ((EnemyShipF) enemy).setHoverY(finalHover);
+        else if (enemy instanceof EnemyBoss) ((EnemyBoss) enemy).setHoverY(finalHover);
     }
 }

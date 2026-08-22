@@ -147,7 +147,9 @@ public class Unit extends Visual {
      * @param unit the unit which is doing the damage
      */
     public void receiveDamage(Unit unit) {
-        receiveDamage(life, this); // kill the unit immediately by doing as much damage as there is life left
+        // Collision damage against enemy: deals a portion of HP rather than instant death
+        float ramDamage = Math.min(10f, Math.max(2.0f, maxLife * 0.25f));
+        receiveDamage(ramDamage, this);
     }
 
     public void receiveDamage(float damageAmount, Visual visual) {

@@ -11,9 +11,9 @@ import com.badlogic.gdx.math.MathUtils;
 import java.util.ArrayList;
 
 public class EnemyBoss extends Unit {
-    // Boss must feel dominant — enlarged from 320 to 400px.
-    private static final float UNIT_WIDTH  = 400;
-    private static final float UNIT_HEIGHT = 400;
+    // Boss visual size (balanced for multi-boss and single-boss battles).
+    private static final float UNIT_WIDTH  = 340;
+    private static final float UNIT_HEIGHT = 340;
     private static final float ENTER_SPEED = 280;     
     private static final float HOVER_SPEED = 100;      
     private static final Color UNIT_COLOR  = Color.valueOf("ff0055"); 
@@ -26,6 +26,8 @@ public class EnemyBoss extends Unit {
     private float hoverY       = -1;   
     private float screenWidth  = 1080; 
     private float hoverDir     = 1f;   
+    private float minX         = 16f;
+    private float maxX         = -1f;
     /** N1 fix: prevent double-drop when multiple projectiles kill the boss in the same frame. */
     private boolean hasDropped = false;
     /** Boss's aimed plasma shot (updated with the player target each frame). */
@@ -75,8 +77,27 @@ public class EnemyBoss extends Unit {
 
     public void setScreenDimensions(float screenWidth, float screenHeight) {
         this.screenWidth = screenWidth;
-        this.hoverY      = screenHeight * 0.75f; 
-        hoverDir = MathUtils.randomBoolean() ? 1f : -1f;
+        if (this.hoverY <= 0) {
+            this.hoverY = screenHeight * 0.75f;
+        }
+        if (this.minX < 0) this.minX = 16f;
+        if (this.maxX <= 0) this.maxX = screenWidth - getWidth() - 16f;
+        if (this.hoverDir == 0) {
+            this.hoverDir = MathUtils.randomBoolean() ? 1f : -1f;
+        }
+    }
+
+    public void setHoverY(float hoverY) {
+        this.hoverY = hoverY;
+    }
+
+    public void setPatrolBounds(float minX, float maxX, float hoverDir) {
+        this.minX = minX;
+        this.maxX = maxX;
+        this.hoverDir = hoverDir;
+        if (moveState == MoveState.HOVERING) {
+            super.setVelocityVector(HOVER_SPEED * hoverDir / com.alexei.spaceshooter.SpaceShooter.FPS, 0);
+        }
     }
 
     @Override
@@ -93,11 +114,12 @@ public class EnemyBoss extends Unit {
                 break;
 
             case HOVERING:
-                float padding = getWidth() + 20;
-                if (getX() <= padding && hoverDir < 0) {
+                float leftBound = (minX >= 0) ? minX : 16f;
+                float rightBound = (maxX > 0) ? maxX : (screenWidth - getWidth() - 16f);
+                if (getX() <= leftBound && hoverDir < 0) {
                     hoverDir = 1f;
                     super.setVelocityVector(HOVER_SPEED * hoverDir / com.alexei.spaceshooter.SpaceShooter.FPS, 0);
-                } else if (getX() + getWidth() >= screenWidth - padding && hoverDir > 0) {
+                } else if (getX() >= rightBound && hoverDir > 0) {
                     hoverDir = -1f;
                     super.setVelocityVector(HOVER_SPEED * hoverDir / com.alexei.spaceshooter.SpaceShooter.FPS, 0);
                 }
