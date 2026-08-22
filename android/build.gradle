@@ -30,8 +30,8 @@ android {
         applicationId "com.alexei.spaceshooter"
         minSdkVersion 29
         targetSdkVersion 34
-        versionCode 1
-        versionName "1.0"
+        versionCode (project.findProperty("versionCode") as Integer ?: 1)
+        versionName (project.findProperty("versionName") ?: "1.0")
     }
     buildTypes {
         release {

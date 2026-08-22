@@ -105,6 +105,15 @@ gradle-app.setting
 .DS_Store
 Thumbs.db
 
+## Packaged APKs
+/releases/*.apk
+/releases/*.idsig
+*.idsig
+
+## Original Reference Project
+/space-shooter-original/
+/space-shooter/
+
 ## iOS
 /ios/xcode/*.xcodeproj/*
 !/ios/xcode/*.xcodeproj/xcshareddata
