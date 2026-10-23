@@ -15,22 +15,25 @@ Tooling test dùng SDK/JDK/ADB/Gradle giả trong thư mục tạm, không kết
 hoặc tải dependency. Build thật là bước riêng. Kết quả và giới hạn hiện tại ở
 [checkpoint](../production/checkpoint.md); không suy runtime pass từ unittest.
 
-## Debug hiện có
+## Kiểm tra campaign theo cụm
 
-Owner duy nhất là `core/src/com/alexei/spaceshooter/utils/DebugConfig.java`.
-Snapshot đầu mốc nền: ENABLE_DEBUG=true, Wave 19, Explosive Lv7, HP 5,
-DEBUG_TEST_SINGLE_ENEMY=false. Giữ nguyên cấu hình này trong mốc nền.
+```bash
+./gradlew :core:checkCampaign -Pandroid.builder.sdkDownload=false
+```
 
-Muốn kiểm tra luồng thường Wave 1–5: tạm đặt ENABLE_DEBUG=false, build và chạy,
-rồi khôi phục đúng giá trị trước test. Không commit debug tuning ngoài task.
-Gameplay late-game mới cần đường test nhanh tương đương, không xóa DevConfig nguồn rồi
-buộc người kiểm thử chơi cả campaign.
+Gói assertion tích hợp đọc catalog thật: store backup/corrupt/schema/write failure,
+Shard high-water/ownership, flight/formation, lives/heat/swept collision, reward,
+hazard, 8 mission/21 encounter bằng test damage và sweep attack theo thời gian.
+Kiểm tra test damage không chứng minh balance hoặc cảm giác chơi thực tế.
+
+DebugConfig/Wave19/Lv7 chỉ còn thuộc code legacy, không điều khiển New Game
+campaign. Không chỉnh config đó để thử boss mới. CampaignCombatCheck khởi tạo
+state/encounter trực tiếp cho sweep hàng loạt; không ghi save trên thiết bị.
 
 ## Smoke trên emulator/thiết bị đã mở
 
 Chạy script chọn bản, xác minh loading/menu, New Game, bắn/effect, HUD, pause/
-resume, game-over và Continue sau mở lại app. Với cấu hình thường, kiểm tra Wave
-1–5. Nghe music/SFX riêng với output audio có sẵn; xem log không chứng minh mix
+resume, game-over và Continue sau mở lại app. Kiểm tra mission đang sửa và điểm chuyển hướng/region khi liên quan. Nghe music/SFX riêng với output audio có sẵn; xem log không chứng minh mix
 nghe đúng. Kiểm tra layout ở tỉ lệ màn hình hiện tại và một tỉ lệ khác khi có thể.
 
 Mốc gameplay bổ sung regression theo domain và một end-to-end flow; không chạy full

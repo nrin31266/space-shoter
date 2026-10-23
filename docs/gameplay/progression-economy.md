@@ -1,17 +1,16 @@
 # Progression và economy
 
-## Hiện trạng
+## Runtime campaign
 
-ScoreTracker, GamePlayScreen và SaveManager xử lý score và sao. Wave/endless là
-tiến trình hiện tại. High score và tổng sao được commit ở cuối lượt; source
-SaveManager giữ quy tắc cộng và lưu dữ liệu. Chưa có campaign profile mới.
+Campaign có tám mission qua hai region; clear mở mission kế, cập nhật best score
+per-mission. Run score và mission score được giữ riêng. Continue/Retry dùng
+checkpoint đầu encounter; Replay lấy preset của mission và không ghi profile.
 
-## Thiết kế phát triển
+Stellar Shard dùng cho cosmetic chassis/skin/trail theo giá trong catalog.
+Món đã sở hữu được trang bị miễn phí, không làm đổi balance combat. New Game
+reset campaign checkpoint/loadout nhưng giữ inventory, Shard và record/unlock.
+UI hỏi xác nhận trước khi thay checkpoint. Không có talent, gacha hoặc shop tổng quát.
 
-Campaign gồm mission/encounter, tiến trình mở khóa, Stellar Shard, Mission Replay
-và cosmetic. Tách run score, campaign progress và profile; replay/dev run không
-được ghi nhầm vào tiến trình campaign. Thiết kế này chưa triển khai trong Java.
-
-Reward/drop thuộc [weapon/item/drop](../content/weapons-items-drops.md);
+Reward quota/drop thuộc [weapon/item/drop](../content/weapons-items-drops.md);
 transaction và tương thích dữ liệu thuộc [save/profile](../systems/save-profile.md).
-Cửa hàng tổng quát, talent và gacha ngoài phạm vi hiện tại.
+Phần chưa tương đương đầy đủ nằm ở [checkpoint](../production/checkpoint.md).

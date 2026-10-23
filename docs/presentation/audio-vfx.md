@@ -1,23 +1,25 @@
 # Hình ảnh, audio và VFX
 
-## Hiện trạng
+## Runtime campaign
 
-Game dùng sprite neon, background Starfield/nebula, muzzle flash, explosion,
-shield và hit effects. LoadingScreen/AudioManager tải tài nguyên qua AssetManager.
-[Nguồn tài nguyên](../production/assets.md) sở hữu credit và license.
+CampaignAssets tải atlas, font và audio một lần. PrefabVisual cache hierarchy,
+pivot/PPU, sorting order và SpriteFrameLoop; renderer đọc health để thay damage
+sprite, hide node bị hạ. Artwork hiện tại thuộc bộ campaign. `CampaignWorld`
+pool explosion/hit/muzzle/pickup bursts; renderer hiển thị shield, telegraph,
+beam/barrage, backdrop/planet, engine plume và cosmetic trail.
 
-## Thiết kế phát triển
+CampaignAudio đọc AudioPalette: cue gain/variation/interval/voice limit, music
+stream/crossfade và ducking khi cue quan trọng. Pause Activity dừng audio;
+settings giữ volume và reduced motion. AssetManager sở hữu atlas/audio; font
+được CampaignAssets dispose. Không tạo Texture/Sound/font trong render.
 
-Hoàn thiện silhouette tàu/enemy/boss, animation, exhaust, hit/explosion, shield,
-telegraph, background và cinematic. VFX dùng sprite/atlas, pooled particle và
-SpriteBatch; chỉ thêm shader khi hiệu ứng thực sự cần. Presentation nhận sự kiện
-combat, không quyết damage, reward hoặc save.
+## Phần chưa tương đương hoàn toàn
 
-Audio có nhóm music, SFX và UI; giới hạn số voice đồng thời, ưu tiên sự kiện quan
-trọng, dùng variation và cooldown cho âm lặp. Music dùng stream và chuyển track
-mượt; SFX ngắn được cache. Kiểm tra gain, ducking, loop và crossfade bằng nghe thật.
+Cinematic PlanetJourney, staged fragments/armor destruction, boss skill cue,
+background parallax và projectile trail/material cần đối chiếu hình ảnh tiếp.
+Collision không lấy shape từ sprite cuối. Không đánh đồng build pass hoặc test
+logic với nghe audio mix hay nghiệm thu hình ảnh. Gain/duck/loop và output audio
+cần nghe trực tiếp trên thiết bị.
 
-Friendly projectile, hostile projectile, pickup và hazard phải dễ phân biệt.
-Kiểm tra effect khi pause/resume, pool reuse, boss death và encounter cleanup.
-Layout thuộc [UI/UX](ui-ux.md), quy trình tài nguyên thuộc
-[asset pipeline](../production/asset-pipeline.md).
+[Nguồn asset](../production/assets.md) sở hữu credit/license;
+[checkpoint](../production/checkpoint.md) giữ kết quả đã chạy.

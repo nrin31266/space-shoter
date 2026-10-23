@@ -1,438 +1,309 @@
 package com.alexei.spaceshooter.screen;
 
 import com.alexei.spaceshooter.MainGame;
-import com.alexei.spaceshooter.Starfield;
-import com.alexei.spaceshooter.entity.Ship;
-import com.alexei.spaceshooter.manager.AudioManager;
-import com.alexei.spaceshooter.manager.GameState;
-import com.alexei.spaceshooter.manager.SaveManager;
-import com.alexei.spaceshooter.utils.*;
+import com.alexei.spaceshooter.manager.CampaignStore;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.alexei.spaceshooter.utils.CustomUI;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.kotcrab.vis.ui.widget.VisDialog;
-import com.kotcrab.vis.ui.widget.VisLabel;
-import com.kotcrab.vis.ui.widget.VisSlider;
-import com.kotcrab.vis.ui.widget.VisTextButton;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.Scaling;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
 
-public class MainMenuScreen implements Screen {
+public final class MainMenuScreen extends ScreenAdapter {
     private final MainGame game;
-    private final AudioManager audioManager;
-    private final ShapeRenderer shapeRenderer;
-    private final SpriteBatch batch;
-    private final Starfield starfield;
-    private final Starfield starfield2;
+    private final Stage stage = new Stage(new ExtendViewport(1280, 720));
+    private final CampaignUi ui;
+    private final Group root = new Group();
+    private final Image backdrop;
+    private final Array<Actor> anchored = new Array<>();
+    private final Array<float[]> anchors = new Array<>();
+    private Runnable back = this::home;
+    private int selectedMission;
 
-    private Stage stage;
-    private Skin skin;
-    private BitmapFont titleFont;
-    private BitmapFont fontAwesome;
-
-    // Title animation
-    private float titlePulse = 0f;
-    /** Cached to avoid per-frame GlyphLayout allocation in renderTitle() */
-    private final com.badlogic.gdx.graphics.g2d.GlyphLayout cachedLayout = new com.badlogic.gdx.graphics.g2d.GlyphLayout();
-    /** 1x1 white texture reused for dialog dividers instead of creating Pixmap+Texture each time */
-    private Texture whiteDividerTex;
-
-    public MainMenuScreen(MainGame game, AudioManager audioManager) {
+    public MainMenuScreen(MainGame game) {
         this.game = game;
-        this.audioManager = audioManager;
-        this.shapeRenderer = new ShapeRenderer();
-        this.batch = new SpriteBatch();
-
-        float sw = Gdx.graphics.getWidth();
-        float sh = Gdx.graphics.getHeight();
-        this.starfield = new Starfield((int) sw, (int) sh,
-                GameState.STAR_SCROLL_ANGLE, GameState.STAR_SCROLL_SPEED,
-                GameState.STAR_COUNT, GameState.MIN_STAR_SIZE, GameState.MAX_STAR_SIZE);
-        this.starfield2 = new Starfield((int) sw, (int) sh,
-                GameState.STAR_SCROLL_ANGLE_2, GameState.STAR_SCROLL_SPEED_2,
-                GameState.STAR_COUNT_2, GameState.MIN_STAR_SIZE_2, GameState.MAX_STAR_SIZE_2);
-        this.starfield.setNebula(com.alexei.spaceshooter.utils.TextureRegistry.nebula, 0.34f);
-    }
-
-    @Override
-    public void show() {
-        audioManager.stopAllMusic();
-        audioManager.playMusic(SoundName.Ut);
-
-        // Create a 1x1 white texture for reuse in dividers
-        if (whiteDividerTex == null) {
-            com.badlogic.gdx.graphics.Pixmap pxWhite = new com.badlogic.gdx.graphics.Pixmap(1, 1, com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888);
-            pxWhite.setColor(Color.WHITE);
-            pxWhite.fill();
-            whiteDividerTex = new Texture(pxWhite);
-            pxWhite.dispose();
-        }
-
-        createSkin();
-        stage = new Stage(new ScreenViewport());
-        buildUI();
-        Gdx.input.setInputProcessor(stage);
-    }
-
-    private void createSkin() {
-        skin = new Skin();
-
-        // White pixel for drawable backgrounds
-        Pixmap pix = new Pixmap(64, 64, Pixmap.Format.RGBA8888);
-        pix.setColor(Color.WHITE);
-        pix.fill();
-        skin.add("white", new Texture(pix));
-        pix.dispose();
-
-        BitmapFont buttonFont = FontUtil.generateRoboto(48);
-        buttonFont.getData().setScale(1f);
-        buttonFont.setUseIntegerPositions(false);
-        skin.add("default-font", buttonFont);
-        
-        fontAwesome = FontUtil.generateFontAwesome(48);
-        
-        titleFont = FontUtil.generateRoboto(65);
-        titleFont.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-        titleFont.getData().setScale(1.0f);
-
-        Label.LabelStyle labelStyle = new Label.LabelStyle(buttonFont, Color.WHITE);
-        skin.add("default", labelStyle);
-
-        // Primary button — dark navy with cyan text
-        com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle btnStyle = new com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle();
-        btnStyle.up   = skin.newDrawable("white", new Color(0.06f, 0.10f, 0.20f, 0.95f));
-        btnStyle.down = skin.newDrawable("white", new Color(0.00f, 0.55f, 0.75f, 0.95f));
-        btnStyle.over = skin.newDrawable("white", new Color(0.10f, 0.20f, 0.35f, 0.95f));
-        btnStyle.font = buttonFont;
-        btnStyle.fontColor = new Color(0f, 0.9f, 1f, 1f);
-        btnStyle.downFontColor = Color.WHITE;
-        skin.add("btn", btnStyle);
-
-        // Continue button — slightly teal-ish
-        com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle continueStyle = new com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle();
-        continueStyle.up   = skin.newDrawable("white", new Color(0.04f, 0.18f, 0.18f, 0.95f));
-        continueStyle.down = skin.newDrawable("white", new Color(0.00f, 0.65f, 0.55f, 0.95f));
-        continueStyle.over = skin.newDrawable("white", new Color(0.06f, 0.28f, 0.25f, 0.95f));
-        continueStyle.font = buttonFont;
-        continueStyle.fontColor = new Color(0f, 1f, 0.75f, 1f);
-        continueStyle.downFontColor = Color.WHITE;
-        skin.add("continue", continueStyle);
-
-        // Settings button — muted purple
-        com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle settingsStyle = new com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle();
-        settingsStyle.up   = skin.newDrawable("white", new Color(0.12f, 0.08f, 0.22f, 0.95f));
-        settingsStyle.down = skin.newDrawable("white", new Color(0.50f, 0.30f, 0.80f, 0.95f));
-        settingsStyle.over = skin.newDrawable("white", new Color(0.20f, 0.12f, 0.35f, 0.95f));
-        settingsStyle.font = buttonFont;
-        settingsStyle.fontColor = new Color(0.7f, 0.5f, 1f, 1f);
-        settingsStyle.downFontColor = Color.WHITE;
-        skin.add("settings", settingsStyle);
-
-        // Dialog style buttons
-        com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle dialogBtnStyle = new com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle();
-        dialogBtnStyle.up   = skin.newDrawable("white", new Color(0.06f, 0.10f, 0.20f, 0.95f));
-        dialogBtnStyle.down = skin.newDrawable("white", new Color(0.00f, 0.55f, 0.75f, 0.95f));
-        dialogBtnStyle.over = skin.newDrawable("white", new Color(0.10f, 0.20f, 0.35f, 0.95f));
-        dialogBtnStyle.font = buttonFont;
-        dialogBtnStyle.fontColor = new Color(0f, 0.9f, 1f, 1f);
-        dialogBtnStyle.downFontColor = Color.WHITE;
-        skin.add("dialog-btn", dialogBtnStyle);
-
-        // Window / dialog background
-        com.badlogic.gdx.scenes.scene2d.ui.Window.WindowStyle windowStyle = new com.badlogic.gdx.scenes.scene2d.ui.Window.WindowStyle();
-        windowStyle.titleFont = buttonFont;
-        windowStyle.background = skin.newDrawable("white", new Color(0.04f, 0.06f, 0.12f, 0.97f));
-        skin.add("default", windowStyle);
-    }
-
-    private void buildUI() {
-        Table root = new Table();
-        root.setFillParent(true);
-        root.center();
-
-        Label subtitle = new Label("DEFEND THE GALAXY", CustomUI.getSkin());
-        subtitle.setAlignment(Align.center);
-        subtitle.setFontScale(1.3f);
-        subtitle.setColor(new Color(0.4f, 0.6f, 0.9f, 0.8f));
-        root.add(subtitle).padBottom(15).row();
-
-        SaveManager smStats = new SaveManager();
-        long highScore  = smStats.getHighScore();
-        long totalStars = smStats.getTotalStars();
-
-        Label highScoreLabel = new Label("HIGH SCORE: " + highScore, CustomUI.getSkin());
-        highScoreLabel.setAlignment(Align.center);
-        highScoreLabel.setFontScale(0.85f);
-        highScoreLabel.setColor(new Color(1f, 0.88f, 0.1f, 0.95f));
-        root.add(highScoreLabel).padBottom(6).row();
-
-        Label totalStarsLabel = new Label("TOTAL STARS: " + totalStars, CustomUI.getSkin());
-        totalStarsLabel.setAlignment(Align.center);
-        totalStarsLabel.setFontScale(0.85f);
-        totalStarsLabel.setColor(new Color(0f, 0.92f, 1f, 0.95f));
-        root.add(totalStarsLabel).padBottom(20).row();
-
-        // Spacer — pushes buttons down, away from the info cluster
-        root.add().height(110).row();
-
-        // ─── NEW GAME Button ──────────────────────────────────────
-        Button newGameBtn = CustomUI.createButton("\uf04b", "NEW GAME", false);
-        newGameBtn.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                audioManager.playSound(SoundName.Go);
-                audioManager.stopAllMusic();
-                SaveManager sm = new SaveManager();
-                sm.clear();
-                game.setScreen(new GamePlayScreen(game, audioManager, false, 1));
-            }
-        });
-        root.add(newGameBtn).width(1000).height(150).padBottom(35).row();
-
-        // ─── CONTINUE Button (only if save exists) ────────────────
-        SaveManager saveCheck = new SaveManager();
-        if (saveCheck.hasSavedGame()) {
-            Button continueBtn = CustomUI.createButton("\uf04b", "CONTINUE", false);
-            continueBtn.addListener(new ClickListener() {
-                @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    audioManager.playSound(SoundName.Go);
-                    audioManager.stopAllMusic();
-                    game.setScreen(new GamePlayScreen(game, audioManager, true, 1));
+        ui = new CampaignUi(game.assets);
+        backdrop = new Image(ui.icon("Environments/background.png"));
+        backdrop.setScaling(Scaling.fill);
+        backdrop.setTouchable(Touchable.disabled);
+        stage.addActor(backdrop);
+        Actor stars = new Actor() {
+            private float distance;
+            @Override public void act(float delta) { distance += delta * .007f; }
+            @Override public void draw(Batch batch, float parentAlpha) {
+                batch.setColor(.4f, .7f, .85f, parentAlpha * .26f);
+                for (int i = 0; i < 38; i++) {
+                    float x = (i * .618034f) % 1, y = MathUtils.floor(i * .414214f - distance);
+                    y = i * .414214f - distance - y;
+                    float size = (i % 3 == 0 ? 3 : 2) * .8f;
+                    batch.draw(game.assets.whiteRegion, x * stage.getWidth() - size / 2, y * stage.getHeight() - size / 2, size, size);
                 }
-            });
-            root.add(continueBtn).width(1000).height(150).padBottom(35).row();
+                batch.setColor(Color.WHITE);
+            }
+        };
+        stars.setTouchable(Touchable.disabled); stage.addActor(stars); stage.addActor(root);
+        home();
+    }
+
+    // Các anchor và size lấy từ canvas 1600×900; giữ khoảng an toàn riêng với nền phủ màn hình.
+    private <T extends Actor> T place(T actor, float x, float y, float width, float height) {
+        return place(actor, x, y, width, height, .5f);
+    }
+    private <T extends Actor> T place(T actor, float x, float y, float width, float height, float pivotX) {
+        root.addActor(actor); anchored.add(actor); anchors.add(new float[]{x, y, width * .8f, height * .8f, pivotX});
+        layout(); return actor;
+    }
+    private void layout() {
+        for (int i = 0; i < anchored.size; i++) {
+            float[] p = anchors.get(i);
+            anchored.get(i).setBounds(root.getWidth() * p[0] - p[2] * p[4], root.getHeight() * p[1] - p[3] / 2, p[2], p[3]);
         }
+    }
+    private void clear() {
+        root.clearChildren(); anchored.clear(); anchors.clear(); stage.setKeyboardFocus(null); back = this::home;
+    }
+    private Label copy(String text, boolean center) {
+        Label label = ui.label(text); label.setWrap(true); label.setAlignment(center ? Align.center : Align.left); return label;
+    }
+    private void header(String text) {
+        place(ui.title(text), .06f, .88f, 950, 80, 0);
+        place(ui.secondary("QUAY LẠI", () -> back.run()), .94f, .88f, 250, 64, 1);
+    }
+    private void focus(Actor actor) { stage.setKeyboardFocus(actor); }
 
-        // ─── SETTINGS Button ──────────────────────────────────────
-        Button settingsBtn = CustomUI.createButton("\uf013", "SETTINGS", false);
-        settingsBtn.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                showSettingsDialog();
-            }
-        });
-        root.add(settingsBtn).width(1000).height(150).row();
-
-        stage.addActor(root);
+    private JsonValue cosmetic(String id) {
+        for (JsonValue option : game.assets.catalog.asset("Data/Cosmetics/ShipCosmetics.asset").get("Options"))
+            if (option.getString("Id").equals(id)) return option;
+        throw new IllegalArgumentException("Unknown cosmetic: " + id);
+    }
+    private boolean owned(String id) {
+        for (String item : game.profile.ownedCosmetics) if (item.equals(id)) return true;
+        return false;
+    }
+    private void shipPreview(String[] selection, String status, boolean equipped) {
+        JsonValue ship = cosmetic(selection[0]);
+        place(new ShipPreview(game.assets, ship, selection[1], cosmetic(selection[2])), .28f, .6267f, 256, 320);
+        Label name = ui.title(ship.getString("DisplayName")); name.setFontScale(.52f); name.setAlignment(Align.center); name.setColor(Color.WHITE);
+        place(name, .28f, .31f, 650, 52);
+        Label label = copy(equipped ? "ĐANG TRANG BỊ" : "XEM TRƯỚC", true); label.setFontScale(.8f); label.setColor(Color.CYAN);
+        place(label, .28f, .265f, 650, 32);
+        Label detail = copy(status, true); detail.setFontScale(.8f); place(detail, .28f, .2f, 660, 70);
+        Table wallet = new Table(); wallet.add(new Image(ui.icon("UI/ui-shard.png"))).size(34).padRight(10); wallet.add(ui.label(String.format("%,d", game.profile.shard)));
+        place(wallet, .28f, .12f, 650, 48);
     }
 
-    private void showSettingsDialog() {
-        VisDialog dialog = new VisDialog("");
-        dialog.pad(80);
-        dialog.getContentTable().defaults().center().pad(20);
-
-        // Title
-        Label titleLabel = CustomUI.createTitle("\uf013 SETTINGS", new Color(0.7f, 0.5f, 1f, 1f));
-        dialog.getContentTable().add(titleLabel).padBottom(30).row();
-
-        // Divider
-        addDialogDivider(dialog, new Color(0.5f, 0.3f, 0.9f, 0.6f));
-
-        // Volume Slider
-        final Label volumeLabel = CustomUI.createTitle("Volume: " + (int)(audioManager.getVolume() * 100f) + "%", Color.WHITE);
-        volumeLabel.setFontScale(1.0f);
-        dialog.getContentTable().add(volumeLabel).padBottom(10).row();
-
-        final VisSlider volumeSlider = new VisSlider(0f, 100f, 1f, false);
-        com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle style = new com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle(volumeSlider.getStyle());
-        style.background = CustomUI.getSkin().newDrawable("white", new Color(0.2f, 0.2f, 0.3f, 1f));
-        style.background.setMinHeight(15f);
-        style.knob = CustomUI.getSkin().newDrawable("white", new Color(0f, 0.9f, 1f, 1f));
-        style.knob.setMinHeight(50f);
-        style.knob.setMinWidth(30f);
-        volumeSlider.setStyle(style);
-
-        volumeSlider.setValue(audioManager.getVolume() * 100f);
-        volumeSlider.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                float vol = volumeSlider.getValue() / 100f;
-                audioManager.setVolume(vol);
-                volumeLabel.setText("Volume: " + (int)(vol * 100f) + "%");
-            }
-        });
-        dialog.getContentTable().add(volumeSlider).width(600).padBottom(30).row();
-
-        // ─── Music Mute Toggle (Part B) ───────────────────────────────
-        addDialogDivider(dialog, new Color(0.5f, 0.3f, 0.9f, 0.4f));
-
-        // Current state read once at dialog-open time
-        final boolean musicCurrentlyMuted = audioManager.isMusicMuted();
-        // \uf001 = FontAwesome music note; \uf026 = volume-off (muted)
-        String musicIcon  = musicCurrentlyMuted ? "\uf026" : "\uf001";
-        String musicBtnLabel = musicCurrentlyMuted ? "Music: OFF" : "Music: ON";
-
-        final Button musicToggleBtn = CustomUI.createButton(musicIcon, musicBtnLabel, musicCurrentlyMuted);
-        musicToggleBtn.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                boolean nowMuted = !audioManager.isMusicMuted();
-                audioManager.setMusicMuted(nowMuted);
-                if (!nowMuted) {
-                    // Unmuting: restart menu music that was stopped by setMusicMuted(true)
-                    audioManager.playMusic(SoundName.Ut);
-                }
-                
-                // Update button style & labels in-place (no dialog reload flicker)
-                musicToggleBtn.setStyle(CustomUI.getSkin().get(nowMuted ? "danger" : "default", Button.ButtonStyle.class));
-                if (musicToggleBtn.getChildren().size >= 2) {
-                    if (musicToggleBtn.getChildren().get(0) instanceof Label) {
-                        Label iconLbl = (Label) musicToggleBtn.getChildren().get(0);
-                        iconLbl.setText(nowMuted ? "\uf026" : "\uf001");
-                        iconLbl.setColor(nowMuted ? new Color(1f, 0.4f, 0.4f, 1f) : new Color(0f, 0.9f, 1f, 1f));
-                    }
-                    if (musicToggleBtn.getChildren().get(1) instanceof Label) {
-                        Label textLbl = (Label) musicToggleBtn.getChildren().get(1);
-                        textLbl.setText(nowMuted ? "Music: OFF" : "Music: ON");
-                        textLbl.setColor(nowMuted ? new Color(1f, 0.4f, 0.4f, 1f) : new Color(0f, 0.9f, 1f, 1f));
-                    }
-                }
-            }
-        });
-        dialog.getContentTable().add(musicToggleBtn).width(600).height(130).padTop(10).padBottom(25).row();
-
-        // Close — \uf00d is FontAwesome × (times/close icon)
-        Button closeBtn = CustomUI.createButton("\uf00d", "Close", false);
-        closeBtn.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                dialog.hide();
-            }
-        });
-        dialog.getContentTable().add(closeBtn).width(400).height(120).padTop(10).row();
-
-        dialog.show(stage, Actions.sequence(Actions.alpha(0f), Actions.alpha(1f, 0.2f)));
-        dialog.pack();
-        dialog.setPosition((Gdx.graphics.getWidth() - dialog.getWidth()) / 2f,
-                (Gdx.graphics.getHeight() - dialog.getHeight()) / 2f);
+    private void home() {
+        clear();
+        place(ui.title("SPACE SHOOTER"), .08f, .91f, 730, 100, 0);
+        String status = !game.profile.hasCampaign ? "Chọn CHƠI MỚI để bắt đầu hành trình." :
+                "NHIỆM VỤ " + String.format("%02d", game.profile.mission) + " · " + (game.profile.mission <= 4 ? "KHU VỰC A" : "KHU VỰC B");
+        shipPreview(game.profile.equippedCosmetics, status, true);
+        Table navigation = new Table(); navigation.top().pad(12.8f); navigation.defaults().spaceBottom(17.6f).growX();
+        TextButton resume = ui.button("TIẾP TỤC", () -> start(game.copy(game.profile), false));
+        resume.setDisabled(game.saveError != null || !game.profile.hasCampaign);
+        navigation.add(resume).height(67.2f).row();
+        TextButton newGame = ui.button("CHƠI MỚI", () -> { if (game.profile.hasCampaign) confirmNewGame(); else newGame(); });
+        newGame.setDisabled(game.saveError != null); navigation.add(newGame).height(57.6f).row();
+        Table destinations = new Table(); destinations.defaults().growX().height(60.8f);
+        destinations.add(ui.secondary("XƯỞNG", () -> hangar(false, 0))).padRight(12.8f);
+        destinations.add(ui.secondary("CỬA HÀNG", () -> hangar(true, 0)));
+        navigation.add(destinations).row();
+        navigation.add(ui.secondary("NHIỆM VỤ", this::missions)).height(57.6f).row();
+        place(navigation, .75f, .54f, 560, 420);
+        Table footer = new Table(); footer.defaults().growX().height(54.4f);
+        TextButton[] controls = {ui.secondary("CÁCH CHƠI", this::help), ui.secondary("CÀI ĐẶT", this::settings), ui.secondary("GIỚI THIỆU", this::credits)};
+        for (int i = 0; i < controls.length; i++) { controls[i].getLabel().setFontScale(.72f); footer.add(controls[i]).padRight(i == 2 ? 0 : 12.8f); }
+        place(footer, .75f, .17f, 560, 68);
+        if (game.saveError != null) place(copy("Không đọc/ghi được save. Dữ liệu được giữ nguyên.\n" + game.saveError, true), .5f, .055f, 1300, 60);
+        if (game.pendingCheckpoint != null) place(ui.secondary("THỬ LƯU LẠI", () -> { game.flushPending(); home(); }), .28f, .055f, 480, 60);
+        focus(resume.isDisabled() ? newGame : resume);
     }
 
-    /** Thin horizontal divider inside a dialog - reuses cached white texture to avoid Pixmap+Texture allocation */
-    private void addDialogDivider(VisDialog dialog, Color color) {
-        com.badlogic.gdx.scenes.scene2d.ui.Image line =
-                new com.badlogic.gdx.scenes.scene2d.ui.Image(whiteDividerTex);
-        line.setColor(color);
-        dialog.getContentTable().add(line).width(600).height(2).padTop(10).padBottom(10).row();
+    private void confirm(String message, Runnable accept, Runnable cancel) {
+        clear(); back = cancel;
+        Table card = new Table(); card.setBackground(ui.modal); card.pad(28); card.defaults().pad(12);
+        card.add(copy(message, true)).colspan(2).grow().row();
+        TextButton no = ui.secondary("HỦY", cancel);
+        card.add(ui.button("ĐỒNG Ý", accept)).width(250).height(58);
+        card.add(no).width(250).height(58);
+        place(card, .5f, .5f, 900, 420); focus(no);
+    }
+    private void confirmNewGame() {
+        confirm("Bắt đầu hành trình mới?\nTiến độ chiến dịch hiện tại sẽ được thay thế. Coin, kỷ lục, ngoại hình và cài đặt được giữ lại.", this::newGame, this::home);
+    }
+    private void newGame() {
+        CampaignStore.State state = game.copy(game.profile);
+        state.mission = 1; state.encounter = 0; state.lives = 3; state.missiles = 1;
+        state.activeWeapon = 0; state.weaponLevels = new int[]{1, 0, 0};
+        state.score = 0; state.missionCleared = state.completed = state.regionReady = false;
+        state.hasCampaign = true; CampaignStore.resetMissionStats(state);
+        game.audio.cue(32); game.setScreen(new GamePlayScreen(game, state, false, true));
+    }
+    private void start(CampaignStore.State state, boolean replay) {
+        game.audio.cue(32); game.setScreen(new GamePlayScreen(game, state, replay, replay));
     }
 
-    private void showDialogCentered(VisDialog dialog) {
-        dialog.show(stage, Actions.sequence(
-                Actions.alpha(0f),
-                Actions.alpha(1f, 0.2f)));
-        dialog.pack();
-        dialog.setWidth(Math.max(dialog.getWidth(), Gdx.graphics.getWidth() * 0.85f));
-        dialog.setPosition(
-                (Gdx.graphics.getWidth() - dialog.getWidth()) / 2f,
-                (Gdx.graphics.getHeight() - dialog.getHeight()) / 2f);
+    private static String time(float seconds) {
+        int total = (int)Math.max(0, seconds); return total >= 3600 ? String.format("%d:%02d:%02d", total / 3600, total / 60 % 60, total % 60) : String.format("%02d:%02d", total / 60, total % 60);
     }
-
-    @Override
-    public void render(float delta) {
-        float deltaTime = Gdx.graphics.getDeltaTime() * 1000;
-        float screenWidth = Gdx.graphics.getWidth();
-        float screenHeight = Gdx.graphics.getHeight();
-
-        Gdx.gl.glClearColor(0, 0, 0.04f, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        Gdx.gl.glEnable(GL20.GL_BLEND);
-        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-
-        titlePulse += delta;
-
-        starfield.update(deltaTime);
-        starfield2.update(deltaTime);
-
-        // Background: batched nebula + starfields + floating ship art
-        batch.begin();
-        starfield.render(shapeRenderer, batch);
-        starfield2.render(shapeRenderer, batch);
-        // Hero ship art at the bottom of the screen (below the buttons), gently bobbing.
-        if (com.alexei.spaceshooter.utils.TextureRegistry.ship != null) {
-            float shipSize = screenHeight * 0.20f;
-            float bob = MathUtils.sin(titlePulse * 2.2f) * 8f;
-            batch.draw(com.alexei.spaceshooter.utils.TextureRegistry.ship,
-                    (screenWidth - shipSize) / 2f, screenHeight * 0.045f + bob,
-                    shipSize, shipSize);
+    private void missions() { selectedMission = Math.max(1, game.profile.mission); missions(selectedMission); }
+    private void missions(int selected) {
+        clear(); selectedMission = selected; header("NHIỆM VỤ");
+        place(ui.label("KHU VỰC A"), .06f, .77f, 400, 50, 0);
+        place(ui.label("KHU VỰC B"), .06f, .43f, 400, 50, 0);
+        TextButton first = null;
+        for (int i = 1; i <= 8; i++) {
+            final int number = i;
+            boolean unlocked = i <= game.profile.unlockedMission;
+            int best = game.profile.bestScores[i - 1];
+            String status = !unlocked ? "ĐÃ KHÓA" : game.profile.hasCampaign && !game.profile.missionCleared && game.profile.mission == i ? "ĐANG TIẾN HÀNH" : best > 0 ? "ĐÃ HOÀN THÀNH" : "ĐÃ MỞ";
+            TextButton card = ui.card(String.format("NHIỆM VỤ %02d", i) + "\n" + status + (best > 0 ? "\n" + String.format("%,d", best) + " · " + time(game.profile.bestTimes[i - 1]) : ""), () -> missions(number));
+            card.getLabel().setFontScale(.85f); card.setDisabled(!unlocked); card.setChecked(i == selected);
+            place(card, .17f + ((i - 1) % 4) * .22f, i <= 4 ? .64f : .3f, 300, 180);
+            if (i == 1) first = card;
         }
-        batch.end();
-
-        // ─── Animated title (drawn manually for glow effect) ─────
-        renderTitle(screenWidth, screenHeight);
-
-        // Scene2D overlay
-        stage.act(delta);
-        stage.draw();
+        int best = game.profile.bestScores[selected - 1];
+        Label detail = copy(String.format("NHIỆM VỤ %02d", selected) + " · " + (best <= 0 ? "Chưa có kỷ lục hoàn thành" : "KỶ LỤC " + String.format("%,d", best) + " điểm · " + time(game.profile.bestTimes[selected - 1])), false);
+        detail.setFontScale(.8f); place(detail, .06f, .1f, 820, 65, 0);
+        TextButton launch = ui.button("CHƠI LẠI NHIỆM VỤ", () -> replay(selected));
+        launch.setDisabled(selected > game.profile.unlockedMission || game.saveError != null);
+        place(launch, .94f, .1f, 510, 72, 1); focus(first);
+    }
+    private void replay(int number) {
+        CampaignStore.State state = game.copy(game.profile);
+        state.mission = number; state.encounter = 0; state.score = state.missionScore = state.encounterShardHighWater = state.shard = 0;
+        state.missionCleared = state.completed = state.regionReady = false; CampaignStore.resetMissionStats(state);
+        JsonValue preset = game.assets.catalog.missions[number - 1].get("ReplayPreset");
+        state.lives = preset.getInt("Lives"); state.missiles = preset.getInt("Missiles");
+        state.activeWeapon = preset.getInt("ActiveWeapon"); state.weaponLevels = preset.get("WeaponLevels").asIntArray(); start(state, true);
     }
 
-    /**
-     * Renders the "SPACE SHOOTER" title with a pulsing multi-layer glow.
-     * We render 3 passes: outer glow → mid → core, each with different color/alpha.
-     */
-    private void renderTitle(float sw, float sh) {
-        float pulse = (MathUtils.sin(titlePulse * 2.2f) + 1f) / 2f; // 0..1
-
-        batch.begin();
-
-        String title = "SPACE SHOOTER";
-        cachedLayout.setText(titleFont, title);
-        float tx = (sw - cachedLayout.width) / 2f;
-        float ty = sh * 0.88f;
-
-        // Outer glow layer (cyan, semi-transparent, offset)
-        float glowAlpha = 0.25f + pulse * 0.25f;
-        for (int ox = -3; ox <= 3; ox += 3) {
-            for (int oy = -3; oy <= 3; oy += 3) {
-                if (ox == 0 && oy == 0) continue;
-                titleFont.setColor(0f, 0.8f, 1f, glowAlpha);
-                titleFont.draw(batch, title, tx + ox, ty + oy);
-            }
+    private void hangar(boolean store, int slot) {
+        String selected = game.profile.equippedCosmetics[slot];
+        if (store) for (JsonValue option : game.assets.catalog.asset("Data/Cosmetics/ShipCosmetics.asset").get("Options"))
+            if (option.getInt("Slot") == slot && !owned(option.getString("Id"))) { selected = option.getString("Id"); break; }
+        hangar(store, slot, selected);
+    }
+    private void hangar(boolean store, int slot, String selected) {
+        clear();
+        place(ui.secondary("QUAY LẠI", this::home), .06f, .88f, 250, 64, 0);
+        TextButton hangar = ui.tab("XƯỞNG", () -> hangar(false, slot)), shop = ui.tab("CỬA HÀNG", () -> hangar(true, slot));
+        hangar.setDisabled(!store); hangar.setChecked(!store); shop.setDisabled(store); shop.setChecked(store);
+        place(hangar, .64f, .87f, 230, 64); place(shop, .81f, .87f, 270, 64);
+        String[] selection = game.profile.equippedCosmetics.clone(); selection[slot] = selected;
+        String[] tabs = {"TÀU", "SƠN TÀU", "VỆT DI CHUYỂN"};
+        shipPreview(selection, slot == 0 ? "Chọn tàu, rồi tùy chỉnh sơn và vệt di chuyển." : tabs[slot] + " · " + cosmetic(selection[0]).getString("DisplayName"), game.profile.equippedCosmetics[slot].equals(selected));
+        for (int i = 0; i < 3; i++) {
+            final int tabIndex = i;
+            TextButton tab = ui.tab(tabs[i], () -> hangar(store, tabIndex)); tab.getLabel().setFontScale(.8f); tab.setChecked(i == slot); tab.setDisabled(i == slot);
+            place(tab, .565f + i * .165f, .78f, 240, 54);
         }
-        // Mid layer — white
-        titleFont.setColor(new Color(0.7f, 0.9f, 1f, 0.85f + pulse * 0.15f));
-        titleFont.draw(batch, title, tx, ty);
-        // Core layer — pure white highlight (slightly smaller offset upward)
-        titleFont.setColor(new Color(1f, 1f, 1f, 0.95f));
-        titleFont.draw(batch, title, tx, ty + 1);
-
-        batch.end();
+        Label context = copy(slot == 0 ? store ? "KHÁM PHÁ TÀU" : "TÀU CỦA BẠN" : "NGOẠI HÌNH CỦA " + cosmetic(selection[0]).getString("DisplayName"), true); context.setFontScale(.8f);
+        place(context, .73f, .71f, 720, 48);
+        Array<JsonValue> options = new Array<>();
+        for (JsonValue option : game.assets.catalog.asset("Data/Cosmetics/ShipCosmetics.asset").get("Options"))
+            if (option.getInt("Slot") == slot && (store || owned(option.getString("Id")))) options.add(option);
+        TextButton first = null;
+        for (int i = 0; i < options.size; i++) {
+            JsonValue option = options.get(i); String id = option.getString("Id");
+            String status = game.profile.equippedCosmetics[slot].equals(id) ? "ĐANG TRANG BỊ" : owned(id) ? "ĐÃ SỞ HỮU" : option.getInt("ShardCost") + " Coin";
+            TextButton card = ui.card(option.getString("DisplayName") + "\n" + status, () -> hangar(store, slot, id));
+            card.clearChildren(); card.pad(8); String[] swatch = game.profile.equippedCosmetics.clone(); swatch[slot] = id;
+            card.add(new ShipPreview(game.assets, cosmetic(swatch[0]), swatch[1], cosmetic(swatch[2]))).size(64, 80).padBottom(10).row();
+            card.getLabel().setFontScale(.72f); card.add(card.getLabel()).growX(); card.setChecked(selected.equals(id));
+            place(card, .73f + (i - (options.size - 1) * .5f) * (options.size > 2 ? .165f : .24f), .44f, options.size > 2 ? 230 : 320, 220);
+            if (first == null) first = card;
+        }
+        JsonValue option = cosmetic(selected); boolean available = owned(selected), equipped = game.profile.equippedCosmetics[slot].equals(selected); int cost = option.getInt("ShardCost");
+        Label detail = copy(option.getString("DisplayName") + "\n" + (store ? "Mua và trang bị bằng Coin." : "Đã sở hữu · thay đổi miễn phí.") + " Chỉ thay đổi ngoại hình.", true); detail.setFontScale(.8f);
+        place(detail, .73f, .24f, 720, 100);
+        String action = store ? available ? "ĐÃ SỞ HỮU" : game.profile.shard >= cost ? "MUA & TRANG BỊ · " + cost + " Coin" : "CẦN THÊM " + (cost - game.profile.shard) + " Coin" : equipped ? "ĐANG TRANG BỊ" : "TRANG BỊ";
+        Runnable commit = () -> { game.equipCosmetic(selected); hangar(store, slot, selected); };
+        TextButton equip = ui.button(action, () -> {
+            if (available) commit.run(); else confirm("Mua " + option.getString("DisplayName") + " với " + cost + " Coin?\nChỉ thay đổi ngoại hình; không thay đổi chỉ số chiến đấu.", commit, () -> hangar(store, slot, selected));
+        });
+        equip.setDisabled(game.saveError != null || (store ? available || game.profile.shard < cost : equipped));
+        place(equip, .73f, .11f, 720, 76); focus(first);
     }
 
-    @Override
-    public void resize(int width, int height) {
-        if (stage != null) stage.getViewport().update(width, height, true);
+    private void settings() {
+        clear(); header("CÀI ĐẶT");
+        place(ui.label("NHẠC"), .12f, .68f, 540, 70, 0);
+        place(ui.label("HIỆU ỨNG ÂM THANH"), .12f, .51f, 540, 70, 0);
+        Slider music = place(ui.slider(game.profile.musicVolume), .73f, .68f, 520, 72);
+        Slider sfx = place(ui.slider(game.profile.sfxVolume), .73f, .51f, 520, 72);
+        TextButton vibration = place(ui.toggle("RUNG THIẾT BỊ", game.profile.vibrationEnabled), .5f, .35f, 1200, 72);
+        TextButton shake = place(ui.toggle("RUNG MÀN HÌNH", !game.profile.reducedMotion), .5f, .23f, 1200, 72);
+        Label error = copy("", true); error.setFontScale(.75f); place(error, .5f, .035f, 1400, 48);
+        TextButton save = ui.button("LƯU VÀ QUAY LẠI", () -> {
+            if (game.pendingCheckpoint != null && !game.flushPending()) { error.setText("Chưa lưu được tiến độ. Dữ liệu trước đó vẫn được giữ. Hãy thử lại."); return; }
+            if (game.saveError != null) { error.setText("Không thể thay cài đặt khi bản lưu chưa đọc được. Dữ liệu được giữ nguyên."); return; }
+            CampaignStore.State candidate = game.copy(game.profile);
+            candidate.musicVolume = music.getValue(); candidate.sfxVolume = sfx.getValue();
+            candidate.vibrationEnabled = vibration.isChecked(); candidate.reducedMotion = !shake.isChecked();
+            game.checkpoint(candidate);
+            if (game.saveError != null) {
+                // Cài đặt nháp không được trở thành checkpoint chờ ghi sau khi người chơi hủy.
+                game.pendingCheckpoint = null; game.saveError = null;
+                error.setText("Chưa lưu được cài đặt. Giá trị trước đó vẫn được giữ. Hãy thử lại."); return;
+            }
+            game.audio.musicVolume = candidate.musicVolume; game.audio.sfxVolume = candidate.sfxVolume; home();
+        });
+        place(save, .5f, .1f, 590, 72); focus(save);
     }
 
-    @Override public void pause() {}
-    @Override public void resume() {}
-    @Override public void hide() {}
-
-    @Override
-    public void dispose() {
-        shapeRenderer.dispose();
-        batch.dispose();
-        if (stage != null) stage.dispose();
-        if (skin != null) skin.dispose();
-        if (titleFont != null) titleFont.dispose();
-        if (fontAwesome != null) fontAwesome.dispose();
-        if (whiteDividerTex != null) whiteDividerTex.dispose();
+    private void help() {
+        clear(); header("CÁCH CHƠI");
+        String[] titles = {"DI CHUYỂN VÀ BẮN", "VŨ KHÍ VÀ NHIỆT", "SỐNG SÓT VÀ TIẾP TẾ", "TẠM DỪNG VÀ TIẾP TỤC"};
+        String[] body = {"Kéo ở vùng trống để di chuyển tương đối. Giữ ngón tay để bắn; nhấc tay để ngừng bắn.", "Chạm ô vũ khí để đổi nhánh đã mở. Các nhánh dùng chung nhiệt. Khi quá nóng, chờ hạ nhiệt để bắn lại.", "Mất mạng làm giảm cấp vũ khí đang dùng. Sau hồi sinh có bảo vệ ngắn. Nhặt Core và hỗ trợ; dùng nút Tên lửa khi cần.", "Chạm Ⅱ để tạm dừng. Bạn có thể đổi cài đặt hoặc chơi lại đợt đã lưu. Tiếp tục chiến dịch từ đầu đợt đã lưu."};
+        for (int i = 0; i < 4; i++) {
+            Table block = new Table(); block.setBackground(ui.panel); block.pad(20); block.defaults().growX();
+            Label title = copy(titles[i], false); title.setColor(Color.CYAN); block.add(title).padBottom(15).row();
+            Label text = copy(body[i], false); text.setFontScale(.86f); block.add(text).growY();
+            place(block, i % 2 == 0 ? .28f : .72f, i < 2 ? .62f : .28f, 660, 280);
+        }
     }
+    private void credits() {
+        clear(); header("GIỚI THIỆU");
+        Label text = copy("SPACE SHOOTER\n\nPhát triển: Nguyễn Văn Rin\nNền source: Fando / space-shooter · Java/LibGDX\nArtwork: tác giả dự án với AI, agent/MCP và Aseprite\n\nAUDIO\nMusic: Andrew Sitkov · license thương mại\nSFX: Kenney (CC0), Little Robot Sound Factory (CC BY 3.0)\nFont: Chakra Petch / VT323 (OFL)\nChi tiết và bằng chứng: assets/campaign/licenses", true);
+        place(text, .5f, .45f, 1360, 600);
+    }
+
+    @Override public void show() {
+        Gdx.input.setInputProcessor(new InputMultiplexer(stage, new InputAdapter() {
+            @Override public boolean keyDown(int key) {
+                if (key == Input.Keys.BACK || key == Input.Keys.ESCAPE) { back.run(); return true; }
+                return false;
+            }
+        })); game.audio.music("bgm-hub");
+    }
+    @Override public void render(float delta) {
+        Gdx.gl.glClearColor(.025f, .045f, .085f, 1); Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        game.audio.tick(Math.min(delta, .1f)); stage.getViewport().apply(); stage.act(Math.min(delta, .1f)); stage.draw();
+    }
+    @Override public void resize(int width, int height) {
+        stage.getViewport().update(width, height, true);
+        float scale = stage.getViewport().getWorldWidth() / width;
+        float left = Gdx.graphics.getSafeInsetLeft() * scale, bottom = Gdx.graphics.getSafeInsetBottom() * scale;
+        root.setBounds(left, bottom, stage.getWidth() - left - Gdx.graphics.getSafeInsetRight() * scale, stage.getHeight() - bottom - Gdx.graphics.getSafeInsetTop() * scale);
+        backdrop.setBounds(0, 0, stage.getWidth(), stage.getHeight()); layout();
+    }
+    @Override public void dispose() { stage.dispose(); }
 }

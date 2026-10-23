@@ -63,3 +63,32 @@ Art có manifest PixelLab/Aseprite/procedural tools tại
 
 Đây là kiểm kê bộ chuẩn bị; license/credit runtime hiện tại thuộc
 [tài nguyên của Space](assets.md).
+
+## Hợp đồng export cho giai đoạn game
+
+Chỉ đọc filesystem, không mở hoặc build Unity. Bắt đầu từ scene production,
+catalog mission và prefab/config được tham chiếu; inventory toàn bộ dependencies
+nhưng export lát Mission01 trước, mở rộng theo content được tích hợp.
+
+Dùng PyYAML SafeLoader đang có cho exporter offline; xử lý YAML tags/documents
+của Unity mà không thực thi object constructor. Resolve theo (GUID, fileID),
+bao gồm sprite subasset IDs và local scene/prefab references. IDs số lớn giữ dạng
+chuỗi ở manifest để không mất precision. Mảng int hex giải mã đúng little-endian
+và kiểu field, không đọc như một chuỗi hoặc tự đoán float.
+
+Serialized overrides trong scene/prefab được ưu tiên hơn default trong C#; hỗ trợ
+đúng các component production cần dùng, không viết Unity deserializer tổng quát.
+Thiếu component/reference/field bắt buộc thì báo đường dẫn cụ thể; không lấp bằng
+sprite hoặc balance mặc định. Giữ rect/pivot/PPU, collider/muzzle anchors, timing,
+curve/formation và audio event bindings. Đổi origin/UV ở biên render, không sửa
+lại tọa độ gameplay để chữa lỗi hình.
+
+TextureAtlas được tạo offline bằng TexturePacker cùng phiên bản LibGDX; tool
+dependency tách khỏi Android runtime. Runtime chỉ tải asset/config đã export;
+không phụ thuộc repo tham khảo hoặc parse YAML khi chơi. Provenance/license cho
+file dùng thật được copy cùng asset, tài nguyên không dùng được ghi vào inventory
+thay vì đóng cả Unity cache vào APK.
+
+Giá trị đã kiểm tra để định hướng slice: PlayerLives khởi đầu 3, default trần 5;
+WeaponLoadout.MaximumLevel=5. Giá trị serialized thực tế vẫn phải được đối chiếu
+trước khi export; không lấy default làm bằng chứng prefab/scene không override.

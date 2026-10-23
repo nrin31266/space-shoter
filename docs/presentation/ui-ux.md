@@ -1,17 +1,18 @@
 # UI và UX
 
-## Hiện trạng
+## Runtime campaign
 
-MainMenuScreen/GamePlayScreen và CustomUI/UIIcons dùng Scene2D/VisUI. Menu có
-New Game, Continue khi có save và Settings; gameplay có HUD, pause và game-over.
+Scene2D `CampaignUi`, MainMenuScreen và GamePlayScreen dùng ExtendViewport
+1280×720 và safe insets. Menu có Continue/New Game/mission replay/settings/help/
+credits, preview tàu động, thẻ tàu/skin/vệt, hangar và cửa hàng cosmetic. New Game có xác nhận; cửa hàng chọn xem trước rồi bấm mua/trang bị; ghi lỗi giữ pending snapshot để thử lưu lại.
 
-## Thiết kế phát triển
+HUD theo anchor: heat gauge trên trái, score/Shard phía trên, pause trên phải,
+lives dưới trái, missile phía trên nút weapon ở dưới phải. Boss hiện tên, HP,
+phase và số node còn sống; temporary effects có timer. Overlay giữ pause/retry/results và lời giới thiệu vị trí bên trái màn hình;
+"Chạm để tiếp tục" ở dưới, không có modal/nút khởi hành chặn giữa hình.
+Preview dùng EngineSockets/MovementTrailSocket, động cơ .075s/frame, ribbon
+.1s/frame và dao động hull; nút scale theo hover/press với tốc độ 22/s. HUD chỉ hiển thị state, không quyết damage/save.
 
-Hoàn thiện menu, HUD, pause/settings/results, hangar/credits và chuyển màn hình
-bằng Scene2D. Dùng Table/Stack và viewport phù hợp, hỗ trợ landscape nhiều tỉ lệ
-và safe area; chữ rõ, nút đủ lớn cho touch, phong cách thống nhất với gameplay.
-
-HUD đọc state; gameplay và save có owner riêng. Back/Pause và quyền nhận input
-được điều phối theo màn hình; xử lý pointer khi chuyển màn hình hoặc mất focus.
-Kiểm tra New Game/Continue, resume và layout ở nhiều kích thước.
-Palette, VFX và audio thuộc [trình bày](audio-vfx.md).
+Relative drag đi qua InputMultiplexer sau UI; cancel pointer khi mất focus/mất quyền điều khiển. Back/Escape về menu hoặc pause tùy màn. Keyboard/gamepad focus và các chi
+tiết layout/animation nguồn vẫn cần đối chiếu thêm; không gọi bản Java pixel-perfect.
+Bằng chứng và phần chưa nghiệm thu ở [checkpoint](../production/checkpoint.md).

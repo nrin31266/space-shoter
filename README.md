@@ -6,17 +6,10 @@ Game bắn tàu không gian được phát triển và tùy biến từ prototyp
 
 ## Trạng thái phát triển
 
-Bản custom hiện có gameplay arcade cuộn dọc, nhiều loại enemy, ba nhánh vũ khí,
-item, boss, wave/endless, save, HUD và audio. Chi tiết cùng số liệu đã đối chiếu
-source nằm trong [tài liệu theo domain](docs/README.md).
-
-Hướng phát triển tiếp theo là game landscape với campaign, combat và trình bày
-hoàn chỉnh hơn trên kiến trúc Java/LibGDX. **Mốc setup codebase và docs đã đóng;
-chưa triển khai gameplay mới hoặc thay bộ asset.** Phần đã kiểm chứng ở
-[checkpoint](docs/production/checkpoint.md).
-
-Cấu hình debug hiện đang bật ở Wave 19, vũ khí Lv7; cách kiểm tra gameplay thường
-nằm trong [kiểm thử](docs/systems/verification.md).
+Bản custom đang chạy campaign landscape bằng Java/LibGDX: tám mission, hai region,
+ba nhánh vũ khí, lives/heat, enemy/hazard, boss, checkpoint/replay và hangar.
+Đang hoàn thiện độ tương đương gameplay/hình ảnh; chưa nghiệm thu toàn bộ G1–G7.
+Chi tiết hiện trạng và giới hạn nằm tại [checkpoint](docs/production/checkpoint.md).
 
 ## Chuẩn bị và build
 

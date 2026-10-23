@@ -43,34 +43,63 @@ không thay checkpoint. Theo dõi Dashboard Token Saver/request usage trước v
 job đại diện; chưa có số đo tiết kiệm riêng cho Space. Không bật Headroom hoặc
 cài RTK CLI khác chỉ vì quảng cáo phần trăm tiết kiệm.
 
-## Chia việc cho Claude
+## Giao việc tối đa qua 9Router
 
-Codex giữ tích hợp; Claude nhận việc độc lập theo module. Một job cần: mục tiêu,
-file được đọc/sửa, hành vi phải giữ, tiêu chí test và đầu ra ngắn. Không để hai bên
-sửa một file đồng thời. Không cấp Bash/network/tool không cần chỉ để viết docs.
+Ưu tiên Claude/Gemini thực hiện các phần có thể tách rõ: inventory/exporter,
+DTO/validator, logic combat/reward/flight, content batches, Scene2D screens, audio/
+VFX và targeted tests. Codex chốt contract, giữ file tích hợp chung, review diff,
+chạy cổng kiểm tra và xử lý xung đột. Không giới hạn Claude ở việc hỏi đáp/review.
 
-Ví dụ review gọn, không tool/MCP/session history; prompt đặt trong file tạm ngoài
-repo và chỉ chứa phần source cần review:
+Mặc định tối đa hai job độc lập chạy đồng thời khi file scope và interface đã
+chốt. Job phụ thuộc kết quả nhau chạy tuần tự. Mỗi file chỉ có một bên sở hữu
+trong lúc sửa; các file MainGame/GamePlayScreen, Gradle và catalog/schema chung
+do Codex tích hợp. Không tự tạo branch hoặc worktree nếu chưa được yêu cầu.
+
+Một job nhận đúng mục tiêu, file được đọc/sửa, contract và tiêu chí hoàn tất.
+Chỉ gửi đoạn source/canonical owner cần thiết, không cả repository hoặc transcript.
+Đầu ra gồm file đã đổi, hành vi, kiểm tra đã/chưa chạy, rủi ro còn lại; Codex đọc
+diff thay vì yêu cầu model kể lại code. Tóm tắt ngắn được giữ ở checkpoint.
+
+## Lệnh và vòng đời job
+
+Dùng claude -p, --output-format json, --max-turns theo độ lớn job và model route
+Gemini đã cấu hình. --bare giảm nạp memory/hooks/plugin/MCP tự động; khi dùng,
+job phải được cấp các quy tắc AGENTS và context liên quan một cách tường minh.
+Chỉ mở Read/Glob/Grep/Write/Edit cho job code; Bash/build chỉ giao khi thật sự
+cần và được phân công riêng để tránh nhiều bên chạy cùng check.
+
+Ví dụ job code có file scope ghi trong /tmp/space-task.txt:
 
 ```bash
 claude --bare --model ag/gemini-3.8-flash-high \
-  --tools '' --strict-mcp-config --mcp-config '{"mcpServers":{}}' \
-  --no-session-persistence --max-turns 1 --output-format json \
-  -p < /tmp/space-review-task.txt > /tmp/space-review-result.json
+  --tools Read,Glob,Grep,Write,Edit --allowedTools Read Glob Grep Write Edit \
+  --strict-mcp-config --mcp-config '{"mcpServers":{}}' \
+  --permission-mode acceptEdits --max-turns 12 --output-format json \
+  -p < /tmp/space-task.txt > /tmp/space-task-result.json
 ```
 
-`--bare` bỏ memory/hooks/plugin tự động: job cần quy tắc AGENTS thì chỉ rõ nội
-dung/ràng buộc cần tuân thủ trong prompt. Job code cần đọc/sửa thì chỉ mở các tool
-Read/Glob/Grep/Write/Edit phù hợp và file scope đã chốt; parent kiểm tra diff/tests.
-Không dùng dangerously-skip-permissions. Với job cần tiếp tục, bỏ
-no-session-persistence, lưu session_id từ JSON và dùng `--resume ID`; không dùng
---continue vì có thể nhặt nhầm job gần nhất. Giới hạn thời gian/số lượt theo việc;
-kiểm tra exit status, is_error, terminal_reason và file thật sau mỗi job.
+Tool allowlist không thay thế file scope/review: luôn kiểm tra diff và không cấp
+Bash hoặc MCP của dự án khác khi job không cần. Job chỉ phân tích dùng --tools ''
+và --max-turns 1. Không dùng dangerously-skip-permissions.
 
-Gemini đã dùng được qua Claude CLI/9Router. Timeout của một job cần được xử lý
-bằng giới hạn thời gian, chia nhỏ việc hoặc chạy lại có kiểm soát; không kết luận
-route không hoạt động chỉ từ một lần timeout. Kiểm tra diff và kết quả thật trước
-khi nhận bàn giao.
+Lưu session_id từ JSON. Chỉ dùng --resume ID cho việc còn liên quan của cùng
+module; module mới bắt đầu session mới để tránh context phình. Không dùng
+--continue vì có thể tiếp tục nhầm job gần nhất. Giới hạn thời gian ở tiến trình
+cha, kiểm tra exit status/is_error/terminal_reason và file thực tế sau mỗi job.
+Job timeout/quota: lưu phần đã làm, thử lại có giới hạn hoặc thu nhỏ việc; không
+chạy vòng lặp retry vô hạn và không kết luận Gemini không hỗ trợ chỉ từ timeout.
+
+Giữ RTK đang bật; theo dõi token/latency của job thật, không chạy health-check
+lặp lại trước từng việc. DeepSeek chỉ dùng lại khi quota sẵn; không liên tục thử
+route đã báo hết quota. Không bật thêm Headroom hoặc mở model khác ngoài scope.
+
+## Kiểm tra tập trung
+
+Claude không tự build APK hoặc chạy full suite sau mỗi chỉnh sửa. Codex gom các
+job cùng subsystem rồi chạy targeted check một lần; build/smoke tại các cổng của
+[kế hoạch phát triển](../production/development-plan.md). Kết quả pass được giữ
+cùng revision/config; chỉ chạy lại nếu dependency liên quan thay đổi. Lỗi cục bộ
+thì chạy lại check cục bộ, không quay về test toàn bộ game cũ.
 
 ## Tiếp tục sau compaction hoặc session mới
 
@@ -80,6 +109,7 @@ không copy toàn transcript, log dài hoặc dump source vào docs. Lưu log/jo
 ở /tmp hoặc build output được ignore; đưa session_id cần resume vào checkpoint
 khi job vẫn còn giá trị. Xong job thì giữ kết quả đã review, không nạp lại cả lịch sử.
 
-Tài liệu tham khảo: [Claude CLI](https://code.claude.com/docs/en/cli-reference),
+Tài liệu tham khảo: [chạy Claude theo chương trình](https://code.claude.com/docs/en/headless),
+[giảm context/token](https://code.claude.com/docs/en/costs), [Claude CLI](https://code.claude.com/docs/en/cli-reference),
 [9Router/RTK](https://github.com/decolua/9router). Không coi số tiền CLI ước lượng
 cho model tùy biến là hóa đơn thực của provider.

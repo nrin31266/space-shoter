@@ -3,11 +3,45 @@ targetCompatibility = JavaVersion.VERSION_1_8
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
 sourceSets.main.java.srcDirs = [ "src/" ]
+sourceSets.test.java.srcDirs = [ "test/" ]
+
+configurations { assetTools }
 
 eclipse.project.name = appName + "-core"
 
 dependencies {
+    assetTools "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
     implementation "space.earlygrey:shapedrawer:$shapedrawerVersion"
     implementation "com.kotcrab.vis:vis-ui:$visuiVersion"
     api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+}
+
+tasks.register('packCampaignAtlas', JavaExec) {
+    classpath = configurations.assetTools
+    mainClass = 'com.badlogic.gdx.tools.texturepacker.TexturePacker'
+    args file("$buildDir/atlas-input"), rootProject.file('assets/campaign'), 'art'
+    systemProperty 'java.awt.headless', 'true'
+    inputs.dir rootProject.file('assets/campaign/art')
+    inputs.file rootProject.file('tools/campaign-atlas.json')
+    outputs.files rootProject.file('assets/campaign/art.atlas'), rootProject.file('assets/campaign/art.png')
+    doFirst {
+        copy { from rootProject.file('assets/campaign/art'); into file("$buildDir/atlas-input") }
+        copy { from rootProject.file('tools/campaign-atlas.json'); into file("$buildDir/atlas-input"); rename { 'pack.json' } }
+    }
+}
+
+tasks.register('checkCampaignSave', JavaExec) {
+    dependsOn testClasses
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'com.alexei.spaceshooter.manager.CampaignStoreCheck'
+    enableAssertions = true
+}
+
+
+tasks.register('checkCampaign', JavaExec) {
+    dependsOn testClasses
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'com.alexei.spaceshooter.manager.CampaignChecks'
+    enableAssertions = true
+    args rootProject.file('assets/campaign/catalog.json')
 }

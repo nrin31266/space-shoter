@@ -2,14 +2,16 @@
 
 ## Hiện trạng
 
-`MainGame` tạo AssetManager và chuyển LoadingScreen → MainMenuScreen →
-GamePlayScreen. `GameState` giữ world state; WaveManager/EnemyFactory giữ spawn;
-entity/weapon giữ combat; effect/Starfield giữ trình bày. GamePlayScreen hiện còn
-nhiều trách nhiệm; tách theo mốc gameplay khi thực sự cần, không tạo framework mới.
+`MainGame` tạo AssetManager, CampaignAssets/Audio/Store và chuyển LoadingScreen →
+MainMenuScreen → GamePlayScreen. CampaignWorld chạy simulation, CombatState và
+RewardRules giữ combat/drop; BossCombat/DirectedSkill/EscortController giữ ability.
+CampaignRenderer/PrefabVisual xử lý atlas/transform/animation, Scene2D giữ UI.
+Các lớp GameState/WaveManager/entity/weapon legacy còn trong source nhưng không
+được màn custom mới gọi. Không coi việc còn file là runtime đang dùng.
 
-TextureRegistry hiện cache region bằng static fields: cần xem lifecycle/reset
-trước mốc asset, không coi static resource lifetime là an toàn trên Android.
-AssetManager sở hữu tài nguyên được load, không dispose riêng từng asset của nó.
+AssetManager sở hữu atlas/audio; font do CampaignAssets tạo một lần và dispose.
+Shot/pickup/burst dùng pool; không tạo texture/sound/font mỗi frame. Catalog là
+JSON offline, runtime không đọc YAML hoặc cần repository tham khảo.
 
 ## Ranh giới phát triển
 

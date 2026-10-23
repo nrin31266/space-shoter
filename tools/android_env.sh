@@ -6,7 +6,7 @@ space_android_env() {
   if [[ -z "$sdk" && -f "$root/local.properties" ]]; then
     sdk="$(sed -n 's/^sdk\.dir=//p' "$root/local.properties" | tr -d '\r')"
   fi
-  if [[ -z "$sdk" ]]; then
+  if [[ -z "$sdk" || ! -f "$sdk/platforms/android-34/android.jar" ]]; then
     for candidate in "$HOME/Android/Sdk" "${players[@]/%//SDK}"; do
       if [[ -f "$candidate/platforms/android-34/android.jar" ]]; then
         sdk="$candidate"
@@ -18,9 +18,9 @@ space_android_env() {
     echo "Thiếu Android API 34. Đặt ANDROID_SDK_ROOT tới SDK có platforms/android-34." >&2
     return 1
   }
-  if [[ -z "${JAVA_HOME:-}" ]]; then
+  if [[ -z "${JAVA_HOME:-}" ]] || ! "${JAVA_HOME}/bin/java" -version 2>&1 | head -1 | grep -q '"17\.'; then
     for candidate in "${players[@]/%//OpenJDK}" /usr/lib/jvm/java-17*; do
-      if [[ -x "$candidate/bin/java" ]]; then
+      if [[ -x "$candidate/bin/java" ]] && "$candidate/bin/java" -version 2>&1 | head -1 | grep -q '"17\.'; then
         JAVA_HOME="$candidate"
         break
       fi

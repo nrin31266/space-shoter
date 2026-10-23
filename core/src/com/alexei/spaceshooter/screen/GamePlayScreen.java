@@ -1,1212 +1,470 @@
 package com.alexei.spaceshooter.screen;
 
 import com.alexei.spaceshooter.MainGame;
-import com.alexei.spaceshooter.SpaceShooter;
-import com.alexei.spaceshooter.data.wave.WaveConfig;
-import com.alexei.spaceshooter.effect.*;
-import com.alexei.spaceshooter.entity.*;
-import com.alexei.spaceshooter.factory.EnemyFactory;
-import com.alexei.spaceshooter.manager.AudioManager;
-import com.alexei.spaceshooter.manager.GameState;
-import com.alexei.spaceshooter.manager.SaveManager;
-import com.alexei.spaceshooter.manager.WaveManager;
-import com.alexei.spaceshooter.utils.*;
-import com.alexei.spaceshooter.weapon.*;
-import java.util.List;
+import com.alexei.spaceshooter.manager.CampaignStore;
+import com.alexei.spaceshooter.manager.CampaignWorld;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Interpolation;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.alexei.spaceshooter.utils.CustomUI;
-import com.badlogic.gdx.scenes.scene2d.ui.Window;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.utils.Align;
-import com.kotcrab.vis.ui.widget.VisDialog;
-import com.kotcrab.vis.ui.widget.VisLabel;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Stack;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
 
-import space.earlygrey.shapedrawer.ShapeDrawer;
+public final class GamePlayScreen extends ScreenAdapter {
+    private final MainGame game;
+    public final CampaignWorld world;
+    private final CampaignRenderer renderer;
+    private final CampaignUi ui;
+    private final Stage stage = new Stage(new ExtendViewport(1280, 720));
+    private final Table hud = new Table(), overlay = new Table();
+    private final Label status, score, shard, heat, title, bossStatus, effects;
+    private final TextButton weaponButton, missileButton;
+    private final Image heatFill, heatFrame, heatVent, weaponIcon, bossFill, shieldIcon, overdriveIcon, supportIcon;
+    private final Label overdriveTimer, supportTimer;
+    private final com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable[] ventFrames;
+    private final Table bossPanel = new Table();
+    private int shownEffects = -1;
+    private final String[] weaponNames = {"Pulse", "Plasma", "Homing"};
+    private Table heatGauge, lifePanel, indicatorPanel, coinPanel;
+    private TextButton pauseButton;
+    private final Image[] heatNotches = new Image[4];
+    private Label bossPercentage;
+    private boolean settingsOpen;
+    private Runnable confirmAction;
+    private String confirmCopy;
+    private final CampaignStore.State initial;
+    private boolean paused;
+    private int pointer = -1, lastX, lastY, shownRevision = -1, shownHeat = -1;
+    private CampaignWorld.Stage shownStage;
+    private float accumulator, pendingDragX, pendingDragY, tapStarted = -1;
+    private Label continueHint;
 
-public class GamePlayScreen implements Screen {
-
-    // ─── Core references ──────────────────────────────────────────────
-    private final MainGame     game;
-    private final AudioManager audioManager;
-    private final GameState    state;
-
-    private WaveManager  waveManager;
-    private EnemyFactory enemyFactory;
-    private SaveManager  saveManager;
-
-    private boolean continueFromSave = false;
-    private int     startWaveId     = 1;
-
-    private ShapeRenderer shapeRenderer;
-    private ShapeDrawer   drawer;
-    private SpriteBatch   batch;
-    private BitmapFont    hudFont;
-    private BitmapFont    overlayFont;
-    private Texture       textureSolid;
-    /** Cached GlyphLayout to avoid per-frame allocation in renderBossHealthBar, renderWaveAnnouncement etc. */
-    private final com.badlogic.gdx.graphics.g2d.GlyphLayout cachedLayout = new com.badlogic.gdx.graphics.g2d.GlyphLayout();
-    /** Track whether batch is currently drawing (to avoid nested begin/end) */
-    private boolean batchDrawing = false;
-
-    // ─── Input ────────────────────────────────────────────────────────
-    private final TouchData touch            = new TouchData();
-    private final Vector2   touchDisplacement = new Vector2();
-    private boolean screenTouched = false;
-
-    // ─── Game flow ────────────────────────────────────────────────────
-    private boolean isGameOver         = false;
-    private boolean isPaused           = false;
-    private boolean gameOverPopupShown = false;
-    private boolean pausePopupShown    = false;
-
-    // ─── Intro sequence (shown once on New Game) ──────────────────────
-    /** True while the intro countdown is running before Wave 1 starts */
-    private boolean introActive        = false;
-    private float   introTimer         = 0f;
-    /** Total intro duration before enemies are allowed to spawn */
-    private static final float INTRO_DURATION = 3.5f;
-    /** Within the intro, enemies start spawning after this many seconds */
-    private static final float INTRO_SPAWN_DELAY = 2.8f;
-
-    // ─── Wave announcement / clear overlay ───────────────────────────
-    private float   waveAnnouncementTimer  = 0f;
-    private float   waveClearTimer         = 0f;
-    private boolean showWaveAnnouncement   = false;
-    private boolean showWaveClear          = false;
-    private static final float WAVE_ANNOUNCE_DURATION = 2.0f;
-    private static final float WAVE_CLEAR_DURATION    = 1.5f;
-
-    /**
-     * Delay between all enemies dying and the NEXT wave actually starting to spawn.
-     * waveManager.startWave() is called after this delay expires.
-     * During the delay, "WAVE CLEAR!" overlay is visible.
-     */
-    private float   nextWaveDelay      = 0f;
-    private boolean pendingNextWave    = false;
-    private static final float NEXT_WAVE_DELAY = 2.2f; // seconds between waves
-
-    // ─── Scene2D ─────────────────────────────────────────────────────
-    private Stage  uiStage;
-    private Skin   uiSkin;
-    // HUD text is drawn manually (absolute coords) for reliable layout.
-    private String hudScoreText  = "SCORE 0";
-    private String hudItemsText  = "0";
-    private String hudWeaponText = "LASER Lv:1";
-
-    // ─────────────────────────────────────────────────────────────────
-    // Constructors
-    // ─────────────────────────────────────────────────────────────────
-    public GamePlayScreen(MainGame game, AudioManager audioManager) {
-        this(game, audioManager, false, 1);
+    public GamePlayScreen(MainGame game, CampaignStore.State state, boolean replay) {
+        this(game, state, replay, false);
     }
 
-    public GamePlayScreen(MainGame game, AudioManager audioManager,
-                          boolean continueFromSave, int startWaveId) {
-        this.game             = game;
-        this.audioManager     = audioManager;
-        this.state            = new GameState();
-        this.continueFromSave = continueFromSave;
-        this.startWaveId      = startWaveId;
+    public GamePlayScreen(MainGame game, CampaignStore.State state, boolean replay, boolean withIntro) {
+        this.game = game;
+        initial = game.copy(state);
+        ui = new CampaignUi(game.assets);
+        world = new CampaignWorld(game.assets.catalog, state, replay, new CampaignWorld.Listener() {
+            public void sound(int cue) { game.audio.cue(cue); }
+            public void checkpoint(CampaignStore.State checkpoint) { game.checkpoint(checkpoint); }
+            public int creditShards(int cumulative, int balance) { return game.creditShards(cumulative); }
+        });
+        if (withIntro) world.introduceMission();
+        renderer = new CampaignRenderer(game.assets, world);
+        status = ui.hudLabel(""); score = ui.hudLabel(""); shard = ui.hudLabel(""); heat = ui.hudLabel(""); title = ui.title("");
+        shard.setColor(com.badlogic.gdx.graphics.Color.GOLD);
+        title.setFontScale(.5f);
+        hud.setFillParent(true); hud.top().pad(12);
+        Table thermal = new Table();
+        thermal.add(heat).left().row();
+        Stack gauge = new Stack();
+        heatFill = new Image(ui.icon("UI/ui-heat-fill.png"));
+        gauge.add(heatFill);
+        heatFrame = new Image(ui.icon("UI/ui-heat-housing.png")); gauge.add(heatFrame);
+        Table notches = new Table();
+        for (int i = 0; i < 4; i++) {
+            heatNotches[i] = new Image(ui.icon("UI/ui-heat-notch.png"));
+            notches.add(heatNotches[i]).width(1.6f).height(7.2f).padLeft(i == 0 ? 0 : 39.36f);
+        }
+        gauge.add(notches);
+        thermal.add(gauge).size(205, 20);
+        com.badlogic.gdx.utils.JsonValue hudConfig = null;
+        for (com.badlogic.gdx.utils.JsonValue doc : game.assets.catalog.record("Scenes/02_Gameplay.unity").get("documents"))
+            if (doc.get("data").has("heatVentFrames")) hudConfig = doc.get("data");
+        if (hudConfig == null) throw new IllegalArgumentException("Missing HUD configuration");
+        String[] ventKeys = CampaignWorld.frames(hudConfig.get("heatVentFrames"));
+        ventFrames = new com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable[ventKeys.length];
+        for (int i = 0; i < ventKeys.length; i++) ventFrames[i] = new com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable(game.assets.sprite(ventKeys[i]).region);
+        heatVent = new Image(ventFrames[0]); thermal.add(heatVent).size(23).padLeft(4);
+        hud.add(thermal).left().width(218);
+        Table totals = new Table();
+        totals.add(score).minWidth(100).padRight(48);
+        totals.add(shard).padRight(8);
+        totals.add(new Image(ui.icon("UI/ui-shard.png"))).size(32);
+        hud.add(totals).center().expandX();
+        pauseButton = ui.button("", () -> setPaused(true));
+        pauseButton.clearChildren(); pauseButton.add(new Image(ui.icon("UI/ui-icon-pause.png"))).size(42);
+        hud.add(pauseButton).width(58).height(58).row();
+        bossStatus = ui.hudLabel("");
+        bossPercentage = ui.hudLabel("");
+        bossPanel.add(bossStatus).expandX().left();
+        bossPanel.add(bossPercentage).right().row();
+        Stack bossGauge = new Stack();
+        bossGauge.add(new Image(ui.panel));
+        bossFill = new Image(ui.icon("UI/ui-heat-fill.png")); bossFill.setColor(com.badlogic.gdx.graphics.Color.CORAL);
+        bossGauge.add(bossFill);
+        bossPanel.add(bossGauge).colspan(2).growX().height(11.2f).padTop(3.2f);
+        bossPanel.top();
+        bossPanel.setTouchable(Touchable.disabled);
+        hud.add(title).colspan(3).padTop(20).expandY().top().row();
+        effects = ui.hudLabel("");
+        Table pickupCue = new Table(); pickupCue.setFillParent(true); pickupCue.bottom().padBottom(120);
+        pickupCue.add(effects); pickupCue.setTouchable(Touchable.disabled);
+        hud.addActor(pickupCue);
+        Table indicators = new Table();
+        shieldIcon = new Image(ui.icon("UI/ui-shield.png"));
+        overdriveIcon = new Image(ui.icon("UI/ui-overdrive.png"));
+        supportIcon = new Image(ui.icon("UI/ui-support.png"));
+        overdriveTimer = ui.hudLabel(""); supportTimer = ui.hudLabel("");
+        indicators.add(shieldIcon).size(38).pad(6); indicators.add(overdriveIcon).size(38).pad(6); indicators.add(supportIcon).size(38).pad(6).row();
+        indicators.add(); indicators.add(overdriveTimer); indicators.add(supportTimer);
+        hud.add(indicators).colspan(3).left().padBottom(6).row();
+        Table life = new Table();
+        life.add(new Image(ui.icon("UI/ui-life.png"))).size(48);
+        life.add(status).padLeft(12);
+        hud.add(life).left();
+        hud.add().expandX();
+        Table controls = new Table();
+        missileButton = ui.button("", () -> {
+            if (paused) return;
+            if (!world.missile()) game.audio.cue(34);
+            else if (game.profile.vibrationEnabled) Gdx.input.vibrate(500);
+        });
+        missileButton.clearChildren();
+        missileButton.add(new Image(ui.icon("UI/ui-ammo.png"))).size(51.2f).padRight(0);
+        missileButton.add(missileButton.getLabel()); missileButton.getLabel().setFontScale(.8f);
+        controls.add(missileButton).size(122, 67).padBottom(10).row();
+        weaponButton = ui.button("", () -> {
+            if (!paused && world.gameplayInput() && world.player.cycle()) { world.revision++; game.audio.cue(32); }
+        });
+        weaponIcon = new Image(ui.icon("UI/ui-weapon-pulse.png"));
+        weaponButton.clearChildren(); weaponButton.add(weaponIcon).size(57.6f).padRight(0);
+        weaponButton.add(weaponButton.getLabel()); weaponButton.getLabel().setFontScale(.8f);
+        weaponButton.getLabel().setColor(com.badlogic.gdx.graphics.Color.CYAN);
+        TextButton.TextButtonStyle controlStyle = new TextButton.TextButtonStyle(ui.buttonStyle);
+        controlStyle.up = ui.panel;
+        weaponButton.setStyle(controlStyle); missileButton.setStyle(controlStyle); pauseButton.setStyle(controlStyle);
+        controls.add(weaponButton).size(122, 74);
+        hud.add(controls).right().bottom();
+        hud.setTouchable(Touchable.childrenOnly);
+        heatGauge = thermal; lifePanel = life; indicatorPanel = indicators;
+        coinPanel = new Table(); coinPanel.add(shard).padRight(6.4f); coinPanel.add(new Image(ui.icon("UI/ui-shard.png"))).size(32);
+        hud.clearChildren();
+        hud.addActor(heatGauge); hud.addActor(score); hud.addActor(coinPanel); hud.addActor(pauseButton);
+        hud.addActor(lifePanel); hud.addActor(indicatorPanel); hud.addActor(missileButton); hud.addActor(weaponButton);
+        hud.addActor(effects); hud.addActor(title);
+        title.setAlignment(Align.center); score.setAlignment(Align.center); effects.setAlignment(Align.center);
+        stage.addActor(hud);
+        stage.addActor(bossPanel);
+        overlay.setFillParent(true);
+        overlay.setTouchable(Touchable.childrenOnly);
+        stage.addActor(overlay);
     }
 
-    // ─────────────────────────────────────────────────────────────────
-    // show()
-    // ─────────────────────────────────────────────────────────────────
-    @Override
-    public void show() {
-        float sw = Gdx.graphics.getWidth();
-        float sh = Gdx.graphics.getHeight();
+    private void clearPointer() { tapStarted = -1; pointer = -1; world.held = false; pendingDragX = pendingDragY = 0; }
 
-        // ── Rendering setup ──────────────────────────────────────
-        Pixmap pix = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
-        pix.setColor(0xDEADBEFF);
-        pix.fill();
-        textureSolid = new Texture(pix);
-        pix.dispose();
+    private void setPaused(boolean value) {
+        if (world.stage == CampaignWorld.Stage.GAME_OVER || world.stage == CampaignWorld.Stage.RESULT) return;
+        if (!value && !game.flushPending()) { refreshOverlay(); return; }
+        paused = value; settingsOpen = false; confirmAction = null; clearPointer(); accumulator = 0;
+        refreshOverlay();
+    }
 
-        batch         = new SpriteBatch();
-        shapeRenderer = new ShapeRenderer();
-        drawer        = new ShapeDrawer(batch, new TextureRegion(textureSolid));
+    private void menu() {
+        if (!game.flushPending()) { refreshOverlay(); return; }
+        game.audio.cue(33); game.setScreen(new MainMenuScreen(game));
+    }
 
-        hudFont = FontUtil.generateRoboto(60);
-        hudFont.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-        hudFont.getData().setScale(0.68f);
-
-        overlayFont = FontUtil.generateRoboto(60);
-        overlayFont.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-        overlayFont.getData().setScale(1f);
-
-        // ── Wave system ───────────────────────────────────────────
-        enemyFactory = new EnemyFactory();
-        waveManager  = new WaveManager(enemyFactory);
-        WaveConfig cfg = WaveConfig.loadFromFile("data/waves.json");
-        waveManager.loadConfig(cfg);
-
-        saveManager = new SaveManager();
-
-        // ── Game state ────────────────────────────────────────────
-        state.init(sw, sh);
-        state.ship.setAudioManager(audioManager);
-
-        Ship ship = state.ship;
-        ship.setX((sw - ship.getWidth()) / 2f);
-        ship.setY(sh * 0.12f);
-        ship.setLife(Ship.INITIAL_LIFE);
-
-        if (continueFromSave) {
-            SaveManager.SaveData saveData = saveManager.load();
-            if (saveData != null) {
-                if (saveData.maxLife > 0) ship.setMaxLife(saveData.maxLife);
-                ship.setLife(saveData.life);
-                ship.setActiveWeaponType(saveData.activeWeaponType);
-                ship.setWeaponLevel(saveData.weaponLevel0);
-                ship.setStockpile(saveData.stockpile0);
-                state.scoreTracker.loadState(saveData.score, saveData.stars);
-                startWaveId = saveData.savedWave;
-                state.currentWaveId = saveData.savedWave;
-            }
-        } else {
-            saveManager.clear();
-            state.currentWaveId = startWaveId;
+    private void refreshOverlay() {
+        overlay.clear();
+        if (paused && settingsOpen) { showSettings(); return; }
+        if (paused && confirmAction != null) { showConfirmation(); return; }
+        if (paused) { showPause(); return; }
+        if (!paused && world.awaitingContinue()) {
+            Table briefing = new Table(); briefing.left().bottom().padLeft(83).padBottom(270);
+            Label location = ui.title(world.announcement); location.setFontScale(.5f);
+            briefing.add(location).left().row();
+            Label description = ui.hudLabel(world.stage == CampaignWorld.Stage.REGION_TRAVEL ? "Hành trình tiếp tục về phía trước." : world.mission.getString("MissionBriefing"));
+            description.setFontScale(.72f); description.setWrap(true);
+            briefing.add(description).width(820).left().padTop(12);
+            overlay.add(briefing).grow();
+            Table hint = new Table(); hint.setFillParent(true); hint.bottom().padBottom(32);
+            hint.setTouchable(Touchable.disabled);
+            continueHint = ui.hudLabel("Chạm để tiếp tục");
+            hint.add(continueHint); overlay.addActor(hint);
+            return;
         }
-
-        // Apply DebugConfig if enabled
-        if (com.alexei.spaceshooter.utils.DebugConfig.ENABLE_DEBUG) {
-            if (!continueFromSave) {
-                startWaveId = com.alexei.spaceshooter.utils.DebugConfig.DEBUG_START_WAVE;
-                state.currentWaveId = com.alexei.spaceshooter.utils.DebugConfig.DEBUG_START_WAVE;
-                waveLoopCount = com.alexei.spaceshooter.utils.DebugConfig.DEBUG_START_WAVE_LOOP_COUNT;
-            }
-            ship.setLife(com.alexei.spaceshooter.utils.DebugConfig.DEBUG_START_HP);
-            ship.setActiveWeaponType(com.alexei.spaceshooter.utils.DebugConfig.DEBUG_START_WEAPON_TYPE);
-            ship.setWeaponLevel(com.alexei.spaceshooter.utils.DebugConfig.DEBUG_START_WEAPON_LEVEL);
-
-            if (com.alexei.spaceshooter.utils.DebugConfig.DEBUG_TEST_SINGLE_ENEMY) {
-                startSingleEnemyTestMode(sw, sh);
-            }
+        continueHint = null;
+        if (!paused && world.stage != CampaignWorld.Stage.RESULT && world.stage != CampaignWorld.Stage.GAME_OVER) return;
+        Table panel = new Table(); panel.setBackground(ui.modal); panel.pad(34); panel.defaults().pad(9);
+        panel.add(ui.title(paused ? "TẠM DỪNG" : world.announcement)).width(850).row();
+        if (game.saveError != null) {
+            Label error = ui.label("Không lưu được checkpoint: " + game.saveError); error.setWrap(true);
+            panel.add(error).width(850).row();
         }
-
-        for (Weapon w : ship.getWeapons()) w.setAudioManager(audioManager);
-
-        Visual.setVisualEffectsList(state.visualEffects);
-        SpaceShooter.setActiveEnemiesList(state.enemies);
-        SpaceShooter.setStaticAudioManager(audioManager);
-        SpaceShooter.setActiveItemsList(state.items);
-
-        // ── Sequence start ────────────────────────────────────────
-        if (continueFromSave) {
-            // Continue: skip intro, go straight to wave
-            launchWave(state.currentWaveId, false);
-        } else {
-            // New game: show intro first
-            introActive = true;
-            introTimer  = 0f;
+        if (game.saveError != null) panel.add(ui.button("THỬ LƯU LẠI", () -> { game.flushPending(); refreshOverlay(); })).width(360).height(64).row();
+        {
+            panel.add(ui.label("ĐIỂM NHIỆM VỤ " + world.save.missionScore + "   ·   SHARD " + world.save.shard)).row();
+            panel.add(ui.label("THỜI GIAN " + (int)world.save.missionSeconds + "s · HẠ " + world.save.enemiesDestroyed
+                    + " · CORE " + world.save.coresCollected + " · MẤT MẠNG " + world.save.livesLost)).row();
+            if (world.stage == CampaignWorld.Stage.RESULT && world.save.mission < 8 && !world.replay)
+                panel.add(ui.button("NHIỆM VỤ TIẾP THEO", () -> { if (game.flushPending()) { world.nextMission(); overlay.clear(); } else refreshOverlay(); })).width(420).height(64).row();
+            if (world.stage == CampaignWorld.Stage.GAME_OVER || world.replay) panel.add(ui.button("THỬ LẠI", () -> {
+                if (!game.flushPending()) { refreshOverlay(); return; }
+                CampaignStore.State restored = game.copy(world.replay ? initial : game.profile);
+                restored.missionCleared = false;
+                game.setScreen(new GamePlayScreen(game, restored, world.replay));
+            })).width(360).height(64).row();
         }
+        panel.add(ui.button("VỀ MENU", this::menu)).width(360).height(64);
+        overlay.add(panel);
+    }
 
-        // ── Scene2D UI ────────────────────────────────────────────
-        createUISkin();
-        uiStage = new Stage(new com.badlogic.gdx.utils.viewport.ScreenViewport());
-        buildHUD();
+    private Table shellPanel(float width, float height) {
+        overlay.clear();
+        Image shade = new Image(ui.panel); shade.setColor(.025f, .045f, .085f, .98f);
+        shade.setFillParent(true); overlay.addActor(shade);
+        Table panel = new Table(); panel.setBackground(ui.modal); panel.pad(28.8f);
+        panel.defaults().growX().spaceBottom(12.8f);
+        overlay.add(panel).size(width, height);
+        return panel;
+    }
 
-        InputMultiplexer mux = new InputMultiplexer();
-        mux.addProcessor(uiStage);
-        mux.addProcessor(new InputAdapter() {
-            @Override public boolean touchDown(int x, int y, int pointer, int button) {
-                touch.set(x, y, false);
-                screenTouched = true;
-                Ship s = state.ship;
-                touchDisplacement.set(x - s.getX(), -y - s.getY());
+    private void showPause() {
+        Table panel = shellPanel(560, 520);
+        Label heading = ui.title("TẠM DỪNG"); heading.setFontScale(.5f); heading.setAlignment(Align.center);
+        panel.add(heading).height(60.8f).row();
+        Label detail = ui.hudLabel(game.saveError != null ? "Chưa lưu được tiến độ. Hãy thử lưu lại trước khi tiếp tục."
+                : String.format(java.util.Locale.ROOT, "NHIỆM VỤ %02d · ĐỢT %d\n%s · CẤP %d", world.save.mission, world.save.encounter + 1,
+                weaponNames[world.save.activeWeapon], world.save.weaponLevels[world.save.activeWeapon]));
+        detail.setWrap(true); detail.setAlignment(Align.center); detail.setColor(.68f, .77f, .84f, 1);
+        panel.add(detail).height(73.6f).row();
+        TextButton resume = ui.button("TIẾP TỤC", () -> setPaused(false));
+        panel.add(resume).height(57.6f).row();
+        panel.add(ui.secondary(game.saveError == null ? "CHƠI LẠI ĐỢT" : "THỬ LƯU LẠI", () -> {
+            if (game.saveError != null) { game.flushPending(); refreshOverlay(); return; }
+            confirm("Chơi lại từ đầu đợt đã lưu?\nĐiểm, thời gian và trang bị sẽ trở về đã lưu.", () -> {
+                if (game.flushPending()) game.setScreen(new GamePlayScreen(game, game.copy(world.replay ? initial : game.profile), world.replay));
+                else { confirmAction = null; refreshOverlay(); }
+            });
+        })).height(57.6f).row();
+        panel.add(ui.secondary("CÀI ĐẶT", () -> { settingsOpen = true; refreshOverlay(); })).height(57.6f).row();
+        panel.add(ui.secondary("MÀN HÌNH CHÍNH", () -> confirm("Rời nhiệm vụ?\nKhi tiếp tục, bạn sẽ trở về đầu đợt đã lưu. Phần đang chơi sẽ được bỏ qua.", this::menu))).height(57.6f);
+        stage.setKeyboardFocus(resume);
+    }
+
+    private void confirm(String copy, Runnable action) {
+        confirmCopy = copy; confirmAction = action; refreshOverlay();
+    }
+
+    private void showConfirmation() {
+        Table panel = shellPanel(608, 280);
+        Label copy = ui.label(confirmCopy); copy.setWrap(true); copy.setAlignment(Align.center);
+        panel.add(copy).colspan(2).grow().row();
+        TextButton agree = ui.button("ĐỒNG Ý", () -> confirmAction.run());
+        panel.add(agree).width(260).height(57.6f);
+        TextButton cancel = ui.secondary("HỦY", () -> { confirmAction = null; refreshOverlay(); });
+        panel.add(cancel).width(260).height(57.6f); stage.setKeyboardFocus(cancel);
+    }
+
+    private void showSettings() {
+        Table panel = shellPanel(720, 584);
+        Label heading = ui.title("CÀI ĐẶT"); heading.setFontScale(.625f); heading.setAlignment(Align.center);
+        panel.add(heading).height(60.8f).row();
+        Slider music = ui.slider(game.profile.musicVolume), sfx = ui.slider(game.profile.sfxVolume);
+        panel.add(ui.label("NHẠC")).left().row(); panel.add(music).height(32).row();
+        panel.add(ui.label("HIỆU ỨNG ÂM THANH")).left().row(); panel.add(sfx).height(32).row();
+        TextButton vibration = ui.toggle("RUNG THIẾT BỊ", game.profile.vibrationEnabled);
+        TextButton shake = ui.toggle("RUNG MÀN HÌNH", !game.profile.reducedMotion);
+        panel.add(vibration).height(57.6f).row(); panel.add(shake).height(57.6f).row();
+        TextButton save = ui.button("LƯU VÀ QUAY LẠI", () -> {
+            if (!game.flushPending()) return;
+            CampaignStore.State candidate = game.copy(game.profile);
+            candidate.musicVolume = music.getValue(); candidate.sfxVolume = sfx.getValue();
+            candidate.vibrationEnabled = vibration.isChecked(); candidate.reducedMotion = !shake.isChecked();
+            game.checkpoint(candidate);
+            if (game.saveError != null) return;
+            game.audio.musicVolume = candidate.musicVolume; game.audio.sfxVolume = candidate.sfxVolume;
+            settingsOpen = false; refreshOverlay();
+        });
+        panel.add(save).height(57.6f).row();
+        panel.add(ui.secondary("QUAY LẠI", () -> { settingsOpen = false; refreshOverlay(); })).height(48);
+        stage.setKeyboardFocus(save);
+    }
+
+    @Override public void show() {
+        InputAdapter playInput = new InputAdapter() {
+            @Override public boolean touchDown(int x, int y, int id, int button) {
+                if (paused || pointer != -1) return false;
+                if (world.awaitingContinue()) {
+                    if (!world.readyToContinue()) return true;
+                    pointer = id; lastX = x; lastY = y; tapStarted = world.clock; return true;
+                }
+                if (!world.player.canInput() || !world.gameplayInput()) return false;
+                pointer = id; lastX = x; lastY = y; world.held = true;
                 return true;
             }
-            @Override public boolean touchUp(int x, int y, int pointer, int button) {
-                touch.set(x, y, true);
-                screenTouched = false;
+            @Override public boolean touchDragged(int x, int y, int id) {
+                if (id != pointer) return false;
+                if (world.awaitingContinue()) { tapStarted = -1; return true; }
+                pendingDragX += (x - lastX) * world.width / Gdx.graphics.getWidth();
+                pendingDragY += (lastY - y) * world.height / Gdx.graphics.getHeight();
+                lastX = x; lastY = y;
                 return true;
             }
-            @Override public boolean touchDragged(int x, int y, int pointer) {
-                if (!screenTouched) return false;
-                Ship s = state.ship;
-                float newX = x - touchDisplacement.x;
-                float newY = -y - touchDisplacement.y;
-                if (newX >= 0 && newX <= Gdx.graphics.getWidth() - s.getWidth())
-                    s.setX(newX);
-                else touchDisplacement.x = x - s.getX();
-                if (newY >= 0 && newY <= Gdx.graphics.getHeight() - s.getHeight())
-                    s.setY(newY);
-                else touchDisplacement.y = -y - s.getY();
-                return true;
+            @Override public boolean touchUp(int x, int y, int id, int button) {
+                if (id != pointer) return false;
+                if (tapStarted >= 0 && world.clock - tapStarted <= .6f && x >= 0 && y >= 0
+                        && x < Gdx.graphics.getWidth() && y < Gdx.graphics.getHeight()) world.acceptBriefing();
+                clearPointer(); return true;
             }
-        });
-        Gdx.input.setInputProcessor(mux);
-
-        audioManager.stopAllMusic();
-        audioManager.playMusic(SoundName.ActionMusic);
-    }
-
-    /**
-     * Helper: calls waveManager.startWave() and shows announcement overlay.
-     * @param showAnnounce  true = show "WAVE X" text
-     */
-    private int waveLoopCount = 0;
-
-    private void launchWave(int waveId, boolean showAnnounce) {
-        state.currentWaveId = waveId;
-        int effectiveWaveId = (waveLoopCount * 20) + waveId;
-        waveManager.reset();
-        waveManager.startWave(waveId, effectiveWaveId);
-        pendingNextWave = false;
-        showWaveClear = false;
-        if (showAnnounce) {
-            showWaveAnnouncement = true;
-            waveAnnouncementTimer = 0f;
-        }
-        audioManager.playSound(SoundName.WaveStart);
-        Gdx.app.log("[GamePlay]", "Launched Wave " + waveId + " (Loop " + waveLoopCount + ", Effective " + effectiveWaveId + ")");
-
-        // Boss-wave pity (Section: demo-first design). On boss showcase waves
-        // (5, 10, 15, 20) if the player's weapon is too weak (< Lv5), drop a
-        // guaranteed energy power-up + a weapon-switch so they can keep up.
-        boolean isBossWave = (waveId % 5 == 0);
-        if (isBossWave && state.ship.getWeaponLevel() < 5) {
-            float sw = Gdx.graphics.getWidth();
-            float sh = Gdx.graphics.getHeight();
-            float bx = sw / 2f;
-            float by = sh * 0.78f;
-            com.alexei.spaceshooter.entity.ItemEnergyUpgrade energy =
-                    new com.alexei.spaceshooter.entity.ItemEnergyUpgrade(bx - com.alexei.spaceshooter.entity.ItemEnergyUpgrade.ITEM_SIZE / 2f, by);
-            energy.setScatterVelocity(90f, 160f);
-            state.items.add(energy);
-
-            int activeType = state.ship.getActiveWeaponType();
-            com.alexei.spaceshooter.entity.Item weaponItem;
-            if (activeType == com.alexei.spaceshooter.entity.Ship.WEAPON_TYPE_EXPLOSIVE) {
-                weaponItem = new com.alexei.spaceshooter.entity.ItemWeaponUpgradeExplosive(bx - com.alexei.spaceshooter.entity.ItemWeaponUpgradeExplosive.ITEM_SIZE / 2f, by - 90f);
-            } else if (activeType == com.alexei.spaceshooter.entity.Ship.WEAPON_TYPE_HOMING) {
-                weaponItem = new com.alexei.spaceshooter.entity.ItemWeaponUpgradeHoming(bx - com.alexei.spaceshooter.entity.ItemWeaponUpgradeHoming.ITEM_SIZE / 2f, by - 90f);
-            } else {
-                weaponItem = new com.alexei.spaceshooter.entity.ItemWeaponUpgrade(bx - com.alexei.spaceshooter.entity.ItemWeaponUpgrade.ITEM_SIZE / 2f, by - 90f);
+            @Override public boolean touchCancelled(int x, int y, int id, int button) {
+                if (id != pointer) return false;
+                clearPointer(); return true;
             }
-            weaponItem.setScatterVelocity(90f, 160f);
-            state.items.add(weaponItem);
-            Gdx.app.log("[GamePlay]", "Boss-wave pity: dropped energy + weapon switch for Lv" + state.ship.getWeaponLevel());
-        }
-    }
-
-    /** Wire weapons, add to the active list, and announce boss entrances. */
-    private void addSpawnedEnemies(java.util.List<Unit> newEnemies) {
-        for (Unit e : newEnemies) {
-            wireEnemyWeapons(e);
-            state.enemies.add(e);
-            if (e instanceof com.alexei.spaceshooter.entity.EnemyBoss) {
-                audioManager.playSound(SoundName.BossWarning);
-            }
-        }
-    }
-
-    // ─────────────────────────────────────────────────────────────────
-    // UI Skin
-    // ─────────────────────────────────────────────────────────────────
-    private void createUISkin() {
-        uiSkin = CustomUI.getSkin();
-    }
-
-
-
-    // ─────────────────────────────────────────────────────────────────
-    // HUD
-    // ─────────────────────────────────────────────────────────────────
-    private void buildHUD() {
-        // ── Top-right: ONLY the pause button (explicit absolute position) ──
-        Button pauseBtn = CustomUI.createButton("\uf04c", null, false);
-        pauseBtn.setSize(84, 76);
-        float sw = Gdx.graphics.getWidth();
-        float sh = Gdx.graphics.getHeight();
-        pauseBtn.setPosition(sw - 84 - 14f, sh - 76 - 12f);
-        pauseBtn.addListener(new ClickListener() {
-            @Override public void clicked(InputEvent event, float x, float y) {
-                isPaused = true;
-                saveCurrentGame();
-            }
-        });
-        uiStage.addActor(pauseBtn);
-
-        // All other HUD text (HP, weapon, WAVE, star, score) is drawn in
-        // renderPlayerHudTop() with absolute coordinates for a reliable
-        // left / centre / right layout on any device.
-    }
-
-    // ─────────────────────────────────────────────────────────────────
-    // Dialogs
-    // ─────────────────────────────────────────────────────────────────
-    private VisDialog createBaseDialog() {
-        VisDialog d = new VisDialog("");
-        d.pad(80);
-        d.getContentTable().defaults().center().pad(18);
-        return d;
-    }
-
-    private Button primaryBtn(String text) {
-        return CustomUI.createButton(null, text, false);
-    }
-
-    private Button dangerBtn(String text) {
-        return CustomUI.createButton(null, text, true);
-    }
-
-    private Label dialogTitle(String text, Color color) {
-        return CustomUI.createTitle(text, color);
-    }
-
-    private void addDivider(VisDialog dialog, Color color) {
-        Pixmap px = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
-        px.setColor(color); px.fill();
-        Texture t = new Texture(px);
-        px.dispose();
-        dialog.getContentTable()
-              .add(new com.badlogic.gdx.scenes.scene2d.ui.Image(t))
-              .width(650).height(2).padTop(8).padBottom(8).row();
-    }
-
-    private void showCentered(VisDialog dialog) {
-        dialog.show(uiStage, Actions.sequence(Actions.alpha(0f), Actions.alpha(1f, 0.2f)));
-        dialog.pack();
-        float w = Math.max(dialog.getWidth(), Gdx.graphics.getWidth() * 0.85f);
-        dialog.setWidth(w);
-        dialog.setPosition(
-                (Gdx.graphics.getWidth()  - w) / 2f,
-                (Gdx.graphics.getHeight() - dialog.getHeight()) / 2f);
-    }
-
-    private void showPauseDialog() {
-        if (pausePopupShown) return;
-        pausePopupShown = true;
-
-        VisDialog d = createBaseDialog();
-        d.getContentTable().add(dialogTitle("PAUSED", new Color(0f, 0.92f, 1f, 1f)))
-                           .padBottom(50).row();
-        addDivider(d, new Color(0f, 0.6f, 0.8f, 0.6f));
-
-        Button resumeBtn = CustomUI.createButton("\uf04b", "Resume", false);
-        resumeBtn.addListener(new ClickListener() {
-            @Override public void clicked(InputEvent event, float x, float y) {
-                isPaused = false;
-                pausePopupShown = false;
-                d.hide(Actions.sequence(Actions.alpha(0f, 0.15f), Actions.removeActor()));
-            }
-        });
-        d.getContentTable().add(resumeBtn).width(720).height(160).padTop(22).row();
-
-        Button menuBtn = dangerBtn("<  Menu");
-        menuBtn.addListener(new ClickListener() {
-            @Override public void clicked(InputEvent event, float x, float y) {
-                saveCurrentGame();
-                game.setScreen(new MainMenuScreen(game, audioManager));
-            }
-        });
-        d.getContentTable().add(menuBtn).width(720).height(160).padTop(18).row();
-        showCentered(d);
-    }
-
-    private void showGameOverPopup() {
-        if (gameOverPopupShown) return;
-        gameOverPopupShown = true;
-
-        long score  = state.scoreTracker.getTotalPoints();
-        long killed = state.scoreTracker.getEnemiesKilled();
-        long stars  = state.scoreTracker.getStarsCollected();
-
-        // Commit stats ONLY when game session ends (player death on Game Over)
-        saveManager.commitGameStats(score, stars);
-        long bestScore = saveManager.getHighScore();
-
-        VisDialog d = createBaseDialog();
-        d.getContentTable().add(dialogTitle("GAME OVER", new Color(1f, 0.25f, 0.25f, 1f)))
-                           .padBottom(24).row();
-        addDivider(d, new Color(0.8f, 0.2f, 0.2f, 0.5f));
-
-        Label waveLabel = CustomUI.createTitle("WAVE " + state.currentWaveId + " REACHED", new Color(1f, 0.45f, 0.45f, 1f));
-        waveLabel.setFontScale(1.1f);
-        d.getContentTable().add(waveLabel).padBottom(26).row();
-
-        // Stats block
-        Table stats = new Table();
-        stats.defaults().pad(4);
-        Label scoreLbl = CustomUI.createTitle("SCORE", new Color(0.55f, 0.6f, 0.8f, 1f));
-        scoreLbl.setFontScale(0.9f);
-        stats.add(scoreLbl).left().row();
-        Label scoreVal = CustomUI.createTitle("" + score, new Color(1f, 0.85f, 0.3f, 1f));
-        scoreVal.setFontScale(1.4f);
-        stats.add(scoreVal).left().padBottom(10).row();
-
-        Label bestLbl = CustomUI.createTitle("BEST SCORE", new Color(0.55f, 0.6f, 0.8f, 1f));
-        bestLbl.setFontScale(0.9f);
-        stats.add(bestLbl).left().row();
-        Label bestVal = CustomUI.createTitle("" + bestScore, new Color(0.8f, 0.85f, 1f, 1f));
-        bestVal.setFontScale(1.2f);
-        stats.add(bestVal).left().padBottom(10).row();
-
-        Label crystalsLbl = CustomUI.createTitle("STARS", new Color(0.55f, 0.6f, 0.8f, 1f));
-        crystalsLbl.setFontScale(0.9f);
-        stats.add(crystalsLbl).left().row();
-        Label crystalsVal = CustomUI.createTitle("" + stars, new Color(1f, 0.85f, 0.3f, 1f));
-        crystalsVal.setFontScale(1.2f);
-        stats.add(crystalsVal).left().padBottom(10).row();
-
-        Label killsLbl = CustomUI.createTitle("ENEMIES DESTROYED", new Color(0.55f, 0.6f, 0.8f, 1f));
-        killsLbl.setFontScale(0.9f);
-        stats.add(killsLbl).left().row();
-        Label killsVal = CustomUI.createTitle("" + killed, new Color(0.8f, 0.85f, 1f, 1f));
-        killsVal.setFontScale(1.2f);
-        stats.add(killsVal).left().row();
-
-        d.getContentTable().add(stats).padBottom(22).row();
-
-        addDivider(d, new Color(0.8f, 0.2f, 0.2f, 0.4f));
-
-        Button restartBtn = CustomUI.createButton("\uf01e", "RESTART", false);
-        restartBtn.addListener(new ClickListener() {
-            @Override public void clicked(InputEvent event, float x, float y) {
-                d.hide(Actions.sequence(Actions.alpha(0f, 0.15f), Actions.removeActor()));
-                resetGame();
-            }
-        });
-        d.getContentTable().add(restartBtn).width(720).height(150).padTop(20).row();
-
-        Button menuBtn = dangerBtn("<  Menu");
-        menuBtn.addListener(new ClickListener() {
-            @Override public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new MainMenuScreen(game, audioManager));
-            }
-        });
-        d.getContentTable().add(menuBtn).width(720).height(150).padTop(16).row();
-        showCentered(d);
-    }
-
-    // ─────────────────────────────────────────────────────────────────
-    // Reset
-    // ─────────────────────────────────────────────────────────────────
-    private void resetGame() {
-        isGameOver         = false;
-        isPaused           = false;
-        gameOverPopupShown = false;
-        pausePopupShown    = false;
-
-        state.reset();
-        waveManager.reset();
-
-        float sw = Gdx.graphics.getWidth();
-        float sh = Gdx.graphics.getHeight();
-        state.init(sw, sh);
-        state.ship.setAudioManager(audioManager);
-        state.currentWaveId = 1;
-
-        Ship ship = state.ship;
-        ship.setX((sw - ship.getWidth()) / 2f);
-        ship.setY(sh * 0.12f);
-        ship.setLife(Ship.INITIAL_LIFE);
-
-        if (com.alexei.spaceshooter.utils.DebugConfig.ENABLE_DEBUG) {
-            startWaveId = com.alexei.spaceshooter.utils.DebugConfig.DEBUG_START_WAVE;
-            state.currentWaveId = com.alexei.spaceshooter.utils.DebugConfig.DEBUG_START_WAVE;
-            ship.setLife(com.alexei.spaceshooter.utils.DebugConfig.DEBUG_START_HP);
-            ship.setWeaponLevel(com.alexei.spaceshooter.utils.DebugConfig.DEBUG_START_WEAPON_LEVEL);
-        }
-
-        for (Weapon w : ship.getWeapons()) w.setAudioManager(audioManager);
-
-        Visual.setVisualEffectsList(state.visualEffects);
-        SpaceShooter.setActiveEnemiesList(state.enemies);
-        SpaceShooter.setStaticAudioManager(audioManager);
-        SpaceShooter.setActiveItemsList(state.items);
-        saveManager.clear();
-
-        uiStage.clear();
-        buildHUD();
-
-        showWaveAnnouncement = false;
-        showWaveClear        = false;
-        pendingNextWave      = false;
-
-        // Show intro for new game
-        introActive = true;
-        introTimer  = 0f;
-
-        audioManager.stopAllMusic();
-        audioManager.playMusic(SoundName.ActionMusic);
-    }
-
-    // ─────────────────────────────────────────────────────────────────
-    // render()
-    // ─────────────────────────────────────────────────────────────────
-
-    /** Batched background pass: nebula + both starfields in a single SpriteBatch. */
-    private void renderBackground() {
-        batch.begin();
-        state.starfield.render(shapeRenderer, batch);
-        state.starfield2.render(shapeRenderer, batch);
-        batch.end();
-    }
-
-    /** ShapeRenderer pass for primitives such as the invulnerability shield. */
-    private void renderShapePass() {
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        state.ship.render(shapeRenderer, batch); // shield circle if invulnerable
-        if (shapeRenderer.isDrawing()) shapeRenderer.end();
-    }
-
-    /** Single SpriteBatch pass for all textured game entities. */
-    private void renderEntityPass() {
-        Ship ship = state.ship;
-        batch.begin();
-        ship.render(shapeRenderer, batch);
-        for (Unit      e : state.enemies)      e.render(shapeRenderer, batch);
-        for (Item      i : state.items)        i.render(shapeRenderer, batch);
-        for (Projectile p : state.projectiles) p.render(shapeRenderer, batch);
-        for (Visual    v : state.visualEffects) v.render(shapeRenderer, batch);
-        batch.end();
-    }
-
-    @Override
-    public void render(float delta) {
-        Gdx.gl.glClearColor(0, 0, 0.02f, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        Gdx.gl.glEnable(GL20.GL_BLEND);
-        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-
-        float dt   = Gdx.graphics.getDeltaTime() * 1000; // ms
-        float sw   = Gdx.graphics.getWidth();
-        float sh   = Gdx.graphics.getHeight();
-        Ship  ship = state.ship;
-
-        // ── Game Over ─────────────────────────────────────────────
-        if (isGameOver) {
-            state.starfield.update(dt);
-            state.starfield2.update(dt);
-            renderBackground();
-            showGameOverPopup();
-            updateHUD();
-            uiStage.act(delta);
-            uiStage.draw();
-            return;
-        }
-
-        // ── Paused ────────────────────────────────────────────────
-        if (isPaused) {
-            renderBackground();
-            renderShapePass();
-            showPauseDialog();
-            uiStage.act(delta);
-            uiStage.draw();
-            return;
-        }
-
-        // ── Ship died ─────────────────────────────────────────────
-        if (ship.isDead()) {
-            touch.handle();
-            audioManager.stopSound(SoundName.Alarm);
-            audioManager.stopAllMusic();
-            isGameOver = true;
-            saveCurrentGame();
-            if (shapeRenderer.isDrawing()) shapeRenderer.end();
-            return;
-        }
-
-        // ── Player ALWAYS updates and shoots ──────────────────────
-        for (Weapon w : ship.getWeapons()) w.setEnabled(screenTouched);
-        ship.update(dt);
-        for (Weapon w : ship.getWeapons()) w.update(dt, state.projectiles);
-        for (Projectile p : state.projectiles) p.update(dt);
-
-        // ══ INTRO SEQUENCE ════════════════════════════════════════
-        if (introActive) {
-            introTimer += delta;
-
-            // Still update starfields for visual life
-            state.starfield.update(dt);
-            state.starfield2.update(dt);
-
-            // Update visual effects (muzzle flashes etc.) so the smoke/shock
-            // effects emit particles even during the intro/wave-1 roll-in.
-            for (int i = state.visualEffects.size() - 1; i >= 0; i--) {
-                Visual v = state.visualEffects.get(i);
-                v.update(dt);
-                if (v.isDead()) state.visualEffects.remove(i);
-            }
-
-            // After spawn delay, actually start the wave (enemies begin spawning)
-            if (introTimer >= INTRO_SPAWN_DELAY && !waveManager.isWaveStarted()) {
-                waveManager.startWave(state.currentWaveId);
-                showWaveAnnouncement = true;
-                waveAnnouncementTimer = 0f;
-            }
-
-            // Spawn enemies if wave is started (even during intro's tail)
-            if (waveManager.isWaveStarted()) {
-                addSpawnedEnemies(waveManager.update(dt, sw, sh));
-            }
-
-            if (introTimer >= INTRO_DURATION) {
-                introActive = false;
-            }
-
-            // Render
-            renderBackground();
-            renderShapePass();
-
-            batch.begin();
-            ship.render(shapeRenderer, batch);
-            for (Projectile p : state.projectiles) p.render(shapeRenderer, batch);
-            for (Visual     v : state.visualEffects) v.render(shapeRenderer, batch);
-            renderIntroOverlay(sw, sh);
-            if (showWaveAnnouncement) renderWaveAnnouncement(sw, sh);
-            batch.end();
-
-            // HUD stays visible during the intro too.
-            renderPlayerHudTop(sw, sh);
-
-            updateHUD();
-            uiStage.act(delta);
-            uiStage.draw();
-            return;
-        }
-
-        // ══ BETWEEN-WAVE DELAY ════════════════════════════════════
-        if (pendingNextWave) {
-            nextWaveDelay -= delta;
-
-            // Update world during delay (items, effects, starfield)
-            state.starfield.update(dt);
-            state.starfield2.update(dt);
-            for (int i = state.visualEffects.size() - 1; i >= 0; i--) {
-                Visual v = state.visualEffects.get(i);
-                v.update(dt);
-                if (v.isDead()) state.visualEffects.remove(i);
-            }
-            for (int i = state.items.size() - 1; i >= 0; i--) {
-                Item item = state.items.get(i);
-                item.update(dt);
-                if (item.isDead()) { state.items.remove(i); continue; }
-                if (item.isColliding(ship) && !item.isPickedUp()) {
-                    item.pickUp(); 
-                    if (item instanceof com.alexei.spaceshooter.entity.ItemHP) {
-                        ship.addLife(1f);
-                    } else if (item instanceof com.alexei.spaceshooter.entity.ItemEnergyUpgrade) {
-                        ship.upgradeEnergy();
-                    } else if (item instanceof com.alexei.spaceshooter.entity.ItemWeaponUpgradeExplosive) {
-                        ship.onWeaponPickup(com.alexei.spaceshooter.entity.Ship.WEAPON_TYPE_EXPLOSIVE);
-                    } else if (item instanceof com.alexei.spaceshooter.entity.ItemWeaponUpgradeHoming) {
-                        ship.onWeaponPickup(com.alexei.spaceshooter.entity.Ship.WEAPON_TYPE_HOMING);
-                    } else if (item instanceof com.alexei.spaceshooter.entity.ItemWeaponUpgrade) {
-                        ship.onWeaponPickup(com.alexei.spaceshooter.entity.Ship.WEAPON_TYPE_PLASMA);
-                    } else {
-                        state.scoreTracker.collectStar();
-                    }
+            @Override public boolean keyDown(int key) {
+                if (key == Input.Keys.BACK || key == Input.Keys.ESCAPE) {
+                    if (settingsOpen) { settingsOpen = false; refreshOverlay(); }
+                    else if (confirmAction != null) { confirmAction = null; refreshOverlay(); }
+                    else setPaused(!paused);
+                    return true;
                 }
-            }
-
-            if (waveClearTimer < WAVE_CLEAR_DURATION) {
-                waveClearTimer += delta;
-            }
-
-            if (nextWaveDelay <= 0f) {
-                // Launch next wave (endless loop back to wave 1 after completing wave 20)
-                boolean hasMore = waveManager.hasMoreWaves();
-                int nextId = hasMore ? state.currentWaveId + 1 : 1;
-                if (!hasMore) {
-                    waveLoopCount++;
+                if (key == Input.Keys.SPACE && !paused) {
+                    if (world.awaitingContinue()) world.acceptBriefing();
+                    else if (world.gameplayInput()) world.held = true;
+                    return true;
                 }
-                launchWave(nextId, true);
-                pendingNextWave = false;
+                if (key == Input.Keys.M) return world.missile();
+                return false;
             }
-
-            // Render everything that's still around
-            renderBackground();
-            renderShapePass();
-
-            batch.begin();
-            ship.render(shapeRenderer, batch);
-            for (Projectile p : state.projectiles) p.render(shapeRenderer, batch);
-            for (Item       i : state.items)       i.render(shapeRenderer, batch);
-            for (Visual     v : state.visualEffects) v.render(shapeRenderer, batch);
-            if (showWaveClear)        renderWaveClear(sw, sh);
-            if (showWaveAnnouncement) renderWaveAnnouncement(sw, sh);
-            batch.end();
-
-            // HUD stays visible between waves.
-            renderPlayerHudTop(sw, sh);
-
-            updateHUD();
-            uiStage.act(delta);
-            uiStage.draw();
-            return;
-        }
-
-        // ══ PLAYING ═══════════════════════════════════════════════
-
-        // Announcement timer
-        if (showWaveAnnouncement) {
-            waveAnnouncementTimer += delta;
-            if (waveAnnouncementTimer >= WAVE_ANNOUNCE_DURATION) showWaveAnnouncement = false;
-        }
-
-        // Spawn
-        addSpawnedEnemies(waveManager.update(dt, sw, sh));
-
-        // Score
-        state.scoreTracker.update(dt);
-
-        // Starfields
-        state.starfield.update(dt);
-        state.starfield2.update(dt);
-
-        // Visual effects
-        for (int i = state.visualEffects.size() - 1; i >= 0; i--) {
-            Visual v = state.visualEffects.get(i);
-            v.update(dt);
-            if (v.isDead()) state.visualEffects.remove(i);
-        }
-
-        // Projectiles already updated at the top
-
-        // Enemies
-        for (Unit e : state.enemies) {
-            e.update(dt);
-            if (!e.hasArrived()) continue; // don't fire while still flying in ("ngậm đạn")
-            for (Weapon w : e.getWeapons()) {
-                if (w instanceof WeaponEnergyBallA) ((WeaponEnergyBallA) w).setTarget(ship);
-                if (w instanceof WeaponSniperBeam)  ((WeaponSniperBeam)  w).setTarget(ship);
-                w.update(dt, state.projectiles);
+            @Override public boolean keyUp(int key) {
+                if (key == Input.Keys.SPACE) { world.held = false; return true; }
+                return false;
             }
-        }
+        };
+        Gdx.input.setInputProcessor(new InputMultiplexer(stage, playInput));
+        game.audio.music("bgm-combat");
+    }
 
-        // Ship already updated at the top
-
-        // Items
-        for (int i = state.items.size() - 1; i >= 0; i--) {
-            Item item = state.items.get(i);
-            item.update(dt);
-            if (item.isDead()) { state.items.remove(i); continue; }
-            if (item.isColliding(ship) && !item.isPickedUp()) {
-                item.pickUp(); 
-                if (item instanceof com.alexei.spaceshooter.entity.ItemHP) {
-                    ship.addLife(1f);
-                } else if (item instanceof com.alexei.spaceshooter.entity.ItemEnergyUpgrade) {
-                    ship.upgradeEnergy();
-                } else if (item instanceof com.alexei.spaceshooter.entity.ItemWeaponUpgradeExplosive) {
-                    ship.onWeaponPickup(com.alexei.spaceshooter.entity.Ship.WEAPON_TYPE_EXPLOSIVE);
-                } else if (item instanceof com.alexei.spaceshooter.entity.ItemWeaponUpgradeHoming) {
-                    ship.onWeaponPickup(com.alexei.spaceshooter.entity.Ship.WEAPON_TYPE_HOMING);
-                } else if (item instanceof com.alexei.spaceshooter.entity.ItemWeaponUpgrade) {
-                    ship.onWeaponPickup(com.alexei.spaceshooter.entity.Ship.WEAPON_TYPE_PLASMA);
-                } else {
-                    state.scoreTracker.collectStar();
-                }
+    @Override public void render(float delta) {
+        float seconds = Math.min(delta, .1f);
+        if (!paused) {
+            accumulator += seconds;
+            while (accumulator >= 1f / 60) {
+                world.move(pendingDragX, pendingDragY); pendingDragX = pendingDragY = 0;
+                world.update(1f / 60); accumulator -= 1f / 60;
             }
-            // Magnetization Rules:
-            // - Stars (ItemStar): magnetize from 300px away (d2 <= 90000) at fast 1200f speed.
-            // - HP Items (ItemHP): magnetize ONLY when VERY CLOSE within 90px (d2 <= 8100) ("cho sát mới hút được máu").
-            // - Weapon Upgrades (PLASMA, EXPLOSIVE, HOMING): NEVER magnetized so players can dodge them!
-            if (item instanceof com.alexei.spaceshooter.entity.ItemStar) {
-                float d2 = item.squareDistanceToCenter(ship);
-                if (d2 <= 90000) {
-                    if (item.isMagnetizing()) item.setDirection(ship);
-                    else item.magnetize(ship);
-                    item.setSpeed(1200f);
-                } else if (item.isMagnetizing()) {
-                    item.unmagnetize();
-                }
-            } else if (item instanceof com.alexei.spaceshooter.entity.ItemHP) {
-                float d2 = item.squareDistanceToCenter(ship);
-                if (d2 <= 8100) { // 90px radius
-                    if (item.isMagnetizing()) item.setDirection(ship);
-                    else item.magnetize(ship);
-                    item.setSpeed(800f);
-                } else if (item.isMagnetizing()) {
-                    item.unmagnetize();
-                }
-            } else {
-                if (item.isMagnetizing()) item.unmagnetize();
+            if (!world.player.canInput()) clearPointer();
+        }
+        if (game.saveError != null && !paused && world.stage != CampaignWorld.Stage.RESULT && world.stage != CampaignWorld.Stage.GAME_OVER) setPaused(true);
+        game.audio.tick(seconds);
+        renderer.render(seconds);
+        if (shownRevision != world.revision) {
+            shownRevision = world.revision;
+            status.setText("×" + world.save.lives);
+            weaponButton.setText("LV" + world.save.weaponLevels[world.save.activeWeapon]);
+            weaponIcon.setDrawable(ui.icon(new String[]{"UI/ui-weapon-pulse.png", "UI/ui-weapon-plasma.png", "UI/ui-weapon-homing.png"}[world.save.activeWeapon]));
+            missileButton.setText(world.save.missiles + "/3");
+            score.setText(Integer.toString(world.save.score));
+            shard.setText(Integer.toString(world.save.shard));
+            title.setText(world.announcement);
+            boolean missionTitle = world.announcement.startsWith("NHIỆM VỤ");
+            title.setFontScale(missionTitle ? .525f : .3125f);
+            layoutHud();
+        }
+        int effectsState = (world.player.shield ? 1 : 0) + ((int)Math.ceil(world.player.overdriveRemaining) << 1) + ((int)Math.ceil(world.player.droneRemaining) << 10);
+        if (shownEffects != effectsState) {
+            shownEffects = effectsState;
+            shieldIcon.setVisible(world.player.shield);
+            overdriveIcon.setVisible(world.player.overdriveRemaining > 0);
+            supportIcon.setVisible(world.player.droneRemaining > 0);
+            overdriveTimer.setText(world.player.overdriveRemaining > 0 ? (int)Math.ceil(world.player.overdriveRemaining) + "s" : "");
+            supportTimer.setText(world.player.droneRemaining > 0 ? (int)Math.ceil(world.player.droneRemaining) + "s" : "");
+        }
+        String cue = world.pickupCueRemaining > 0 && world.player.deathRemaining <= 0 && world.stage != CampaignWorld.Stage.RESULT && world.stage != CampaignWorld.Stage.GAME_OVER ? world.pickupAnnouncement : "";
+        if (!effects.textEquals(cue)) effects.setText(cue);
+        heatVent.setVisible(world.player.overheated);
+        if (world.player.overheated) heatVent.setDrawable(ventFrames[(int)(world.clock / .06f) % ventFrames.length]);
+        if (continueHint != null) {
+            float delay = world.stage == CampaignWorld.Stage.BRIEFING ? world.mission.get("Intro").getFloat("ContinueDelaySeconds") : 0;
+            continueHint.setColor(.64f, .78f, .83f, world.readyToContinue() ? Math.min(1, (world.stageClock - delay) / .4f) : 0);
+        }
+        hud.setVisible(world.gameplayInput() && !paused);
+        weaponButton.setDisabled(paused || !world.gameplayInput() || !world.player.canInput());
+        missileButton.setDisabled(paused || !world.gameplayInput() || !world.player.canInput() || world.save.missiles <= 0);
+        int currentHeat = (int)(100 * world.player.heat / world.thermal().getFloat("capacity"));
+        if (shownHeat != currentHeat || !heat.textEquals(world.player.overheated ? "XẢ NHIỆT" : currentHeat >= 80 ? "NÓNG" : "")) {
+            shownHeat = currentHeat;
+            for (Image notch : heatNotches) {
+                if (currentHeat >= 80 || world.player.overheated) notch.setColor(1, .9f, .7f, .9f);
+                else notch.setColor(.86f, .96f, 1, .8f);
             }
+            heat.setText(world.player.overheated ? "XẢ NHIỆT" : currentHeat >= 80 ? "NÓNG" : "");
+            heatFill.setScaleX(Math.max(0, Math.min(1, currentHeat / 100f)));
+            if (world.player.overheated) heatFill.setColor(1, .36f, .22f, 1);
+            else if (currentHeat >= 80) heatFill.setColor(1, .74f, .2f, 1);
+            else heatFill.setColor(.26f, .92f, 1, 1);
+            if (world.player.overheated) heatFrame.setColor(1, .62f, .45f, 1);
+            else if (currentHeat >= 80) heatFrame.setColor(1, .86f, .55f, 1);
+            else heatFrame.setColor(com.badlogic.gdx.graphics.Color.WHITE);
         }
-
-        doCollisionDetection();
-
-        // ── Wave clear check ──────────────────────────────────────
-        if (waveManager.isWaveFinished()
-                && state.enemies.isEmpty()
-                && waveManager.getTotalEnemiesSpawned() > 0
-                && !pendingNextWave) {
-
-            waveManager.markWaveCleared();
-            saveCurrentGame();
-            showWaveClear  = true;
-            waveClearTimer = 0f;
-            audioManager.playSound(SoundName.WaveClear);
-            pendingNextWave = true;
-            nextWaveDelay   = NEXT_WAVE_DELAY;
-            Gdx.app.log("[GamePlay]", "Wave " + state.currentWaveId + " cleared!");
+        if (shownStage != world.stage) {
+            shownStage = world.stage;
+            if (!world.gameplayInput()) clearPointer();
+            refreshOverlay();
+            game.audio.music(world.stage == CampaignWorld.Stage.RESULT || world.stage == CampaignWorld.Stage.GAME_OVER ? "bgm-hub" : world.encounter.getInt("Completion") == 3 ? "bgm-boss" : "bgm-combat");
         }
-
-        // ══ RENDER ════════════════════════════════════════════════
-
-        // Pass 1: Background (batched nebula + starfield)
-        renderBackground();
-
-        // Pass 2: Shape primitives (shield circle, etc.)
-        renderShapePass();
-
-        // Pass 3: All game entity sprites (Single SpriteBatch pass!)
-        renderEntityPass();
-
-        // Pass 4: Overlays & UI
-        renderBossHealthBar(sw, sh);
-        renderPlayerHudTop(sw, sh);
-
-        batch.begin();
-        if (showWaveAnnouncement) renderWaveAnnouncement(sw, sh);
-        if (showWaveClear)        renderWaveClear(sw, sh);
-        batch.end();
-
-        updateHUD();
-        uiStage.act(delta);
-        uiStage.draw();
-    }
-
-    private void renderBossHealthBar(float sw, float sh) {
-        float totalHp = 0f;
-        float totalMaxHp = 0f;
-        int bossCount = 0;
-
-        for (Unit enemy : state.enemies) {
-            if (enemy instanceof com.alexei.spaceshooter.entity.EnemyBoss && !enemy.isDead()) {
-                totalHp += enemy.getLife();
-                totalMaxHp += enemy.getMaxLife();
-                bossCount++;
+        String bossText = "";
+        bossPanel.setVisible(false);
+        for (CampaignWorld.Enemy enemy : world.enemies) if (enemy.boss != null && world.stage == CampaignWorld.Stage.RUNNING && !paused) {
+            bossPanel.setVisible(true);
+            int nodes = 0; float shieldHp = 0, shieldMax = 0;
+            for (com.alexei.spaceshooter.manager.BossCombat.Node node : enemy.boss.nodes) {
+                if (node.hp > 0) nodes++;
+                shieldHp += Math.max(0, node.hp); shieldMax += node.maxHp;
             }
+            boolean shielded = enemy.boss.blocksCoreDamage();
+            float fraction = shielded ? shieldHp / Math.max(1, shieldMax) : enemy.hp / enemy.maxHp;
+            bossFill.setScaleX(Math.max(0, fraction));
+            if (shielded) bossFill.setColor(.2f, .8f, 1, 1); else bossFill.setColor(1, .35f, .2f, 1);
+            bossPercentage.setText((int)Math.ceil(100 * fraction) + "%");
+            bossText = enemy.boss.displayName() + (shielded ? nodes > 0 ? " · NÚT KHIÊN " + nodes : " · KHIÊN ĐANG VỠ"
+                    : enemy.boss.phaseB ? enemy.boss.nodes.size > 0 ? " · LÕI LỘ DIỆN" : " · HỎA LỰC TĂNG CƯỜNG" : "");
+            break;
         }
-
-        if (bossCount == 0 || totalMaxHp <= 0) return;
-
-        float pct = MathUtils.clamp(totalHp / totalMaxHp, 0f, 1f);
-
-        float barW = sw * 0.70f;
-        float barH = 18f;
-        float barX = (sw - barW) / 2f;
-        float barY = sh - 92f;
-
-        shapeRenderer.begin(com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(0.06f, 0.02f, 0.05f, 0.9f);
-        shapeRenderer.rect(barX - 4, barY - 4, barW + 8, barH + 8);
-        shapeRenderer.setColor(0.35f, 0.02f, 0.10f, 1.0f);
-        shapeRenderer.rect(barX, barY, barW, barH);
-        shapeRenderer.setColor(1.0f, 0.15f, 0.35f, 1.0f);
-        shapeRenderer.rect(barX, barY, barW * pct, barH);
-        shapeRenderer.setColor(1f, 1f, 1f, 0.3f);
-        shapeRenderer.rect(barX, barY + barH - 4f, barW * pct, 4f);
-        shapeRenderer.end();
-
-        batch.begin();
-        String label = (bossCount > 1)
-                ? "DREADNOUGHT x" + bossCount
-                : "DREADNOUGHT  ·  " + (int) (pct * 100) + "%";
-        hudFont.setColor(1f, 0.4f, 0.55f, 1f);
-        cachedLayout.setText(hudFont, label);
-        hudFont.draw(batch, label, (sw - cachedLayout.width) / 2f, barY + barH + 16f);
-        batch.end();
+        if (!bossStatus.textEquals(bossText)) bossStatus.setText(bossText);
+        stage.getViewport().apply(); stage.act(seconds); stage.draw();
     }
 
-
-
-    /**
-     * Draws the full gameplay HUD with absolute coordinates so the layout is
-     * reliably distributed (never clumped):
-     *   LEFT    → HP (red) + weapon label
-     *   CENTRE  → WAVE pill
-     *   RIGHT   → star currency + score
-     *   TOP-RIGHT → pause button (Scene2D, positioned in buildHUD)
-     */
-    private void renderPlayerHudTop(float sw, float sh) {
-        Ship ship = state.ship;
-
-        // ── Wave pill (top-centre) ─────────────────────────────────
-        String waveText = "WAVE " + state.currentWaveId;
-        cachedLayout.setText(overlayFont, waveText);
-        float pillW = cachedLayout.width + 44f;
-        float pillH = 32f;
-        float pillX = (sw - pillW) / 2f;
-        float pillY = sh - 56f;
-
-        shapeRenderer.begin(com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(0.04f, 0.08f, 0.15f, 0.82f);
-        shapeRenderer.rect(pillX, pillY, pillW, pillH);
-        shapeRenderer.setColor(0f, 0.85f, 1f, 0.9f);
-        shapeRenderer.rect(pillX, pillY + pillH - 3f, pillW, 3f);
-        shapeRenderer.end();
-
-        // ── Batch pass: all HUD text ───────────────────────────────
-        batch.begin();
-
-        // LEFT: HP in red (bottom-left)
-        hudFont.setColor(1f, 0.22f, 0.22f, 1f);
-        String hpText = "HP " + (int) Math.ceil(ship.getLife()) + "/" + (int) ship.getMaxLife();
-        hudFont.draw(batch, hpText, 16f, sh * 0.055f);
-
-        // LEFT: weapon label (cyan, above HP)
-        hudFont.setColor(0f, 0.85f, 1f, 1f);
-        hudFont.draw(batch, hudWeaponText, 16f, sh * 0.055f + 56f);
-
-        // RIGHT: gold star icon + star count, score below it in white
-        com.badlogic.gdx.graphics.g2d.TextureRegion starReg = com.alexei.spaceshooter.utils.TextureRegistry.itemStar;
-        if (starReg != null) {
-            float iconSize = 34f;
-            float iconY = sh * 0.055f + 50f;
-            float iconX = sw - iconSize - 16f;
-            batch.setColor(1f, 0.85f, 0.3f, 1f); // gold tint
-            batch.draw(starReg, iconX, iconY, iconSize, iconSize);
-            batch.setColor(Color.WHITE);
-            // Count text sits to the left of the icon, right-aligned at iconX.
-            hudFont.setColor(1f, 0.88f, 0.2f, 1f);
-            cachedLayout.setText(hudFont, hudItemsText);
-            hudFont.draw(batch, hudItemsText, iconX - cachedLayout.width - 8f, iconY + 26f);
-        } else {
-            hudFont.setColor(1f, 0.88f, 0.2f, 1f);
-            hudFont.draw(batch, "\u2605 " + hudItemsText, sw - 16f - 60f, sh * 0.055f + 56f);
-        }
-
-        // Score — white text, right side
-        hudFont.setColor(1f, 1f, 1f, 1f);
-        String scoreText = "SCORE " + hudScoreText;
-        cachedLayout.setText(hudFont, scoreText);
-        hudFont.draw(batch, scoreText, sw - cachedLayout.width - 16f, sh * 0.055f + 6f);
-
-        // CENTRE: WAVE text on the pill
-        overlayFont.setColor(0f, 0.92f, 1f, 1f);
-        overlayFont.draw(batch, waveText, pillX + 22f, pillY + pillH - 8f);
-
-        batch.end();
-    }
-
-    private void renderIntroOverlay(float sw, float sh) {
-        float progress = MathUtils.clamp(introTimer / INTRO_DURATION, 0f, 1f);
-
-        float alpha;
-        if (progress < 0.2f) alpha = progress / 0.2f;
-        else if (progress > 0.8f) alpha = 1f - (progress - 0.8f) / 0.2f;
-        else alpha = 1f;
-
-        float pulse = (MathUtils.sin(introTimer * 4f) + 1f) / 2f;
-
-        overlayFont.setColor(new Color(0f, 0.92f, 1f, alpha));
-        String title = "GET READY!";
-        cachedLayout.setText(overlayFont, title);
-        overlayFont.setColor(0f, 0f, 0f, alpha * 0.5f);
-        overlayFont.draw(batch, title, (sw - cachedLayout.width) / 2f + 3, sh * 0.60f - 3);
-        overlayFont.setColor(new Color(0f, 0.92f, 1f, alpha * (0.8f + pulse * 0.2f)));
-        overlayFont.draw(batch, title, (sw - cachedLayout.width) / 2f, sh * 0.60f);
-
-        hudFont.setColor(new Color(1f, 1f, 1f, alpha * 0.7f));
-        String sub = "HOLD SCREEN TO SHOOT  •  DRAG TO MOVE";
-        cachedLayout.setText(hudFont, sub);
-        hudFont.draw(batch, sub, (sw - cachedLayout.width) / 2f, sh * 0.50f);
-    }
-
-    private void renderWaveAnnouncement(float sw, float sh) {
-        float progress = MathUtils.clamp(waveAnnouncementTimer / WAVE_ANNOUNCE_DURATION, 0f, 1f);
-        float alpha;
-        if (progress < 0.2f) alpha = progress / 0.2f;
-        else if (progress > 0.75f) alpha = 1f - (progress - 0.75f) / 0.25f;
-        else alpha = 1f;
-
-        float slideY = sh * 0.72f + (1f - Interpolation.pow3Out.apply(Math.min(1f, progress * 3f))) * sh * 0.15f;
-
-        String txt = "WAVE " + state.currentWaveId;
-        cachedLayout.setText(overlayFont, txt);
-        overlayFont.setColor(0f, 0f, 0f, alpha * 0.6f);
-        overlayFont.draw(batch, txt, (sw - cachedLayout.width) / 2f + 3, slideY - 3);
-        overlayFont.setColor(new Color(0f, 0.92f, 1f, alpha));
-        overlayFont.draw(batch, txt, (sw - cachedLayout.width) / 2f, slideY);
-    }
-
-    private void renderWaveClear(float sw, float sh) {
-        float progress = MathUtils.clamp(waveClearTimer / WAVE_CLEAR_DURATION, 0f, 1f);
-        float alpha;
-        if (progress < 0.15f) alpha = progress / 0.15f;
-        else if (progress > 0.7f) alpha = 1f - (progress - 0.7f) / 0.3f;
-        else alpha = 1f;
-
-        String txt = "WAVE CLEAR!";
-        cachedLayout.setText(overlayFont, txt);
-        overlayFont.setColor(0f, 0f, 0f, alpha * 0.5f);
-        overlayFont.draw(batch, txt, (sw - cachedLayout.width) / 2f + 3, sh * 0.62f - 3);
-        overlayFont.setColor(new Color(1f, 0.88f, 0.1f, alpha));
-        overlayFont.draw(batch, txt, (sw - cachedLayout.width) / 2f, sh * 0.62f);
-    }
-
-    private void updateHUD() {
-        Ship ship = state.ship;
-        hudScoreText = "" + state.scoreTracker.getTotalPoints();
-        hudItemsText = "" + state.scoreTracker.getStarsCollected();
-
-        String wpnTypeStr = (ship.getActiveWeaponType() == Ship.WEAPON_TYPE_PLASMA) ? "LASER" :
-                (ship.getActiveWeaponType() == Ship.WEAPON_TYPE_EXPLOSIVE) ? "BLAST" : "HOMING";
-        int stock = ship.getStockpile();
-        String stockStr = (stock > 0) ? "  [x" + stock + " stock]" : "";
-        hudWeaponText = wpnTypeStr + " Lv:" + ship.getWeaponLevel() + stockStr;
-    }
-
-    private void saveCurrentGame() {
-        Ship s = state.ship;
-        saveManager.save(
-                state.currentWaveId,
-                state.scoreTracker.getTotalPoints(),
-                s.getLife(),
-                state.scoreTracker.getStarsCollected(),
-                s.getActiveWeaponType(),
-                s.getWeaponLevel(0),
-                s.getWeaponLevel(1),
-                s.getWeaponLevel(2),
-                s.getStockpile(0),
-                s.getStockpile(1),
-                s.getStockpile(2),
-                s.getMaxLife()
-        );
-    }
-
-    private void startSingleEnemyTestMode(float sw, float sh) {
-        String enemyType = com.alexei.spaceshooter.utils.DebugConfig.DEBUG_TEST_ENEMY_TYPE;
-        int count = com.alexei.spaceshooter.utils.DebugConfig.DEBUG_TEST_ENEMY_COUNT;
-        float hpMult = com.alexei.spaceshooter.utils.DebugConfig.DEBUG_TEST_HP_MULTIPLIER;
-
-        com.alexei.spaceshooter.data.wave.SpawnAction action = new com.alexei.spaceshooter.data.wave.SpawnAction();
-        action.enemyType = enemyType;
-        action.pattern = "GRID";
-        action.count = count;
-        action.hoverYPct = 0.55f;
-
-        List<Unit> testEnemies = enemyFactory.createFromAction(action, sw, sh, state.currentWaveId);
-        for (Unit u : testEnemies) {
-            u.setMaxLife(u.getMaxLife() * hpMult);
-            u.setLife(u.getMaxLife());
-            wireEnemyWeapons(u);
-        }
-        state.enemies.addAll(testEnemies);
-    }
-
-    private void wireEnemyWeapons(Unit enemy) {
-        for (Weapon w : enemy.getWeapons()) w.setAudioManager(audioManager);
-    }
-
-    // ─────────────────────────────────────────────────────────────────
-    // Collision Detection
-    // ─────────────────────────────────────────────────────────────────
-    public void doCollisionDetection() {
-        Ship ship = state.ship;
-        int  buf  = GameState.BUFFER_ZONE;
-
-        // Out-of-bounds projectiles
-        for (int i = state.projectiles.size() - 1; i >= 0; i--) {
-            Projectile p = state.projectiles.get(i);
-            if (p.getX() < -p.getWidth() - buf || p.getX() > Gdx.graphics.getWidth() + buf
-             || p.getY() < -p.getHeight() - buf || p.getY() > Gdx.graphics.getHeight() + buf) {
-                state.projectiles.remove(i);
-            }
-        }
-
-        // Out-of-bounds enemies (only bottom edge — hovering enemies bounce off sides)
-        for (int i = state.enemies.size() - 1; i >= 0; i--) {
-            Unit e = state.enemies.get(i);
-            if (e.getY() < -e.getHeight() - buf) state.enemies.remove(i);
-        }
-
-        // Player projectiles vs enemies
-        for (int i = state.enemies.size() - 1; i >= 0; i--) {
-            Unit e = state.enemies.get(i);
-            for (int j = state.projectiles.size() - 1; j >= 0; j--) {
-                Projectile p = state.projectiles.get(j);
-                if (p.isShipProjectile() && p.isColliding(e)) {
-                    p.doDamage(e);
-                    // Piercing projectiles punch through; otherwise remove on hit.
-                    if (p.consumePierce()) {
-                        state.projectiles.remove(j);
-                    }
-                    if (e.isDead()) {
-                        state.scoreTracker.addEnemyKilled();
-                        state.enemies.remove(i);
-                        break;
-                    }
-                }
-            }
-        }
-
-        // Enemy projectiles vs ship
-        for (int j = state.projectiles.size() - 1; j >= 0; j--) {
-            Projectile p = state.projectiles.get(j);
-            if (!p.isShipProjectile() && p.isColliding(ship)) {
-                p.doDamage(ship);
-                state.projectiles.remove(j);
-            }
-        }
-
-        // Enemy vs ship collision (only active when ship is NOT invulnerable)
-        if (!ship.isInvulnerable()) {
-            for (int i = state.enemies.size() - 1; i >= 0; i--) {
-                Unit e = state.enemies.get(i);
-                if (e.isColliding(ship)) {
-                    e.receiveDamage(ship);
-                    ship.receiveDamage(e);
-                    if (e.isDead()) {
-                        state.enemies.remove(i);
-                        state.scoreTracker.addEnemyKilled();
-                    }
-                    // Ship gained invulnerability from damage; stop processing further enemy collisions this frame
-                    if (ship.isInvulnerable()) {
-                        break;
-                    }
-                }
-            }
-        }
-    }
-
-    // ─────────────────────────────────────────────────────────────────
-    // Screen lifecycle
-    // ─────────────────────────────────────────────────────────────────
     @Override public void resize(int width, int height) {
-        if (uiStage != null) uiStage.getViewport().update(width, height, true);
+        renderer.resize(width, height);
+        stage.getViewport().update(width, height, true);
+        layoutHud();
     }
-    @Override public void pause()  {}
-    @Override public void resume() {}
-    @Override public void hide()   {}
-    @Override public void dispose() {
-        shapeRenderer.dispose();
-        batch.dispose();
-        hudFont.dispose();
-        overlayFont.dispose();
-        if (textureSolid != null) textureSolid.dispose();
-        if (uiStage != null) uiStage.dispose();
-        if (uiSkin  != null) uiSkin.dispose();
+
+    private void layoutHud() {
+        float width = stage.getViewport().getWorldWidth(), height = stage.getViewport().getWorldHeight();
+        float scale = width / Math.max(1, Gdx.graphics.getWidth());
+        float left = Gdx.graphics.getSafeInsetLeft() * scale, right = Gdx.graphics.getSafeInsetRight() * scale;
+        float bottom = Gdx.graphics.getSafeInsetBottom() * scale, top = Gdx.graphics.getSafeInsetTop() * scale;
+        float usableWidth = width - left - right, usableHeight = height - bottom - top;
+        heatGauge.setBounds(left + 11.2f, height - top - 68.8f, 240, 60.8f);
+        score.setBounds(left + usableWidth * .42f - 64, height - top - 67.2f, 128, 51.2f);
+        coinPanel.setBounds(left + usableWidth * .62f - 64, height - top - 67.2f, 128, 51.2f);
+        pauseButton.setBounds(width - right - 70.4f, height - top - 70.4f, 57.6f, 57.6f);
+        lifePanel.setBounds(left, bottom + 6.4f, 105.6f, 57.6f);
+        indicatorPanel.setBounds(left + usableWidth * .5f - 88, bottom + 20.8f, 176, 76.8f);
+        weaponButton.setBounds(width - right - 128, bottom + 8, 121.6f, 73.6f);
+        missileButton.setBounds(width - right - 128, bottom + 94.4f, 121.6f, 67.2f);
+        effects.setBounds(left + usableWidth * .5f - 208, bottom + 106.4f, 416, 27.2f);
+        boolean missionTitle = world.announcement.startsWith("NHIỆM VỤ");
+        title.setBounds(left + usableWidth * .5f - 440, bottom + usableHeight * (missionTitle ? .67f : .87f) - 20, 880, 40);
+        bossPanel.setBounds(left + usableWidth * .27f, height - top - 84, usableWidth * .46f, 40);
     }
+    @Override public void pause() { setPaused(true); }
+    @Override public void hide() { clearPointer(); Gdx.input.setInputProcessor(null); }
+    @Override public void dispose() { renderer.dispose(); stage.dispose(); }
 }
