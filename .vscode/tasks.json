@@ -2,9 +2,9 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Run Space Shooter on Phone",
+            "label": "Chọn bản và chạy Space Shooter",
             "type": "shell",
-            "command": "./run_on_phone.sh",
+            "command": "./build_run_spaceshooter.sh",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -18,7 +18,8 @@
         {
             "label": "Build Android APK",
             "type": "shell",
-            "command": "./gradlew :android:assembleDebug",
+            "command": "source tools/android_env.sh && space_android_env \"$PWD\" && ./gradlew :android:assembleDebug -Pandroid.builder.sdkDownload=false",
+            "options": {"shell": {"executable": "/bin/bash", "args": ["-c"]}},
             "group": "build",
             "problemMatcher": []
         }

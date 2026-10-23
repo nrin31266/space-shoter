@@ -104,6 +104,9 @@ gradle-app.setting
 ## OS Specific
 .DS_Store
 Thumbs.db
+__pycache__/
+*.pyc
+.claude/settings.local.json
 
 ## Packaged APKs
 /releases/*.apk

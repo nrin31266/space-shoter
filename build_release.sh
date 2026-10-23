@@ -15,37 +15,10 @@ set -Eeuo pipefail
 #  APK sau khi build được copy vào thư mục: releases/
 # ============================================================================
 
-# --- Xác định thư mục gốc project -------------------------------------------
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-if [[ -x "$(pwd)/gradlew" ]]; then
-  PROJECT_ROOT="$(pwd)"
-elif [[ -x "$SCRIPT_DIR/gradlew" ]]; then
-  PROJECT_ROOT="$SCRIPT_DIR"
-else
-  echo "❌ Hãy chạy script tại thư mục project có ./gradlew."
-  echo "   Ví dụ: cd /duong-dan/space-shooter && ./build_release.sh"
-  exit 1
-fi
-
-# --- Cấu hình SDK ------------------------------------------------------------
-SDK_ROOT="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-}}"
-if [[ -z "$SDK_ROOT" || ! -d "$SDK_ROOT" ]]; then
-  if [[ -f "$PROJECT_ROOT/local.properties" ]]; then
-    PROP_SDK="$(grep -E '^sdk\.dir=' "$PROJECT_ROOT/local.properties" | cut -d'=' -f2- | tr -d '\r')"
-    [[ -d "$PROP_SDK" ]] && SDK_ROOT="$PROP_SDK"
-  fi
-fi
-[[ -n "$SDK_ROOT" && -d "$SDK_ROOT" ]] || SDK_ROOT="$HOME/Android/Sdk"
-[[ -d "$SDK_ROOT" ]] || SDK_ROOT="/home/nrin31266/Android/Sdk"
-
-[[ -d "$SDK_ROOT" ]] || {
-  echo "❌ Không tìm thấy Android SDK tại: $SDK_ROOT"
-  echo "   Hãy set biến môi trường ANDROID_SDK_ROOT hoặc kiểm tra local.properties."
-  exit 1
-}
-
-export ANDROID_HOME="$SDK_ROOT"
-export ANDROID_SDK_ROOT="$SDK_ROOT"
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$PROJECT_ROOT/tools/android_env.sh"
+space_android_env "$PROJECT_ROOT"
+SDK_ROOT="$ANDROID_SDK_ROOT"
 
 RELEASES_DIR="$PROJECT_ROOT/releases"
 mkdir -p "$RELEASES_DIR"
@@ -135,7 +108,7 @@ echo
 echo "=== Build APK $BUILD_TYPE v$VERSION (versionCode $VERSION_CODE) ==="
 cd "$PROJECT_ROOT"
 ./gradlew ":android:assemble$(tr '[:lower:]' '[:upper:]' <<< "${BUILD_TYPE:0:1}")${BUILD_TYPE:1}" \
-  -PversionName="$VERSION" -PversionCode="$VERSION_CODE"
+  -PversionName="$VERSION" -PversionCode="$VERSION_CODE" -Pandroid.builder.sdkDownload=false
 
 # --- Xác định APK thô do Gradle sinh ra --------------------------------------
 if [[ "$BUILD_TYPE" == "release" ]]; then
