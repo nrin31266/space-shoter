@@ -1,33 +1,27 @@
 # Tài nguyên và ghi nhận nguồn
 
-## Quy ước
+## Runtime campaign
 
-Artwork custom do Nguyễn Văn Rin thiết kế và thực hiện bằng công cụ AI,
-agent/MCP và công cụ chỉnh sửa được ghi nhận theo đúng tác giả và quy trình tạo.
-Giữ manifest/hash cần thiết để tái tạo và quản lý tài nguyên.
+Bộ `assets/campaign` đang được runtime custom dùng: catalog, atlas, 186 PNG nguồn,
+44 WAV và 3 TTF đã export. Có 464 sprite IDs; inventory 238 records chứa cả dữ liệu
+fixture, không có nghĩa mọi record/file đều xuất hiện trong gameplay production.
+Art nguồn được giữ để tái pack, atlas giữ rect/pivot/PPU qua loader.
 
-Chỉ duy trì credit/license của tài nguyên còn dùng. Khi thay asset và xóa toàn bộ
-reference cũ, xóa mục ghi nhận cũ cùng thay đổi. Font, music hoặc SFX bên thứ ba
-còn dùng giữ đúng tác giả/license của file tương ứng.
-
-## Asset runtime hiện tại
-
-| Nhóm | Ghi nhận |
+| Nhóm | Ghi nhận và bằng chứng |
 |---|---|
-| Tàu, enemy/boss và sprite custom | Tác giả dự án; không chạy generator ghi đè tranh |
-| Đạn, item, nebula sinh offline | Tác giả dự án, chuẩn bị offline |
-| Nhạc và identity SFX OGG | Synth do tác giả dự án tạo |
-| Legacy SFX MP3 | Kế thừa prototype; chưa có manifest nguồn đầy đủ trong repo |
-| Roboto Bold / Font Awesome 6 Free Solid | Font bên thứ ba; chưa có license text đi kèm ở baseline |
+| Artwork tàu, enemy/boss, UI, VFX | Nguyễn Văn Rin, thực hiện với PixelLab/MCP, AI/agent, Aseprite/procedural tools; `campaign/licenses/artwork-manifest.json` |
+| Music | Andrew Sitkov; license thương mại trong `campaign/licenses/audio` |
+| SFX | Kenney CC0 và Little Robot Sound Factory CC BY 3.0; nguồn/license trong `campaign/licenses/audio` |
+| Synth cues | Tác giả dự án; manifest audio ghi từng clip |
+| Chakra Petch, VT323 | OFL và license đi cùng `campaign/fonts` |
 
 Nền source: [Fando/space-shooter](https://github.com/Fando/space-shooter).
-Không gán CC0/public domain chung cho toàn bộ file. assets/ATTRIBUTIONS.md trỏ về
-đây để giữ một nơi quản lý credit.
+Không gọi artwork AI là vẽ tay, không gán CC0 chung cho cả bộ.
 
-## Bộ tài nguyên mới
+## Tài nguyên legacy
 
-Artwork mới được ghi nhận là tài nguyên tác giả thực hiện với PixelLab qua MCP,
-AI/agent và Aseprite/procedural tools. Bộ này chưa thay asset runtime hiện tại.
-Manifest sản xuất và bằng chứng license được đưa vào Space cùng file thực sự dùng.
-Danh mục nội bộ phục vụ chuẩn bị nằm trong [nguồn tham khảo](reference-source.md).
-Quy trình tích hợp và loại bỏ file cũ thuộc [asset pipeline](asset-pipeline.md).
+Các PNG, music/sounds và font legacy ngoài `campaign/` đã được dọn sạch khỏi cây
+`assets/` của dự án custom. Bản original dùng checkout riêng tại `space-shooter-original/`.
+
+Chi tiết đối chiếu nội bộ ở [nguồn tham khảo](reference-source.md),
+quy trình ở [asset pipeline](asset-pipeline.md).
