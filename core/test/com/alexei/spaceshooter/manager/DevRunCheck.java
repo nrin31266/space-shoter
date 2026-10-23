@@ -37,6 +37,18 @@ public final class DevRunCheck {
             for (CampaignWorld.Enemy enemy : phase.enemies) if (enemy.boss != null && enemy.boss.phaseB) phaseB = true;
         }
         assert phaseB : "Phase B route applies after boss arrives";
+        for (int mission : new int[]{4, 8}) {
+            config.route = 3; config.mission = mission;
+            CampaignWorld victory = world(catalog, config);
+            boolean stagedDeath = false;
+            for (int i = 0; i < 1800 && victory.stage != CampaignWorld.Stage.RESULT; i++) {
+                victory.update(1f / 60);
+                stagedDeath |= victory.corpses.size > 0;
+                for (CampaignWorld.Burst burst : victory.bursts)
+                    for (String frame : burst.frames) assert catalog.root.get("sprites").has(frame) : "Missing victory artwork";
+            }
+            assert stagedDeath && victory.stage == CampaignWorld.Stage.RESULT : "Boss victory route must complete: M" + mission;
+        }
         config.route = 0; config.mission = 1; config.weapon = 2; config.level = 4;
         CampaignWorld fake = world(catalog, config); fake.devFakeShots = true;
         CampaignWorld.Enemy target = null;

@@ -289,3 +289,20 @@ HUD resolve đúng hierarchy nguồn; sao lớn nhẹ, ribbon gradient theo Unit
   27 Python tooling tests, audit assets, docs checker, diff whitespace PASS.
 - Save trước/sau smoke không đổi. Handoff còn lại: merge PR rồi checkout old-custom
   và kiểm script/build/menu của bản cũ; chưa thay gameplay bản cũ.
+
+## Crash Dev startup — 2026-10-24
+
+- Log crash thực tế chỉ vào CampaignRenderer constructor: SpriteRenderer trong
+  scene có m_Sprite rỗng; sau khi skip sprite rỗng, pose reader còn đụng stripped
+  Transform không có m_GameObject. Đây là lỗi phần scene debris vừa bổ sung,
+  không phải Dev boss victory tự gây lỗi combat.
+- Dùng hasSpriteReference chung cho optional scene/prefab/effect refs; pose reader
+  bỏ stripped transform khỏi pose map, vẫn báo lỗi nếu hierarchy cần parent thiếu.
+- Regression dùng đúng scene production: gặp empty sprite và stripped records,
+  tính được hai debris poses hữu hạn; Dev victory M4/M8 đi qua staged death tới
+  Result, kiểm từng burst frame có trong catalog.
+- Full campaign suite trước pose guard PASS; sau guard, presentation/contracts và
+  Android build PASS. Runtime M4 victory đã qua explosion/reward, PID giữ nguyên,
+  không có lỗi AndroidRuntime/libgdx lượt mới. M8 victory cũng qua explosion/reward
+  với cùng PID; ảnh dev-victory-m4.png và dev-victory-m8.png trong build/verification.
+  Tiếp tục merge rồi kiểm old branch.

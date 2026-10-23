@@ -63,7 +63,7 @@ public class CampaignRenderer implements Disposable {
         JsonValue scene = assets.catalog.record("Scenes/02_Gameplay.unity");
         for (JsonValue doc : scene.get("documents")) if (doc.getString("type").equals("SpriteRenderer")) {
             JsonValue data = doc.get("data");
-            if (data.getInt("m_Enabled", 1) != 0 && data.get("m_Sprite").has("guid")
+            if (data.getInt("m_Enabled", 1) != 0 && CampaignCatalog.hasSpriteReference(data.get("m_Sprite"))
                     && CampaignCatalog.spriteKey(data.get("m_Sprite")).equals(debrisKey)) {
                 debrisRenderers.add(data);
                 debrisPoses.add(CampaignCatalog.pose(scene, data.get("m_GameObject").getString("fileID")));

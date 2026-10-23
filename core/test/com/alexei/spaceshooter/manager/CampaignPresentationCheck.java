@@ -9,6 +9,22 @@ public final class CampaignPresentationCheck {
     public static void main(String[] args) throws Exception {
         FileHandle catalogFile = new FileHandle(args[0]);
         CampaignCatalog catalog = new CampaignCatalog(catalogFile);
+        assert !CampaignCatalog.hasSpriteReference(null);
+        assert !CampaignCatalog.hasSpriteReference(new com.badlogic.gdx.utils.JsonReader().parse("{\"fileID\":\"0\"}"));
+        int emptySceneSprites = 0, debris = 0;
+        for (JsonValue doc : catalog.record("Scenes/02_Gameplay.unity").get("documents")) {
+            if (!doc.getString("type").equals("SpriteRenderer")) continue;
+            JsonValue ref = doc.get("data").get("m_Sprite");
+            if (!CampaignCatalog.hasSpriteReference(ref)) { emptySceneSprites++; continue; }
+            JsonValue sprite = catalog.root.get("sprites").get(CampaignCatalog.spriteKey(ref));
+            assert sprite != null;
+            if (sprite.getString("path").endsWith("parallax-debris.png")) {
+                CampaignCatalog.Pose pose = CampaignCatalog.pose(catalog.record("Scenes/02_Gameplay.unity"), doc.get("data").get("m_GameObject").getString("fileID"));
+                assert Float.isFinite(pose.x) && Float.isFinite(pose.sx);
+                debris++;
+            }
+        }
+        assert emptySceneSprites > 0 && debris == 2 : "Scene scanner must skip unassigned sprites and retain two debris layers";
         int images = 0, audio = 0;
         String atlas = catalogFile.sibling("art.atlas").readString("UTF-8");
         for (JsonValue file : catalog.root.get("files")) {

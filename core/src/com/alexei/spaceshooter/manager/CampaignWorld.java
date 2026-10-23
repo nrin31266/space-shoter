@@ -392,7 +392,7 @@ public final class CampaignWorld {
         if (death != null) s.deathSeconds = death.getFloat(health == null ? "seconds" : "duration");
         if (death != null && death.has("fragments")) for (JsonValue ref : death.get("fragments")) {
             JsonValue renderer = local(record, ref);
-            if (renderer == null || !renderer.get("m_Sprite").has("guid")) continue;
+            if (renderer == null || !CampaignCatalog.hasSpriteReference(renderer.get("m_Sprite"))) continue;
             Fragment fragment = new Fragment(); fragment.frames = new String[]{CampaignCatalog.spriteKey(renderer.get("m_Sprite"))};
             fragment.scale = CampaignCatalog.pose(record, renderer.get("m_GameObject").getString("fileID")).sx;
             s.fragments.add(fragment);

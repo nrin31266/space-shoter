@@ -84,6 +84,8 @@ public final class CampaignCatalog {
         String id = null;
         for (JsonValue doc : record.get("documents")) if (doc.getString("type").equals("Transform")) {
             JsonValue d = doc.get("data");
+            // Scene có stripped Transform của prefab instance, không mô tả pose độc lập.
+            if (!d.has("m_GameObject")) continue;
             transforms.put(doc.getString("fileID"), d);
             if (d.get("m_GameObject").getString("fileID").equals(objectId)) id = doc.getString("fileID");
         }
@@ -112,6 +114,11 @@ public final class CampaignCatalog {
             if (String.valueOf(data.getString("m_EditorClassIdentifier", "")).endsWith("." + className)) result.add(data);
         }
         return result;
+    }
+
+    public static boolean hasSpriteReference(JsonValue reference) {
+        return reference != null && reference.has("guid") && !reference.getString("guid").isEmpty()
+                && !reference.getString("fileID", "0").equals("0");
     }
 
     public static String spriteKey(JsonValue reference) {

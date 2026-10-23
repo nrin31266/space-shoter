@@ -73,7 +73,7 @@ public final class PrefabVisual {
             if (!doc.getString("type").equals("SpriteRenderer")) continue;
             if (transientRenderers.containsKey(doc.getString("fileID"))) continue;
             JsonValue d = doc.get("data");
-            if (d.getInt("m_Enabled") == 0 || !d.get("m_Sprite").has("guid")) continue;
+            if (d.getInt("m_Enabled") == 0 || !CampaignCatalog.hasSpriteReference(d.get("m_Sprite"))) continue;
             String objectId = d.get("m_GameObject").getString("fileID");
             String transformId = objectTransform.get(objectId);
             if (transformId == null) continue;
@@ -124,7 +124,7 @@ public final class PrefabVisual {
     }
 
     private static CampaignAssets.Sprite optional(CampaignAssets assets, JsonValue ref) {
-        return ref == null || !ref.has("guid") ? null : assets.sprite(ref);
+        return !CampaignCatalog.hasSpriteReference(ref) ? null : assets.sprite(ref);
     }
 
     public void draw(SpriteBatch batch, float x, float y, float scale, float rotation, float clock, float hpFraction, float alpha) {
