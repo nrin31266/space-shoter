@@ -55,7 +55,7 @@ public final class CampaignCombatCheck {
         CampaignStore.State cleared = new CampaignStore.State(); cleared.missionCleared = true;
         CampaignWorld resumed = new CampaignWorld(catalog, cleared, false, new CampaignWorld.Listener() {
             public void sound(int cue) {}
-            public void checkpoint(CampaignStore.State state) { throw new AssertionError("Cleared Continue wrote checkpoint"); }
+            public void checkpoint(CampaignStore.State state) { assert state.mission == 2 && state.encounter == 0 && !state.missionCleared : "Cleared Continue commits incoming entry"; }
         });
         assert resumed.stage == CampaignWorld.Stage.MISSION_TRAVEL && resumed.enemies.size == 0;
         System.out.println("Real-time attacks, boss phases/cancel, replay isolation, playable bounds and cleared Continue: OK");

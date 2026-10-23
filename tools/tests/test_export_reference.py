@@ -60,3 +60,24 @@ class ExportReferenceTest(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class RuntimeCatalogTest(unittest.TestCase):
+    def test_prune_replaces_static_and_preserves_production_dependencies(self):
+        catalog = {
+            'records': {
+                'scene': {'path': 'Scenes/02_Gameplay.unity', 'documents': [{'image': {'guid': 'old', 'fileID': '1'}, 'asset': {'guid': 'item'}}]},
+                'item': {'path': 'Data/Rewards/Item.asset', 'documents': []},
+                'fixture': {'path': 'Data/Fixtures/Old.asset', 'documents': []}},
+            'sprites': {
+                'old:1': {'path': 'art/VFX/loop.png', 'name': 'loop'},
+                'sheet:2': {'path': 'art/VFX/loop-sheet.png', 'name': 'loop_00'}},
+            'resources': {'old': 'art/VFX/loop.png', 'sheet': 'art/VFX/loop-sheet.png', 'beam': 'art/VFX/beam-energy.png'},
+            'files': ['art/VFX/loop.png', 'art/VFX/loop-sheet.png', 'art/VFX/beam-energy.png'],
+            'sha256': {'art/VFX/loop.png': 'old', 'art/VFX/loop-sheet.png': 'new', 'art/VFX/beam-energy.png': 'beam'}}
+        removed = exporter.prune_runtime(catalog)
+        self.assertEqual(removed, ['art/VFX/loop.png'])
+        self.assertEqual(set(catalog['records']), {'scene', 'item'})
+        self.assertEqual(catalog['records']['scene']['documents'][0]['image'], {'guid': 'sheet', 'fileID': '2', 'type': 3})
+        self.assertIn('art/VFX/beam-energy.png', catalog['files'])
+        self.assertEqual(exporter.prune_runtime(catalog), [])

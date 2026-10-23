@@ -2,10 +2,11 @@
 
 ## Runtime hiện tại
 
-LoadingScreen xếp hàng tải texture/audio bằng AssetManager; TextureRegistry và
-AudioManager giữ các tham chiếu để dùng lại. Các PNG đang được load riêng lẻ,
-chưa có TextureAtlas chung. Tài nguyên được chuẩn bị offline; runtime chỉ load
-file đã hoàn thiện.
+LoadingScreen khởi tạo CampaignAssets qua AssetManager. Atlas được pack offline,
+sprite giữ rect/pivot/PPU và audio được load/cache một lần; runtime không đọc Unity.
+Exporter giữ dependency production, đổi placeholder tĩnh sang frame sheet đang dùng
+và bỏ record/file không còn dependency. Repack xóa thư mục atlas-input cũ trước copy
+để ảnh đã loại không quay lại atlas.
 
 ## Chuẩn bị tài nguyên
 
@@ -27,8 +28,8 @@ Nguồn, tác giả và license thuộc [tài nguyên](assets.md).
 AssetManager sở hữu tài nguyên đã load; không dispose riêng từng texture/sound
 của manager. Cache region sau khi tìm trong atlas; không findRegion, tạo font
 hoặc load file mỗi frame. Pool projectile/effect tần suất cao và reset khi reuse.
-TextureRegistry hiện dùng static cache; kiểm tra reset khi Activity hoặc màn
-hình được tạo lại trước khi mở rộng pipeline.
+CampaignAssets/CampaignAudio sở hữu cache theo MainGame; Activity tạo lại load
+phiên mới. Preview extras được tiêu thụ một lần, không tự mở lại màn thử.
 
 ## Thay và dọn asset
 

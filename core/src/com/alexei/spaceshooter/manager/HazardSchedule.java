@@ -6,7 +6,6 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.JsonWriter;
 
 import java.util.Locale;
-import java.util.Random;
 
 public final class HazardSchedule {
 
@@ -79,7 +78,7 @@ public final class HazardSchedule {
         String prefabJson = prefabRef.toJson(JsonWriter.OutputType.json);
 
         int seed = getInt(config, 521, "Seed", "seed");
-        Random random = new Random(seed);
+        RewardRules.SourceRandom random = new RewardRules.SourceRandom(seed);
 
         JsonReader reader = new JsonReader();
         Array<JsonValue> result = new Array<JsonValue>(count);

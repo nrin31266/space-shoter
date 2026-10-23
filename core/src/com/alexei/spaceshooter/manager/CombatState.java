@@ -15,6 +15,8 @@ public class CombatState {
     public float fireRateMultiplier = 1f;
 
     public boolean overheated;
+    public boolean overheatedJustTriggered;
+    public boolean ventJustTriggered;
     public boolean shield;
     public float coolingTimer;
 
@@ -98,9 +100,7 @@ public class CombatState {
         switch (item.getInt("Kind")) {
             case 0: return true;
             case 1: return save.weaponLevels[item.getInt("Branch")] < 5;
-            case 2: return !shield;
-            case 3: return overdriveRemaining <= 0;
-            case 4: return droneRemaining <= 0;
+            case 2: case 3: case 4: return true;
             case 5: return save.missiles < 3;
             case 6: return save.lives < 5;
             default: throw new IllegalArgumentException("Unknown pickup kind");
@@ -198,6 +198,7 @@ public class CombatState {
                 heat = 0f;
                 overheated = false;
                 coolingTimer = 0f;
+                ventJustTriggered = true;
             }
         } else {
             if (held) {
@@ -206,6 +207,7 @@ public class CombatState {
                 if (heat >= capacity) {
                     heat = capacity;
                     overheated = true;
+                    overheatedJustTriggered = true;
                 }
             } else {
                 if (coolingTimer > 0f) {

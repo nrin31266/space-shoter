@@ -12,5 +12,7 @@ public final class CampaignChecks {
         CampaignCombatCheck.main(args);
         CampaignParityCheck.main(args);
         CampaignFlowCheck.main(args);
+        CampaignPresentationCheck.main(args);
+        CampaignContractCheck.main(args);
     }
 }

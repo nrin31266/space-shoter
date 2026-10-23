@@ -6,7 +6,7 @@
 level 0; core mở hoặc tăng level rồi chọn nhánh đó. `CampaignWorld` đọc cadence,
 projectile count/spread/spacing/damage, splash và homing từ catalog weapon.
 Thermal profile giữ capacity, heat rate, cooling delay/rate và overheat latch.
-Các lớp weapon/Item legacy không được runtime campaign gọi.
+Các lớp weapon/Item legacy không còn đường gọi đã được xóa.
 
 Missile reserve khởi đầu 1, trần 3; cooldown .8 giây, flight .32 giây và protection
 .7 giây. Detonate dọn đạn địch; normal mất HP còn lại, large nhận 60% max HP,

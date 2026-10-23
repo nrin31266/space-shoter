@@ -14,7 +14,8 @@ public final class BossCombat {
     }
     public static final class Beam {
         public float fromX, fromY, toX, toY, width;
-        public boolean active, warning;
+        public boolean active, warning, field;
+        final BeamContact contact = new BeamContact();
     }
     public static final class SkillCue {
         public JsonValue data;
@@ -25,6 +26,7 @@ public final class BossCombat {
     }
     public final Array<SkillCue> cues = new Array<>();
     public final Array<Node> nodes = new Array<>();
+    private final Array<float[]> coreShapes = new Array<>();
     public final Array<Beam> beams = new Array<>();
     public boolean phaseB;
     public final String shieldSprite;
@@ -72,7 +74,34 @@ public final class BossCombat {
             if (world.direction() == 1) { float w = node.halfWidth; node.halfWidth = node.halfHeight; node.halfHeight = w; }
             nodes.add(node);
         }
+        // Khung collisionShape của flight chỉ để tính biên, không nhận đạn.
+        for (JsonValue doc : enemy.spec.record.get("documents")) {
+            JsonValue box = doc.get("data");
+            if (!doc.getString("type").equals("BoxCollider2D") || box.getInt("m_Enabled", 1) == 0) continue;
+            String id = box.get("m_GameObject").getString("fileID");
+            boolean nodeShape = false;
+            for (Node node : nodes) if (node.objectId.equals(id)) nodeShape = true;
+            if (nodeShape) continue;
+            CampaignCatalog.Pose p = CampaignCatalog.pose(enemy.spec.record, id);
+            coreShapes.add(new float[]{p.x + box.get("m_Offset").getFloat("x") * p.sx,
+                    p.y + box.get("m_Offset").getFloat("y") * p.sy,
+                    box.get("m_Size").getFloat("x") * Math.abs(p.sx) * .5f,
+                    box.get("m_Size").getFloat("y") * Math.abs(p.sy) * .5f});
+        }
         updateNodes();
+    }
+
+    public float coreHitFraction(CampaignWorld.Shot shot, float shotHW, float shotHH) {
+        float nearest = Float.POSITIVE_INFINITY;
+        for (float[] box : coreShapes) {
+            boolean right = world.direction() == 1;
+            float x = enemy.x + (right ? box[1] : box[0]) * enemy.scale;
+            float y = enemy.y + (right ? -box[0] : box[1]) * enemy.scale;
+            nearest = Math.min(nearest, CampaignWorld.segmentFraction(shot, x, y,
+                    (right ? box[3] : box[2]) * enemy.scale + shotHW,
+                    (right ? box[2] : box[3]) * enemy.scale + shotHH));
+        }
+        return nearest;
     }
 
     private void updateNodes() {
@@ -174,6 +203,7 @@ public final class BossCombat {
                 muzzles.add(CampaignCatalog.pose(enemy.spec.record, transform.get("m_GameObject").getString("fileID")));
             }
             if (muzzles.size == 0) throw new IllegalArgumentException("Boss module has no muzzle");
+            lower.field = upper.field = true;
             beams.add(beam); beams.add(lower); beams.add(upper);
             for (JsonValue presentation : world.catalog.components(enemy.spec.record, "BossSkillPhasePresentation")) {
                 if (CampaignWorld.local(enemy.spec.record, presentation.get("module")) != data
@@ -218,6 +248,7 @@ public final class BossCombat {
             if (busy) cuePhase(4);
             busy = active = false;
             beam.active = beam.warning = lower.active = lower.warning = upper.active = upper.warning = false;
+            beam.contact.reset(); lower.contact.reset(); upper.contact.reset();
             if (directed != null) directed.cancel();
             if (isBeam) enemy.motionPaused = false;
         }
@@ -300,6 +331,7 @@ public final class BossCombat {
         }
 
         void band(Beam b, float from, float to) {
+            if (!active) b.contact.reset();
             float center = (from + to) * .5f;
             if (world.direction() == 0) {
                 b.fromX = b.toX = center * world.width;
@@ -320,9 +352,7 @@ public final class BossCombat {
     }
 
     private void applyBeam(Beam beam) {
-        float dx = beam.toX - beam.fromX, dy = beam.toY - beam.fromY;
-        float t = MathUtils.clamp(((world.playerX - beam.fromX) * dx + (world.playerY - beam.fromY) * dy) / Math.max(.0001f, dx * dx + dy * dy), 0, 1);
-        float radius = beam.width * .5f + world.playerSpec.halfWidth;
-        if (Vector2.dst2(world.playerX, world.playerY, beam.fromX + t * dx, beam.fromY + t * dy) <= radius * radius) world.hitPlayer();
+        if (beam.contact.hit(beam.fromX, beam.fromY, beam.toX, beam.toY, beam.width,
+                world.playerX, world.playerY, world.playerSpec.halfWidth)) world.hitPlayer();
     }
 }

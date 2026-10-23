@@ -11,6 +11,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.utils.Json;
 
 public class MainGame extends Game {
+    public final com.alexei.spaceshooter.manager.DevRunConfig devConfig = new com.alexei.spaceshooter.manager.DevRunConfig();
     private final AssetManager assetManager = new AssetManager();
     public CampaignAssets assets;
     public CampaignAudio audio;

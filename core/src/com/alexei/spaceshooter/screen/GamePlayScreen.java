@@ -25,6 +25,7 @@ public final class GamePlayScreen extends ScreenAdapter {
     public final CampaignWorld world;
     private final CampaignRenderer renderer;
     private final CampaignUi ui;
+    private final com.badlogic.gdx.utils.JsonValue hudConfig;
     private final Stage stage = new Stage(new ExtendViewport(1280, 720));
     private final Table hud = new Table(), overlay = new Table();
     private final Label status, score, shard, heat, title, bossStatus, effects;
@@ -39,7 +40,8 @@ public final class GamePlayScreen extends ScreenAdapter {
     private TextButton pauseButton;
     private final Image[] heatNotches = new Image[4];
     private Label bossPercentage;
-    private boolean settingsOpen;
+    private boolean settingsOpen, devMenuOpen, shownAwaitingContinue;
+    private Table heatFillLayer;
     private Runnable confirmAction;
     private String confirmCopy;
     private final CampaignStore.State initial;
@@ -55,6 +57,7 @@ public final class GamePlayScreen extends ScreenAdapter {
 
     public GamePlayScreen(MainGame game, CampaignStore.State state, boolean replay, boolean withIntro) {
         this.game = game;
+        game.audio.clearGameplay();
         initial = game.copy(state);
         ui = new CampaignUi(game.assets);
         world = new CampaignWorld(game.assets.catalog, state, replay, new CampaignWorld.Listener() {
@@ -64,16 +67,24 @@ public final class GamePlayScreen extends ScreenAdapter {
         });
         if (withIntro) world.introduceMission();
         renderer = new CampaignRenderer(game.assets, world);
-        status = ui.hudLabel(""); score = ui.hudLabel(""); shard = ui.hudLabel(""); heat = ui.hudLabel(""); title = ui.title("");
+        status = ui.digitLabel(""); score = ui.digitLabel(""); shard = ui.digitLabel(""); heat = ui.hudLabel(""); title = ui.title("");
         shard.setColor(com.badlogic.gdx.graphics.Color.GOLD);
+        score.setFontScale(38f * .8f / 42f); shard.setFontScale(38f * .8f / 42f); status.setFontScale(.8f);
         title.setFontScale(.5f);
         hud.setFillParent(true); hud.top().pad(12);
         Table thermal = new Table();
-        thermal.add(heat).left().row();
+        Table heatHeading = new Table();
+        Label caption = ui.hudLabel("NHIỆT"); caption.setFontScale(.85f); heat.setFontScale(.8f);
+        heatHeading.add(caption).left().expandX(); heatHeading.add(heat).right();
+        thermal.add(heatHeading).width(205).left().row();
         Stack gauge = new Stack();
+        heatFrame = new Image(ui.icon("UI/ui-heat-housing.png"));
+        gauge.add(heatFrame);
+        heatFillLayer = new Table();
+        heatFillLayer.left().padLeft(3.2f).padRight(3.2f).padTop(4f).padBottom(4f);
         heatFill = new Image(ui.icon("UI/ui-heat-fill.png"));
-        gauge.add(heatFill);
-        heatFrame = new Image(ui.icon("UI/ui-heat-housing.png")); gauge.add(heatFrame);
+        heatFillLayer.add(heatFill).left().height(12).width(0);
+        gauge.add(heatFillLayer);
         Table notches = new Table();
         for (int i = 0; i < 4; i++) {
             heatNotches[i] = new Image(ui.icon("UI/ui-heat-notch.png"));
@@ -81,9 +92,10 @@ public final class GamePlayScreen extends ScreenAdapter {
         }
         gauge.add(notches);
         thermal.add(gauge).size(205, 20);
-        com.badlogic.gdx.utils.JsonValue hudConfig = null;
+        com.badlogic.gdx.utils.JsonValue foundHudConfig = null;
         for (com.badlogic.gdx.utils.JsonValue doc : game.assets.catalog.record("Scenes/02_Gameplay.unity").get("documents"))
-            if (doc.get("data").has("heatVentFrames")) hudConfig = doc.get("data");
+            if (doc.get("data").has("heatVentFrames")) foundHudConfig = doc.get("data");
+        hudConfig = foundHudConfig;
         if (hudConfig == null) throw new IllegalArgumentException("Missing HUD configuration");
         String[] ventKeys = CampaignWorld.frames(hudConfig.get("heatVentFrames"));
         ventFrames = new com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable[ventKeys.length];
@@ -96,7 +108,7 @@ public final class GamePlayScreen extends ScreenAdapter {
         totals.add(new Image(ui.icon("UI/ui-shard.png"))).size(32);
         hud.add(totals).center().expandX();
         pauseButton = ui.button("", () -> setPaused(true));
-        pauseButton.clearChildren(); pauseButton.add(new Image(ui.icon("UI/ui-icon-pause.png"))).size(42);
+        pauseButton.clearChildren(); pauseButton.pad(0); pauseButton.add(new Image(ui.icon("UI/ui-icon-pause.png"))).size(42);
         hud.add(pauseButton).width(58).height(58).row();
         bossStatus = ui.hudLabel("");
         bossPercentage = ui.hudLabel("");
@@ -133,7 +145,7 @@ public final class GamePlayScreen extends ScreenAdapter {
             if (!world.missile()) game.audio.cue(34);
             else if (game.profile.vibrationEnabled) Gdx.input.vibrate(500);
         });
-        missileButton.clearChildren();
+        missileButton.clearChildren(); missileButton.pad(0);
         missileButton.add(new Image(ui.icon("UI/ui-ammo.png"))).size(51.2f).padRight(0);
         missileButton.add(missileButton.getLabel()); missileButton.getLabel().setFontScale(.8f);
         controls.add(missileButton).size(122, 67).padBottom(10).row();
@@ -141,15 +153,24 @@ public final class GamePlayScreen extends ScreenAdapter {
             if (!paused && world.gameplayInput() && world.player.cycle()) { world.revision++; game.audio.cue(32); }
         });
         weaponIcon = new Image(ui.icon("UI/ui-weapon-pulse.png"));
-        weaponButton.clearChildren(); weaponButton.add(weaponIcon).size(57.6f).padRight(0);
+        weaponButton.clearChildren(); weaponButton.pad(0); weaponButton.add(weaponIcon).size(57.6f).padRight(0);
         weaponButton.add(weaponButton.getLabel()); weaponButton.getLabel().setFontScale(.8f);
         weaponButton.getLabel().setColor(com.badlogic.gdx.graphics.Color.CYAN);
         TextButton.TextButtonStyle controlStyle = new TextButton.TextButtonStyle(ui.buttonStyle);
         controlStyle.up = ui.panel;
-        weaponButton.setStyle(controlStyle); missileButton.setStyle(controlStyle); pauseButton.setStyle(controlStyle);
+        missileButton.setStyle(controlStyle); pauseButton.setStyle(controlStyle);
+        TextButton.TextButtonStyle weaponStyle = new TextButton.TextButtonStyle(controlStyle); weaponStyle.font = game.assets.digitFont;
+        weaponButton.setStyle(weaponStyle); weaponButton.getLabel().setFontScale(40f * .8f / 42f);
+        missileButton.getLabel().setFontScale(32f * .8f / 28f);
         controls.add(weaponButton).size(122, 74);
         hud.add(controls).right().bottom();
         hud.setTouchable(Touchable.childrenOnly);
+        thermal.clearChildren();
+        thermal.addActor(gauge); thermal.addActor(caption); thermal.addActor(heat); thermal.addActor(heatVent);
+        gauge.setBounds(16, 11.2f, 204.8f, 19.2f);
+        caption.setBounds(8, 35.2f, 76.8f, 22.4f);
+        heat.setBounds(108.8f, 36.8f, 112, 25.6f); heat.setAlignment(Align.right);
+        heatVent.setBounds(225.6f, 9.6f, 22.4f, 22.4f);
         heatGauge = thermal; lifePanel = life; indicatorPanel = indicators;
         coinPanel = new Table(); coinPanel.add(shard).padRight(6.4f); coinPanel.add(new Image(ui.icon("UI/ui-shard.png"))).size(32);
         hud.clearChildren();
@@ -169,7 +190,7 @@ public final class GamePlayScreen extends ScreenAdapter {
     private void setPaused(boolean value) {
         if (world.stage == CampaignWorld.Stage.GAME_OVER || world.stage == CampaignWorld.Stage.RESULT) return;
         if (!value && !game.flushPending()) { refreshOverlay(); return; }
-        paused = value; settingsOpen = false; confirmAction = null; clearPointer(); accumulator = 0;
+        paused = value; settingsOpen = false; devMenuOpen = false; confirmAction = null; pendingDragX = pendingDragY = 0; accumulator = 0;
         refreshOverlay();
     }
 
@@ -180,6 +201,7 @@ public final class GamePlayScreen extends ScreenAdapter {
 
     private void refreshOverlay() {
         overlay.clear();
+        if (paused && devMenuOpen) { showDevMenu(); return; }
         if (paused && settingsOpen) { showSettings(); return; }
         if (paused && confirmAction != null) { showConfirmation(); return; }
         if (paused) { showPause(); return; }
@@ -234,7 +256,7 @@ public final class GamePlayScreen extends ScreenAdapter {
     }
 
     private void showPause() {
-        Table panel = shellPanel(560, 520);
+        Table panel = shellPanel(560, 560);
         Label heading = ui.title("TẠM DỪNG"); heading.setFontScale(.5f); heading.setAlignment(Align.center);
         panel.add(heading).height(60.8f).row();
         Label detail = ui.hudLabel(game.saveError != null ? "Chưa lưu được tiến độ. Hãy thử lưu lại trước khi tiếp tục."
@@ -252,8 +274,27 @@ public final class GamePlayScreen extends ScreenAdapter {
             });
         })).height(57.6f).row();
         panel.add(ui.secondary("CÀI ĐẶT", () -> { settingsOpen = true; refreshOverlay(); })).height(57.6f).row();
+        panel.add(ui.secondary("DEV FAST MODE", () -> { devMenuOpen = true; refreshOverlay(); })).height(57.6f).row();
         panel.add(ui.secondary("MÀN HÌNH CHÍNH", () -> confirm("Rời nhiệm vụ?\nKhi tiếp tục, bạn sẽ trở về đầu đợt đã lưu. Phần đang chơi sẽ được bỏ qua.", this::menu))).height(57.6f);
         stage.setKeyboardFocus(resume);
+    }
+
+    private void showDevMenu() {
+        Table panel = new Table(); panel.defaults().pad(4);
+        panel.add(new DevPanel(game, ui, () -> { devMenuOpen = false; refreshOverlay(); })).width(1000).height(540).row();
+        if (world.replay) {
+            Table actions = new Table(); actions.defaults().pad(3).height(44);
+            actions.add(ui.secondary("ĐẠN ĐỊCH THỬ", () -> { world.devSpawnHostileShot(); setPaused(false); }));
+            actions.add(ui.secondary("TIẾP TẾ", () -> { world.devFullSupplies(); setPaused(false); }));
+            actions.add(ui.secondary("DIỆT ĐỊCH", () -> { world.devKillAllEnemies(); setPaused(false); }));
+            panel.add(actions).row();
+            panel.add(ui.secondary("ÁP DỤNG SÚNG / ĐẠN GIẢ VÀ CHƠI TIẾP", () -> {
+                world.devApplyLoadout(game.devConfig.level, game.devConfig.weapon, game.devConfig.fakeShots);
+                if (world.devGodMode != game.devConfig.god) world.devGodModeToggle();
+                setPaused(false);
+            })).height(44).growX().row();
+        }
+        overlay.add(panel);
     }
 
     private void confirm(String copy, Runnable action) {
@@ -264,10 +305,10 @@ public final class GamePlayScreen extends ScreenAdapter {
         Table panel = shellPanel(608, 280);
         Label copy = ui.label(confirmCopy); copy.setWrap(true); copy.setAlignment(Align.center);
         panel.add(copy).colspan(2).grow().row();
-        TextButton agree = ui.button("ĐỒNG Ý", () -> confirmAction.run());
-        panel.add(agree).width(260).height(57.6f);
         TextButton cancel = ui.secondary("HỦY", () -> { confirmAction = null; refreshOverlay(); });
-        panel.add(cancel).width(260).height(57.6f); stage.setKeyboardFocus(cancel);
+        panel.add(cancel).width(260).height(57.6f);
+        TextButton agree = ui.button("ĐỒNG Ý", () -> confirmAction.run());
+        panel.add(agree).width(260).height(57.6f); stage.setKeyboardFocus(agree);
     }
 
     private void showSettings() {
@@ -310,8 +351,10 @@ public final class GamePlayScreen extends ScreenAdapter {
             @Override public boolean touchDragged(int x, int y, int id) {
                 if (id != pointer) return false;
                 if (world.awaitingContinue()) { tapStarted = -1; return true; }
-                pendingDragX += (x - lastX) * world.width / Gdx.graphics.getWidth();
-                pendingDragY += (lastY - y) * world.height / Gdx.graphics.getHeight();
+                if (!paused && world.player.canInput() && world.gameplayInput()) {
+                    pendingDragX += (x - lastX) * world.width / Gdx.graphics.getWidth();
+                    pendingDragY += (lastY - y) * world.height / Gdx.graphics.getHeight();
+                }
                 lastX = x; lastY = y;
                 return true;
             }
@@ -326,8 +369,22 @@ public final class GamePlayScreen extends ScreenAdapter {
                 clearPointer(); return true;
             }
             @Override public boolean keyDown(int key) {
+                if (key == Input.Keys.F1 || key == Input.Keys.F2 || key == Input.Keys.D) {
+                    if (paused && devMenuOpen) {
+                        devMenuOpen = false;
+                        setPaused(false);
+                    } else {
+                        paused = true;
+                        settingsOpen = false;
+                        devMenuOpen = true;
+                        clearPointer();
+                        refreshOverlay();
+                    }
+                    return true;
+                }
                 if (key == Input.Keys.BACK || key == Input.Keys.ESCAPE) {
-                    if (settingsOpen) { settingsOpen = false; refreshOverlay(); }
+                    if (devMenuOpen) { devMenuOpen = false; refreshOverlay(); }
+                    else if (settingsOpen) { settingsOpen = false; refreshOverlay(); }
                     else if (confirmAction != null) { confirmAction = null; refreshOverlay(); }
                     else setPaused(!paused);
                     return true;
@@ -346,7 +403,7 @@ public final class GamePlayScreen extends ScreenAdapter {
             }
         };
         Gdx.input.setInputProcessor(new InputMultiplexer(stage, playInput));
-        game.audio.music("bgm-combat");
+        game.audio.music(world.stage == CampaignWorld.Stage.BRIEFING ? "bgm-hub" : "bgm-combat");
     }
 
     @Override public void render(float delta) {
@@ -357,9 +414,12 @@ public final class GamePlayScreen extends ScreenAdapter {
                 world.move(pendingDragX, pendingDragY); pendingDragX = pendingDragY = 0;
                 world.update(1f / 60); accumulator -= 1f / 60;
             }
-            if (!world.player.canInput()) clearPointer();
+            if (!world.player.canInput()) pendingDragX = pendingDragY = 0;
         }
         if (game.saveError != null && !paused && world.stage != CampaignWorld.Stage.RESULT && world.stage != CampaignWorld.Stage.GAME_OVER) setPaused(true);
+        game.audio.gameplayPaused = paused || world.stage == CampaignWorld.Stage.GAME_OVER;
+        game.audio.musicDuck = world.stage == CampaignWorld.Stage.GAME_OVER ? .12f : world.stage == CampaignWorld.Stage.BOSS_POST_DEATH ? .15f
+                : world.cinematic() || world.stage == CampaignWorld.Stage.MISSION_TRAVEL || world.stage == CampaignWorld.Stage.HANDOFF ? .55f : 1;
         game.audio.tick(seconds);
         renderer.render(seconds);
         if (shownRevision != world.revision) {
@@ -403,7 +463,12 @@ public final class GamePlayScreen extends ScreenAdapter {
                 else notch.setColor(.86f, .96f, 1, .8f);
             }
             heat.setText(world.player.overheated ? "XẢ NHIỆT" : currentHeat >= 80 ? "NÓNG" : "");
-            heatFill.setScaleX(Math.max(0, Math.min(1, currentHeat / 100f)));
+            float fillFraction = Math.max(0f, Math.min(1f, currentHeat / 100f));
+            if (heatFillLayer != null) {
+                heatFillLayer.getCell(heatFill).width(198.6f * fillFraction);
+                heatFillLayer.invalidate();
+            }
+            heatFill.setScaleX(1f);
             if (world.player.overheated) heatFill.setColor(1, .36f, .22f, 1);
             else if (currentHeat >= 80) heatFill.setColor(1, .74f, .2f, 1);
             else heatFill.setColor(.26f, .92f, 1, 1);
@@ -411,11 +476,11 @@ public final class GamePlayScreen extends ScreenAdapter {
             else if (currentHeat >= 80) heatFrame.setColor(1, .86f, .55f, 1);
             else heatFrame.setColor(com.badlogic.gdx.graphics.Color.WHITE);
         }
-        if (shownStage != world.stage) {
-            shownStage = world.stage;
+        if (shownStage != world.stage || shownAwaitingContinue != world.awaitingContinue()) {
+            shownStage = world.stage; shownAwaitingContinue = world.awaitingContinue();
             if (!world.gameplayInput()) clearPointer();
             refreshOverlay();
-            game.audio.music(world.stage == CampaignWorld.Stage.RESULT || world.stage == CampaignWorld.Stage.GAME_OVER ? "bgm-hub" : world.encounter.getInt("Completion") == 3 ? "bgm-boss" : "bgm-combat");
+            game.audio.music((world.stage == CampaignWorld.Stage.RESULT || world.stage == CampaignWorld.Stage.BRIEFING) ? "bgm-hub" : world.encounter.getInt("Completion") == 3 ? "bgm-boss" : "bgm-combat");
         }
         String bossText = "";
         bossPanel.setVisible(false);
@@ -451,20 +516,42 @@ public final class GamePlayScreen extends ScreenAdapter {
         float left = Gdx.graphics.getSafeInsetLeft() * scale, right = Gdx.graphics.getSafeInsetRight() * scale;
         float bottom = Gdx.graphics.getSafeInsetBottom() * scale, top = Gdx.graphics.getSafeInsetTop() * scale;
         float usableWidth = width - left - right, usableHeight = height - bottom - top;
-        heatGauge.setBounds(left + 11.2f, height - top - 68.8f, 240, 60.8f);
-        score.setBounds(left + usableWidth * .42f - 64, height - top - 67.2f, 128, 51.2f);
-        coinPanel.setBounds(left + usableWidth * .62f - 64, height - top - 67.2f, 128, 51.2f);
-        pauseButton.setBounds(width - right - 70.4f, height - top - 70.4f, 57.6f, 57.6f);
+        com.badlogic.gdx.utils.JsonValue hudScene = game.assets.catalog.record("Scenes/02_Gameplay.unity");
+        com.badlogic.gdx.math.Rectangle heatBox = ui.hudBounds(hudScene, parentReference(hudScene, hudConfig.get("heatFrame")), width, height);
+        heatGauge.setBounds(heatBox.x, heatBox.y, heatBox.width, heatBox.height);
+        com.badlogic.gdx.utils.JsonValue scene = game.assets.catalog.record("Scenes/02_Gameplay.unity");
+        // Count do LayoutGroup quản; dùng khung Score/Shard thay RectTransform con zero-size.
+        com.badlogic.gdx.utils.JsonValue scoreRect = hudConfig.get("scoreLabel");
+        com.badlogic.gdx.math.Rectangle scoreBox = ui.hudBounds(scene, parentReference(scene, scoreRect), width, height);
+        score.setBounds(scoreBox.x, scoreBox.y, scoreBox.width, scoreBox.height);
+        com.badlogic.gdx.math.Rectangle shardBox = ui.hudBounds(scene, parentReference(scene, hudConfig.get("shardLabel")), width, height);
+        coinPanel.setBounds(shardBox.x, shardBox.y, shardBox.width, shardBox.height);
+        placeHud(pauseButton, "pauseButton", scene, width, height);
         lifePanel.setBounds(left, bottom + 6.4f, 105.6f, 57.6f);
         indicatorPanel.setBounds(left + usableWidth * .5f - 88, bottom + 20.8f, 176, 76.8f);
-        weaponButton.setBounds(width - right - 128, bottom + 8, 121.6f, 73.6f);
-        missileButton.setBounds(width - right - 128, bottom + 94.4f, 121.6f, 67.2f);
+        placeHud(weaponButton, "weaponButton", scene, width, height);
+        placeHud(missileButton, "missileButton", scene, width, height);
         effects.setBounds(left + usableWidth * .5f - 208, bottom + 106.4f, 416, 27.2f);
         boolean missionTitle = world.announcement.startsWith("NHIỆM VỤ");
         title.setBounds(left + usableWidth * .5f - 440, bottom + usableHeight * (missionTitle ? .67f : .87f) - 20, 880, 40);
         bossPanel.setBounds(left + usableWidth * .27f, height - top - 84, usableWidth * .46f, 40);
     }
-    @Override public void pause() { setPaused(true); }
+    private com.badlogic.gdx.utils.JsonValue parentReference(com.badlogic.gdx.utils.JsonValue scene, com.badlogic.gdx.utils.JsonValue reference) {
+        com.badlogic.gdx.utils.JsonValue component = CampaignWorld.local(scene, reference);
+        String objectId = component.get("m_GameObject").getString("fileID");
+        for (com.badlogic.gdx.utils.JsonValue doc : scene.get("documents")) {
+            com.badlogic.gdx.utils.JsonValue rect = doc.get("data");
+            if (rect.has("m_AnchorMin") && rect.get("m_GameObject").getString("fileID").equals(objectId)) return rect.get("m_Father");
+        }
+        throw new IllegalArgumentException("Missing HUD parent");
+    }
+
+    private void placeHud(Actor actor, String field, com.badlogic.gdx.utils.JsonValue scene, float width, float height) {
+        com.badlogic.gdx.math.Rectangle bounds = ui.hudBounds(scene, hudConfig.get(field), width, height);
+        actor.setBounds(bounds.x, bounds.y, bounds.width, bounds.height);
+    }
+
+    @Override public void pause() { clearPointer(); setPaused(true); }
     @Override public void hide() { clearPointer(); Gdx.input.setInputProcessor(null); }
     @Override public void dispose() { renderer.dispose(); stage.dispose(); }
 }

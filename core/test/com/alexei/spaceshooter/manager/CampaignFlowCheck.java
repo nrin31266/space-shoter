@@ -63,8 +63,11 @@ public final class CampaignFlowCheck {
         assert world.awaitingContinue() && world.save.mission == 4 && world.save.regionReady;
         CampaignWorld restored = world(catalog, cleared, false);
         assert restored.awaitingContinue() : "Continue restores destination without replaying journey";
+        assert Math.abs(restored.playerX / restored.width - .18f) < .001f && Math.abs(restored.playerY / restored.height - .5f) < .001f : "Restored planet arrival preserves ship pose";
         assert restored.acceptBriefing() && restored.gameplayInput() && restored.direction() == 1;
-        while (restored.save.mission == 4) restored.update(DT);
+        int arrivalFrames = 0;
+        while (restored.save.mission == 4 && arrivalFrames < 300) { restored.update(DT); arrivalFrames++; }
+        assert arrivalFrames >= 197 && arrivalFrames <= 201 : "Planet 2 arrival uses .7/1.8/.8 seconds: " + arrivalFrames;
         assert restored.save.mission == 5 && !restored.save.regionReady;
         CampaignWorld dying = world(catalog, new CampaignStore.State(), false);
         dying.stage = CampaignWorld.Stage.HANDOFF; dying.stageClock = 10;

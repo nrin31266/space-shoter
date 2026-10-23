@@ -183,3 +183,89 @@ không lấy mặc định C# khi scene override (planet scale .8 → 1.03).
     (hướng bay ngang), đạn chùm/laser directed beam và modal kết thúc lượt/thử lại.
 - Mã nguồn và tài nguyên đã được commit vào nhánh `main`. Tiếp tục bám sát gameplay
   chuẩn cho tới khi đạt độ tương đương hoàn toàn.
+
+## Sửa presentation sau bàn giao — 2026-10-24
+
+- Tiếp tục working tree đang có; không sửa repository Unity nguồn, không commit/push.
+  Dùng hướng dẫn game-feel/audio-design để đối chiếu event, không thêm generator asset.
+- Sao menu/combat dùng texture speed-streak có sẵn, giảm footprint và mật độ overlay;
+  combat cuộn theo heading. Muzzle bám socket tàu, giữ nhịp .1 s; bỏ thanh trắng
+  giả vệt projectile. Impact Pulse/Plasma/Homing/Rock dùng bank/scale riêng tại điểm
+  swept collision; đạn drone vẫn giữ branch Pulse khi player đang cầm Homing.
+- Thiên thạch dùng bốn bộ size/damage/critical đã author, không phóng thêm scale
+  lên artwork vốn đã có kích thước riêng. Pickup dùng .14 s/frame, alpha expiry;
+  collection bám player. Bổ sung smoke, survival frames, strike launch tại origin;
+  sửa khóa sprite support để không crash khi buff drone xuất hiện.
+- Reserve splash về .5–2.4 và alpha 1–t; vòng impact mỏng theo source. Boss field
+  dùng ion-curtain alpha riêng, beam có lõi và warning mảnh. Cue charge đọc size
+  serialized. Audio thêm Heavy charge/shot, Homing impact, boss explosion beats,
+  WarpPass/TransitionWind và journey phase cues.
+- Boundary hint đọc màu/hold/segment serialized; độ dày 2 pixel theo framebuffer,
+  chỉ ở cạnh viewport bị giới hạn. Bỏ việc clamp tự tạo pressure chỉ vì tàu gần mép;
+  pressure bắt đầu từ thao tác kéo vượt biên, reset khi thả tay hoặc vùng mở rộng.
+- `:core:checkCampaignPresentation :android:assembleDebug -Pandroid.builder.sdkDownload=false`
+  PASS với JDK17/API34. Regression gồm ba impact banks/điểm trúng, drone branch,
+  12 asteroid states, restricted/full-screen boundary và nearby parity death/respawn/
+  zoom/fire backlog. Không chạy lại sweep toàn chiến dịch hoặc tooling không liên quan.
+- Toàn bộ 186 PNG nằm trong atlas, 44 WAV và các font khớp SHA-256 catalog;
+  đối chiếu thêm 235 file export với source hiện tại không có khác biệt. Đây là
+  bằng chứng đóng gói và giữ nguyên asset, không phải bằng chứng tất cả đã xuất hiện
+  đúng sự kiện khi chơi. Chưa nghiệm thu 100% runtime asset usage hoặc nghe audio mix.
+- APK debug cuối đã cài emulator-5554; đã quan sát menu, briefing, giữ bắn/nhiệt,
+  boundary mảnh đúng mép và reserve missile giảm kho/nổ. Log AndroidRuntime/libgdx
+  theo PID lượt chạy mới không có lỗi. Ảnh tại build/verification/presentation-*.png.
+  Preview là replay isolated, không ghi campaign/profile. Chưa kiểm thiết bị thật/iOS.
+
+## Chốt audit và phản hồi bổ sung — 2026-10-24
+
+Chi tiết và giới hạn ở [port audit](port-audit.md). Đã sửa continuous asteroid transit,
+beam swept contact, collider projectile, boss part hitboxes, reward sau staged death,
+held-input/terminal freeze, checkpoint incoming mission và Planet 2 restore/timing.
+HUD resolve đúng hierarchy nguồn; sao lớn nhẹ, ribbon gradient theo Unity và warning rõ hơn.
+
+- `:core:checkCampaign :android:assembleDebug` PASS; 8 missions/21 encounters,
+  save/replay, collision/flow/presentation/HUD regressions. Tooling: 24 Python tests PASS.
+- Cleanup: 59 Java legacy, 17 PNG superseded, 22 unreachable records đã bỏ.
+  Export hiện tại 216 records/447 sprites/218 resources; 169 PNG, 44 WAV trong APK.
+- Fresh pruned export khớp toàn bộ dữ liệu/resources/hash với catalog hiện tại.
+- APK cài một lần cuối, mở menu thường. Dev smoke Vanguard + kéo ribbon + HUD;
+  ảnh `build/verification/final-menu.png`, `final-trail-hud.png`, `final-boss.png`.
+  Save trước/sau Dev smoke không đổi; log lượt mới không có AndroidRuntime/libgdx error.
+- Không tìm thấy auto-retry loop; thêm terminal freeze và tiêu thụ preview intent một lần.
+  Các lần restart do build/install trước đó không được tính là bằng chứng app tự crash.
+- Chưa nghiệm thu chơi tay toàn campaign, nghe mix trên thiết bị thật, FPS thật hoặc iOS.
+  Không claim mọi asset đã kích hoạt đúng event hay 100% parity.
+
+## Dev UI và chạm tiếp tục Planet 2 — 2026-10-24
+
+- DevPanel chung menu/pause: dropdown màn, đợt, route, branch/level; God, skip
+  intro và fake shots. Route boss/phase B/victory, chuyển mission, full Planet 2
+  journey hoặc vào thẳng chờ chạm. Selection có nền checked, underline và marker.
+- Fake shots giữ collider/impact nhưng không direct/splash damage; pause Dev
+  có áp dụng loadout rồi chơi tiếp, đạn địch thử, supplies và kill enemies.
+  Controls runtime chỉ có trong replay; route launch luôn copy state, không ghi save.
+- Sửa overlay theo awaitingContinue đổi ngay trong REGION_TRAVEL. Chỉ có lời nhắc
+  "Chạm để tiếp tục" và chạm màn hình như Planet 1; không có nút riêng theo yêu cầu.
+  Direct/restored ready route giữ title, pose và background vùng đến.
+- `:core:checkCampaign :android:assembleDebug` PASS cho thay đổi cơ chế/UI chung;
+  sau sửa nhỏ final, `:core:checkCampaignContracts :android:assembleDebug` PASS.
+  Dev regressions gồm invalid route, full journey/tap, phase B, fake impact/splash,
+  apply loadout và campaign guard. Docs checker và diff whitespace PASS.
+- Emulator: đã nhìn dropdown selection, Dev pause, full flight → waiting → M5;
+  final tap-only ready → M5. Ảnh `build/verification/dev-planet2-tap-final.png`,
+  `dev-planet2-gameplay-final.png`, `dev-pause-final.png`. Save byte-for-byte không đổi.
+- Không kiểm thiết bị thật/iOS hoặc toàn bộ tổ hợp Dev; không claim toàn bộ
+  Inspector/debug visualization của Unity đã được chuyển.
+
+## Cổng cuối trước PR — 2026-10-24
+
+- Chạy lại `:core:checkCampaign :android:assembleDebug`: PASS. Bao phủ 8 missions /
+  21 encounters, hai boss, actual attack scheduling/phase/cancel, save/replay,
+  transitions/Planet 2 tap, input/death, reward, HUD/assets và Dev controls.
+- 24 Python tooling tests PASS; docs checker PASS và diff whitespace sạch.
+- Giữ nguyên save trên emulator; đã kiểm trực tiếp Dev pause, full journey và
+  tap-only tới M5 ở mốc trên. Các kiểm tra này không chứng minh không còn mọi
+  sai lệch hình ảnh/audio/balance trên thiết bị thật; giữ giới hạn trong port audit.
+- Tách toàn bộ 4 commit local cùng các sửa tiếp theo sang `codex/campaign-custom`.
+  `codex/old-custom` giữ remote main ban đầu `ff38f3f`; local main trở về mốc đó.
+  Không rewrite remote main hoặc force-push; tích hợp qua pull request.

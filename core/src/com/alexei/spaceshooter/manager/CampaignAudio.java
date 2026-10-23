@@ -11,10 +11,14 @@ public final class CampaignAudio {
     private final Sound[] sounds = new Sound[41];
     private final JsonValue[] cues = new JsonValue[41];
     private final float[] nextPlay = new float[41];
-    private final long[][] voices = new long[41][4];
-    private final int[] voiceCursor = new int[41];
+    private final AudioVoices pool = new AudioVoices();
+    private final Sound[] voiceSounds = new Sound[16];
+    private final long[] voiceHandles = new long[16];
+    private final float[] durations = new float[41];
+    public boolean gameplayPaused;
+    public float musicDuck = 1;
     private Music current, outgoing;
-    private float clock, fade = 1, duck, musicGain;
+    private float clock, fade = 1, duck = 1, musicGain, outgoingGain;
     private boolean suspended;
     public float musicVolume = .65f, sfxVolume = .8f;
 
@@ -26,27 +30,29 @@ public final class CampaignAudio {
             cues[id] = cue;
             String path = assets.catalog.root.get("resources").getString(cue.get("Clip").getString("guid"));
             sounds[id] = assets.sound(path.substring(path.lastIndexOf('/') + 1, path.length() - 4));
-            for (int i = 0; i < 4; i++) voices[id][i] = -1;
+            durations[id] = assets.catalog.root.get("audioSeconds").getFloat(path);
         }
     }
 
     public void cue(int id) {
         if (suspended || sfxVolume <= 0 || sounds[id] == null || clock < nextPlay[id]) return;
         JsonValue cue = cues[id];
-        nextPlay[id] = clock + cue.getFloat("Interval");
-        int slot = voiceCursor[id]++ % cue.getInt("MaxVoices");
-        if (voices[id][slot] >= 0) sounds[id].stop(voices[id][slot]);
         float variation = cue.getFloat("Variation");
-        voices[id][slot] = sounds[id].play(cue.getFloat("Volume") * sfxVolume,
-                1 + MathUtils.random(-variation, variation), 0);
-        if (cue.getInt("Tier") <= 1) duck = .35f;
+        float pitch = 1 + MathUtils.random(-variation, variation);
+        int slot = pool.acquire(id, cue.getInt("Tier"), cue.getInt("MaxVoices"), clock, durations[id] / pitch, cue.getFloat("Volume"));
+        if (slot < 0) return;
+        nextPlay[id] = clock + cue.getFloat("Interval");
+        if (voiceSounds[slot] != null) voiceSounds[slot].stop(voiceHandles[slot]);
+        pool.tick(clock, 0);
+        voiceSounds[slot] = sounds[id];
+        voiceHandles[slot] = sounds[id].play(pool.gain(slot, clock, gameplayPaused) * sfxVolume, pitch, 0);
     }
 
     public void music(String name) {
         Music target = assets.music(name);
         if (target == current) return;
         if (outgoing != null) outgoing.stop();
-        outgoing = current;
+        outgoing = current; outgoingGain = musicGain;
         current = target;
         fade = 0;
         musicGain = palette.getFloat(name.equals("bgm-hub") ? "MusicLevel" : "GameplayMusicLevel");
@@ -59,14 +65,27 @@ public final class CampaignAudio {
 
     public void tick(float seconds) {
         clock += seconds;
-        fade = Math.min(1, fade + seconds / .8f);
-        duck = Math.max(0, duck - seconds);
-        float volume = musicVolume * musicGain * (duck > 0 ? .55f : 1);
-        if (current != null) current.setVolume(volume * fade);
+        fade = Math.min(1, fade + seconds / .85f);
+        pool.tick(clock, seconds);
+        for (int i = 0; i < voiceSounds.length; i++) if (voiceSounds[i] != null)
+            voiceSounds[i].setVolume(voiceHandles[i], pool.gain(i, clock, gameplayPaused) * sfxVolume);
+        float targetDuck = Math.min(musicDuck, Math.min(gameplayPaused ? .3f : 1, pool.danger(clock) ? .45f : 1));
+        duck += MathUtils.clamp(targetDuck - duck, -seconds * 5, seconds * 1.6f);
+        if (current != null) current.setVolume(musicVolume * musicGain * duck * fade);
         if (outgoing != null) {
-            outgoing.setVolume(volume * (1 - fade));
+            outgoing.setVolume(musicVolume * outgoingGain * duck * (1 - fade));
             if (fade >= 1) { outgoing.stop(); outgoing = null; }
         }
+    }
+
+    public void clearGameplay() {
+        for (int i = 0; i < 14; i++) {
+            if (voiceSounds[i] != null) voiceSounds[i].stop(voiceHandles[i]);
+            voiceSounds[i] = null;
+        }
+        pool.clearGameplay();
+        for (int i = 0; i < nextPlay.length; i++) if (i < 32 || i > 34) nextPlay[i] = 0;
+        gameplayPaused = false; musicDuck = 1;
     }
 
     public void suspend(boolean value) {

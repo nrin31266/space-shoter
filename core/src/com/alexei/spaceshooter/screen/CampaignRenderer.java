@@ -28,13 +28,13 @@ public class CampaignRenderer implements Disposable {
     private JsonValue chassis, trail;
     private String chassisKey;
     private String[] engineFrames, trailFrames;
-    private final float[] trailX = new float[24], trailY = new float[24], trailAge = new float[24];
-    private int trailCursor;
+    private final com.alexei.spaceshooter.effect.MovementTrail movementTrail = new com.alexei.spaceshooter.effect.MovementTrail();
     private float lastTrailClock = -1, lastPlayerX, lastPlayerY;
 
-    private float backgroundX, backgroundY, previousBackgroundClock, starDistance;
+    private float backgroundX, backgroundY, previousBackgroundClock, starDistance, combatStarDistance;
     private com.badlogic.gdx.graphics.g2d.TextureRegion[] streaks;
-    private JsonValue introPresentation;
+    private JsonValue introPresentation, boundaryHint;
+    private float boundaryOpacity, boundaryClock, hintX, hintY, hintWidth, hintHeight;
     private String bgBaseKey;
     private String bgAltKey;
     private String planetAstraKey;
@@ -42,6 +42,12 @@ public class CampaignRenderer implements Disposable {
     private String debrisKey;
     private String shieldKey;
     private String beamKey;
+    private String reserveMissileKey;
+    private String[] missileSplashFrames;
+    private float playerBank, previousRenderClock;
+    private String starKey, ionFieldKey, supportKey;
+    private String[] survivalFrames, activeShieldFrames;
+    private CampaignCatalog.Pose supportPose;
 
     public CampaignRenderer(CampaignAssets assets, CampaignWorld world) {
         this.assets = assets;
@@ -49,8 +55,11 @@ public class CampaignRenderer implements Disposable {
         this.batch = new SpriteBatch();
         this.camera = new OrthographicCamera();
         resolveKnownSpriteKeys();
+        missileSplashFrames = CampaignWorld.framesByName(assets.catalog, "missile-splash_");
+        if (reserveMissileKey == null) reserveMissileKey = world.reserveMissileKey;
         JsonValue scene = assets.catalog.record("Scenes/02_Gameplay.unity");
         introPresentation = assets.catalog.component(scene, "MissionIntroPresentation");
+        boundaryHint = assets.catalog.component(scene, "PlayableAreaPresentation");
         JsonValue stars = local(scene, introPresentation.get("stars"));
         streaks = new com.badlogic.gdx.graphics.g2d.TextureRegion[stars.get("m_Children").size];
         int index = 0;
@@ -70,8 +79,14 @@ public class CampaignRenderer implements Disposable {
         if (chassis == null || trail == null) throw new IllegalArgumentException("Unknown equipped cosmetic");
         chassisKey = CampaignCatalog.spriteKey(chassis.get(world.save.equippedCosmetics[1].equals("skin-amber") ? "AmberSprite" : "Sprite"));
         engineFrames = CampaignWorld.frames(cosmetics.get("EngineFrames"));
+        JsonValue support = assets.catalog.component(world.playerSpec.record, "SupportDrone");
+        JsonValue renderer = CampaignWorld.local(world.playerSpec.record, support.get("visual"));
+        supportKey = CampaignCatalog.spriteKey(renderer.get("m_Sprite"));
+        supportPose = CampaignCatalog.pose(world.playerSpec.record, renderer.get("m_GameObject").getString("fileID"));
+        JsonValue feedback = assets.catalog.component(world.playerSpec.record, "PlayerCombatPresentation");
+        survivalFrames = CampaignWorld.frames(feedback.get("survivalFrames"));
+        activeShieldFrames = CampaignWorld.framesByName(assets.catalog, "shield-activate-break_");
         trailFrames = CampaignWorld.frames(trail.get("AnimationFrames"));
-        java.util.Arrays.fill(trailAge, -100);
         lastPlayerX = world.playerX; lastPlayerY = world.playerY;
     }
 
@@ -85,7 +100,11 @@ public class CampaignRenderer implements Disposable {
         }
         for (JsonValue entry = sprites.child; entry != null; entry = entry.next) {
             String path = entry.getString("path", "");
-            if (path.endsWith("Environments/background.png")) {
+            if (path.endsWith("VFX/ion-curtain.png")) {
+                ionFieldKey = entry.name;
+            } else if (path.endsWith("VFX/speed-streak.png")) {
+                starKey = entry.name;
+            } else if (path.endsWith("Environments/background.png")) {
                 bgBaseKey = entry.name;
             } else if (path.endsWith("Environments/crimson-background.png")) {
                 bgAltKey = entry.name;
@@ -95,10 +114,11 @@ public class CampaignRenderer implements Disposable {
                 planetCrimsonKey = entry.name;
             } else if (path.endsWith("Environments/parallax-debris.png")) {
                 debrisKey = entry.name;
-            } else if (path.endsWith("VFX/shield-activate-break.png") && entry.name.endsWith(":21300000")) {
-                shieldKey = entry.name;
+
             } else if (path.endsWith("VFX/beam-energy.png") && entry.name.endsWith(":21300000")) {
                 beamKey = entry.name;
+            } else if (path.endsWith("Projectiles/reserve-missile.png")) {
+                reserveMissileKey = entry.name;
             }
         }
     }
@@ -136,9 +156,13 @@ public class CampaignRenderer implements Disposable {
         renderEnemies();
         renderCorpses();
         renderBeams();
-        renderPlayer();
+        float scaledDelta = Math.max(0, world.clock - previousRenderClock);
+        previousRenderClock = world.clock;
+        renderPlayer(scaledDelta);
         renderProjectiles();
         renderBursts();
+        renderEmergencyMissile();
+        renderBoundaryHint();
 
         batch.end();
     }
@@ -204,6 +228,21 @@ public class CampaignRenderer implements Disposable {
                 batch.draw(streaks[i], x * world.width - w / 2, y * world.height - h / 2, w / 2, h / 2, w, h, 1, 1, heading);
             }
         } else starDistance = 0;
+
+        float combatStarSpeed = (speed > 0 ? speed : .035f) * delta;
+        combatStarDistance += combatStarSpeed;
+        for (int i = 0; i < 96; i++) {
+            float depth = .35f + (i % 3) * .32f;
+            float x = repeat(i * .618034f + MathUtils.sinDeg(heading) * combatStarDistance * depth, 1f);
+            float y = repeat(i * .4371f - MathUtils.cosDeg(heading) * combatStarDistance * depth, 1f);
+            float size = world.height / 900f * (1.6f + (i % 4) * .65f) * depth;
+            float twinkle = .72f + .28f * MathUtils.sin(world.clock * (3f + (i % 5)) + i);
+            float a = (.22f + .5f * depth) * twinkle;
+            if (i % 5 == 0) batch.setColor(.55f, .85f, 1f, a);
+            else if (i % 7 == 0) batch.setColor(1f, .9f, .75f, a * .85f);
+            else batch.setColor(.9f, .95f, 1f, a);
+            batch.draw(assets.sprite(starKey).region, x * world.width - size * .5f, y * world.height - size * .5f, size, size);
+        }
         batch.setColor(1, 1, 1, 1);
     }
 
@@ -218,7 +257,7 @@ public class CampaignRenderer implements Disposable {
                     world.height * .5f + y * sprite.height + oy, 1, 0);
     }
 
-    private void renderPlayer() {
+    private void renderPlayer(float delta) {
         CombatState player = world.player;
         if (player == null || player.deathRemaining > 0f) {
             return;
@@ -239,39 +278,45 @@ public class CampaignRenderer implements Disposable {
             return;
         }
 
+        float dt = Math.max(0.001f, Math.min(0.1f, delta));
+        float lateral = world.direction() == 0 ? (drawX - lastPlayerX) : -(drawY - lastPlayerY);
+        float targetBank = (player.canInput()) ? MathUtils.clamp(-lateral / dt * 1.2f, -8f, 8f) : 0f;
+        if (delta > 0) playerBank = MathUtils.lerp(playerBank, targetBank, 1f - (float)Math.exp(-dt * 12f));
+        float idleWobble = (player.canInput() && Math.abs(lateral) < 0.001f) ? MathUtils.sin(world.clock * 2.2f) * 0.8f : 0f;
+        float totalRotation = world.presentationRotation() + playerBank + idleWobble;
+
         if (world.playerSpec != null && world.playerSpec.record != null) {
-            renderCosmetics(drawX, drawY, alpha);
+            renderCosmetics(drawX, drawY, alpha, totalRotation);
         }
 
-        if (shieldKey != null && player.shield) {
+        if (player.droneRemaining > 0 && player.canInput()) {
+            float cos = MathUtils.cosDeg(totalRotation), sin = MathUtils.sinDeg(totalRotation);
+            assets.draw(batch, supportKey, drawX + supportPose.x * cos - supportPose.y * sin,
+                    drawY + supportPose.x * sin + supportPose.y * cos, supportPose.sx, totalRotation + supportPose.rotation);
+        }
+
+        if (activeShieldFrames.length > 0 && player.shield) {
             batch.setColor(1f, 1f, 1f, 0.8f);
-            assets.draw(batch, shieldKey, drawX, drawY, 1.2f, world.clock * 60f);
+            assets.draw(batch, activeShieldFrames[(int)(world.clock / .12f) % activeShieldFrames.length], drawX, drawY, 1.5f, totalRotation);
             batch.setColor(1f, 1f, 1f, 1f);
         }
     }
 
-    private void renderCosmetics(float x, float y, float alpha) {
-        float rotation = world.presentationRotation(), cos = MathUtils.cosDeg(rotation), sin = MathUtils.sinDeg(rotation);
+    private void renderCosmetics(float x, float y, float alpha, float rotation) {
+        float cos = MathUtils.cosDeg(rotation), sin = MathUtils.sinDeg(rotation);
         float lifetime = trail.getFloat("TrailSeconds");
-        if (world.clock != lastTrailClock) {
-            if (trailFrames.length > 0 && lifetime > 0 && world.player.canInput()
-                    && com.badlogic.gdx.math.Vector2.dst2(x, y, lastPlayerX, lastPlayerY) > .0001f) {
-                JsonValue socket = chassis.get("MovementTrailSocket");
-                float sx = socket.getFloat("x"), sy = socket.getFloat("y");
-                trailX[trailCursor] = x + sx * cos - sy * sin;
-                trailY[trailCursor] = y + sx * sin + sy * cos;
-                trailAge[trailCursor] = world.clock;
-                trailCursor = (trailCursor + 1) % trailX.length;
-            }
-            lastTrailClock = world.clock; lastPlayerX = x; lastPlayerY = y;
+        if (world.player.protection > 0 && survivalFrames.length > 0 && world.clock % .3f < .2f) {
+            batch.setColor(1, 1, 1, alpha);
+            assets.draw(batch, survivalFrames[(int)(world.clock / .1f) % survivalFrames.length], x, y, 1.5f, rotation);
         }
-        if (trailFrames.length > 0 && lifetime > 0) for (int i = 0; i < trailX.length; i++) {
-            float progress = (world.clock - trailAge[i]) / lifetime;
-            if (progress < 0 || progress >= 1) continue;
-            batch.setColor(1, 1, 1, alpha * (1 - progress) * .55f);
-            assets.draw(batch, trailFrames[Math.min(trailFrames.length - 1, (int)(progress * trailFrames.length))],
-                    trailX[i], trailY[i], .6f, rotation);
-        }
+        JsonValue trailSocket = chassis.get("MovementTrailSocket");
+        float sxTrail = trailSocket.getFloat("x"), syTrail = trailSocket.getFloat("y");
+        movementTrail.update(x + sxTrail * cos - syTrail * sin, y + sxTrail * sin + syTrail * cos,
+                world.clock, Math.min(lifetime, .16f), world.player.canInput() && world.player.deathRemaining <= 0);
+        if (trailFrames.length > 0 && lifetime > 0)
+            movementTrail.draw(batch, assets.whiteRegion,
+                    world.clock, Math.min(lifetime, .16f), trail.getString("Id").equals("trail-rainbow"), alpha);
+        lastTrailClock = world.clock; lastPlayerX = x; lastPlayerY = y;
         batch.setColor(1, 1, 1, alpha);
         if (engineFrames.length > 0) for (JsonValue socket : chassis.get("EngineSockets")) {
             float sx = socket.getFloat("x"), sy = socket.getFloat("y") - .35555f * chassis.getFloat("PlumeScale");
@@ -279,6 +324,13 @@ public class CampaignRenderer implements Disposable {
                     x + sx * cos - sy * sin, y + sx * sin + sy * cos, chassis.getFloat("PlumeScale"), rotation);
         }
         assets.draw(batch, chassisKey, x, y, 1, rotation);
+        if (world.muzzleRemaining > 0) {
+            String[] frames = world.muzzleFrames[world.save.activeWeapon];
+            JsonValue socket = chassis.get("MuzzleSocket");
+            float sx = socket.getFloat("x"), sy = socket.getFloat("y");
+            int frame = Math.min(frames.length - 1, (int)((1 - world.muzzleRemaining / .1f) * frames.length));
+            if (frame >= 0) assets.draw(batch, frames[frame], x + sx * cos - sy * sin, y + sx * sin + sy * cos, .65f, rotation);
+        }
         batch.setColor(1, 1, 1, 1);
     }
 
@@ -302,20 +354,39 @@ public class CampaignRenderer implements Disposable {
 
             float alpha = (enemy.flash > 0.001f) ? 0.6f : 1.0f;
             if (enemy.boss != null) for (BossCombat.Node node : enemy.boss.nodes) visual.setObjectHealth(node.objectId, node.hp / node.maxHp);
-            visual.draw(batch, enemy.x, enemy.y, enemy.scale,
-                    world.rotation() + (enemy.spec.asteroid ? enemy.age * enemy.group.getFloat("VisualSpin", 0) : 0), world.clock, hpFraction, alpha);
+            String asteroidSprite = enemy.spec.asteroidSprite(enemy.scale * enemy.spec.rootScale, hpFraction);
+            float rotation = world.rotation() + (enemy.spec.asteroid ? enemy.age * enemy.group.getFloat("VisualSpin", 0) : 0);
+            if (asteroidSprite != null) {
+                batch.setColor(1, 1, 1, alpha);
+                assets.draw(batch, asteroidSprite, enemy.x, enemy.y, 1, rotation);
+                batch.setColor(1, 1, 1, 1);
+            } else visual.draw(batch, enemy.x, enemy.y, enemy.scale, rotation, world.clock, hpFraction, alpha);
             if (enemy.charge > 0 && enemy.spec.chargeFrames.length > 0) {
-                String frame = enemy.spec.chargeFrames[(int)(world.clock / .07f) % enemy.spec.chargeFrames.length];
+                float age = enemy.spec.fire.getFloat("telegraphDuration") - enemy.charge;
+                String frame = enemy.spec.chargeFrames[Math.min(enemy.spec.chargeFrames.length - 1, Math.max(0, (int)(age / .07f)))];
                 CampaignAssets.Sprite sprite = assets.sprite(frame);
-                float cueScale = world.height * 44 / 900 / sprite.width;
+                JsonValue feedback = enemy.spec.firePresentation;
+                float cueScale = world.height * feedback.getFloat("cueSizeAt900", 44) / 900 / sprite.width;
                 assets.draw(batch, frame, enemy.x, enemy.y, cueScale, world.rotation());
             }
             if (enemy.directed != null && enemy.directed.warning && enemy.spec.warningFrames.length > 0) {
-                String frame = enemy.spec.warningFrames[(int)(world.clock / .07f) % enemy.spec.warningFrames.length];
+                String frame = enemy.spec.warningFrames[Math.min(enemy.spec.warningFrames.length - 1, (int)(enemy.directed.phaseAge() / .07f))];
                 CampaignAssets.Sprite sprite = assets.sprite(frame);
                 boolean strike = enemy.directed.kind == com.alexei.spaceshooter.manager.DirectedSkill.KIND_STRIKE;
                 assets.draw(batch, frame, strike ? enemy.directed.toX : enemy.directed.fromX,
-                        strike ? enemy.directed.toY : enemy.directed.fromY, world.height * (strike ? 96 : 48) / 900 / sprite.width, world.rotation());
+                        strike ? enemy.directed.toY : enemy.directed.fromY, world.height * (strike ? enemy.spec.telegraph.getFloat("strikeCueSizeAt900", 96) * MathUtils.lerp(1.3f, 1, enemy.directed.chargeProgress()) : 48) / 900 / sprite.width, world.rotation());
+            }
+            if (enemy.directed != null && enemy.directed.kind == com.alexei.spaceshooter.manager.DirectedSkill.KIND_STRIKE
+                    && enemy.spec.launchFrames.length > 0 && (enemy.directed.warning || enemy.directed.active && enemy.directed.phaseAge() < .24f)) {
+                float progress = enemy.directed.warning ? enemy.directed.chargeProgress() * .5f : enemy.directed.phaseAge() / .24f;
+                String frame = enemy.spec.launchFrames[Math.min(enemy.spec.launchFrames.length - 1, (int)(progress * enemy.spec.launchFrames.length))];
+                float size = world.height / 900 * enemy.spec.telegraph.getFloat("strikeCueSizeAt900", 96) * (enemy.directed.warning ? .65f : 1);
+                assets.draw(batch, frame, enemy.directed.warning ? enemy.x : enemy.directed.launchX,
+                        enemy.directed.warning ? enemy.y : enemy.directed.launchY, size / assets.sprite(frame).width, world.rotation());
+            }
+            if (hpFraction <= .25f && enemy.spec.smokeFrames.length > 0) {
+                String frame = enemy.spec.smokeFrames[(int)(world.clock / .18f) % enemy.spec.smokeFrames.length];
+                assets.draw(batch, frame, enemy.x, enemy.y, enemy.scale, world.rotation());
             }
             if (enemy.boss != null) renderBossCues(enemy);
             if (enemy.boss != null && enemy.boss.blocksCoreDamage()) {
@@ -338,7 +409,7 @@ public class CampaignRenderer implements Disposable {
             if (frames.length == 0) continue;
             String frame = frames[Math.min(frames.length - 1, (int)(cue.age / cue.data.getFloat("frameSeconds")))];
             JsonValue tint = cue.data.get(cue.phase == 1 ? "prepareTint" : cue.phase == 2 ? "lockTint" : "attackTint");
-            float alpha = tint.getFloat("a");
+            float alpha = cue.phase <= 2 ? Math.max(.9f, tint.getFloat("a")) : tint.getFloat("a");
             if (cue.phase == 4) alpha *= Math.max(0, 1 - cue.age / (cue.data.getFloat("frameSeconds") * frames.length));
             float size = world.height / 900 * cue.data.getFloat("cueSizeAt900") * cue.data.getFloat("cueScale") * (cue.phase == 3 ? 1.15f : cue.phase == 2 ? 1 : .8f);
             float x = enemy.x + (world.direction() == 0 ? cue.pose.x : cue.pose.y) * enemy.scale;
@@ -369,18 +440,32 @@ public class CampaignRenderer implements Disposable {
             if (enemy.directed != null && enemy.directed.kind == com.alexei.spaceshooter.manager.DirectedSkill.KIND_BEAM && (enemy.directed.active || enemy.directed.warning))
                 beam(enemy.directed.fromX, enemy.directed.fromY, enemy.directed.toX, enemy.directed.toY, enemy.directed.width, enemy.directed.active);
             if (enemy.boss != null) for (BossCombat.Beam beam : enemy.boss.beams) {
-                if (beam.active || beam.warning) beam(beam.fromX, beam.fromY, beam.toX, beam.toY, beam.width, beam.active);
+                if (beam.active || beam.warning) beam(beam.fromX, beam.fromY, beam.toX, beam.toY, beam.width, beam.active, beam.field);
             }
         }
     }
 
     private void beam(float ax, float ay, float bx, float by, float width, boolean active) {
+        beam(ax, ay, bx, by, width, active, false);
+    }
+
+    private void beam(float ax, float ay, float bx, float by, float width, boolean active, boolean field) {
         if (beamKey == null) throw new IllegalArgumentException("Missing beam artwork");
         float dx = bx - ax, dy = by - ay;
         float length = (float)Math.sqrt(dx * dx + dy * dy);
-        batch.setColor(active ? .9f : 1, active ? .4f : .65f, active ? .7f : .2f, active ? .8f : .3f);
-        batch.draw(assets.sprite(beamKey).region, ax, ay - width * .5f, 0, width * .5f,
-                length, width, 1, 1, MathUtils.atan2(dy, dx) * MathUtils.radiansToDegrees);
+        float angle = MathUtils.atan2(dy, dx) * MathUtils.radiansToDegrees;
+        if (field) {
+            batch.setColor(1, .12f, .45f, active ? .35f + .035f * MathUtils.sin(world.clock * 20) : .24f);
+            batch.draw(assets.sprite(ionFieldKey).region, ax, ay - width * .5f, 0, width * .5f, length, width, 1, 1, angle);
+        } else {
+            float visibleWidth = active ? width : Math.min(width, .10f);
+            batch.setColor(1, active ? .25f : .65f, active ? .65f : .25f, active ? .88f : 1);
+            batch.draw(assets.sprite(beamKey).region, ax, ay - visibleWidth * .5f, 0, visibleWidth * .5f, length, visibleWidth, 1, 1, angle);
+            if (active) {
+                batch.setColor(1, .94f, 1, 1);
+                batch.draw(assets.sprite(beamKey).region, ax, ay - width * .125f, 0, width * .125f, length, width * .25f, 1, 1, angle);
+            }
+        }
         batch.setColor(1, 1, 1, 1);
     }
 
@@ -393,7 +478,9 @@ public class CampaignRenderer implements Disposable {
             }
             float angleDeg = MathUtils.atan2(shot.vy, shot.vx) * MathUtils.radiansToDegrees - 90f;
             batch.setColor(shot.r, shot.g, shot.b, shot.a);
-            CampaignAssets.Sprite sprite = assets.sprite(shot.sprite);
+            String key = shot.visualFrames != null && shot.visualFrames.length > 0
+                    ? shot.visualFrames[(int)(shot.age / shot.frameSeconds) % shot.visualFrames.length] : shot.sprite;
+            CampaignAssets.Sprite sprite = assets.sprite(key);
             batch.draw(sprite.region, shot.x - sprite.pivotX, shot.y - sprite.pivotY,
                     sprite.pivotX, sprite.pivotY, sprite.width, sprite.height, shot.scaleX, shot.scaleY, angleDeg);
         }
@@ -415,13 +502,15 @@ public class CampaignRenderer implements Disposable {
                 scale = pickup.definition.getFloat("VisualScale", 1.0f);
                 String[] frames = getPickupFrames(pickup.definition);
                 if (frames != null && frames.length > 0) {
-                    int frameIndex = (int) (pickup.age * 10f) % frames.length;
+                    int frameIndex = (int) (pickup.age / .14f) % frames.length;
                     activeSprite = frames[frameIndex];
                 }
             }
 
             if (activeSprite != null) {
-                assets.draw(batch, activeSprite, pickup.x, pickup.y, scale, 0f);
+                batch.setColor(1, 1, 1, pickup.opacity);
+                assets.draw(batch, activeSprite, pickup.x, pickup.y, scale, world.rotation());
+                batch.setColor(1, 1, 1, 1);
             }
         }
     }
@@ -446,6 +535,96 @@ public class CampaignRenderer implements Disposable {
                 }
             }
         }
+    }
+
+    private void renderEmergencyMissile() {
+        if (world.missileFlight > 0) {
+            float total = world.missileFlightDuration > 0 ? world.missileFlightDuration : 0.32f;
+            float t = MathUtils.clamp(1f - world.missileFlight / total, 0f, 1f);
+            float flightCurve = t * t;
+            float targetX = world.width * 0.5f;
+            float targetY = world.height * 0.5f;
+            float mx = MathUtils.lerp(world.missileStartX, targetX, flightCurve);
+            float my = MathUtils.lerp(world.missileStartY, targetY, flightCurve);
+            float angle = MathUtils.atan2(targetY - world.missileStartY, targetX - world.missileStartX) * MathUtils.radiansToDegrees - 90f;
+
+            float cos = MathUtils.cosDeg(angle + 90f), sin = MathUtils.sinDeg(angle + 90f);
+            for (int k = 1; k <= 4; k++) {
+                float trailDist = k * 0.22f;
+                float trailScale = .12f * (1f - k / 5f);
+                batch.setColor(1f, 0.7f - k * 0.1f, 0.2f, 0.7f - k * 0.12f);
+                batch.draw(assets.sprite(starKey).region, mx - cos * trailDist - trailScale * 0.5f,
+                        my - sin * trailDist - trailScale * 0.5f, trailScale, trailScale);
+            }
+
+            batch.setColor(1, 1, 1, 1);
+            if (reserveMissileKey != null) {
+                assets.draw(batch, reserveMissileKey, mx, my, 1.2f, angle);
+            }
+        }
+
+        if (world.missileDetonationRemaining > 0) {
+            float total = world.missileDetonationDuration > 0 ? world.missileDetonationDuration : 0.45f;
+            float t = MathUtils.clamp(1f - world.missileDetonationRemaining / total, 0f, 1f);
+            float cx = world.missileDetonateX;
+            float cy = world.missileDetonateY;
+
+            float maxRadius = world.width;
+            float radius = MathUtils.lerp(0.3f, maxRadius, t);
+            float ringAlpha = (1f - t) * .8f;
+            int segments = 48;
+            float thickness = MathUtils.lerp(.09f, .025f, t);
+            batch.setColor(1f, 0.65f, 0.2f, ringAlpha);
+            for (int s = 0; s < segments; s++) {
+                float a1 = s * 360f / segments;
+                float a2 = (s + 1) * 360f / segments;
+                float x1 = cx + MathUtils.cosDeg(a1) * radius;
+                float y1 = cy + MathUtils.sinDeg(a1) * radius;
+                float x2 = cx + MathUtils.cosDeg(a2) * radius;
+                float y2 = cy + MathUtils.sinDeg(a2) * radius;
+                float segDx = x2 - x1, segDy = y2 - y1;
+                float segLen = (float)Math.sqrt(segDx * segDx + segDy * segDy);
+                batch.draw(assets.whiteRegion, x1, y1 - thickness * 0.5f, 0, thickness * 0.5f,
+                        segLen, thickness, 1, 1, MathUtils.atan2(segDy, segDx) * MathUtils.radiansToDegrees);
+            }
+
+            if (missileSplashFrames != null && missileSplashFrames.length > 0) {
+                int frameIdx = Math.min(missileSplashFrames.length - 1, (int)(t * missileSplashFrames.length));
+                String frame = missileSplashFrames[frameIdx];
+                if (frame != null) {
+                    float splashScale = MathUtils.lerp(.5f, 2.4f, t);
+                    batch.setColor(1f, 1f, 1f, 1f - t);
+                    assets.draw(batch, frame, cx, cy, splashScale, 0f);
+                }
+            }
+            batch.setColor(1, 1, 1, 1);
+        }
+    }
+
+    private void renderBoundaryHint() {
+        float delta = Math.max(0, world.clock - boundaryClock);
+        boundaryClock = world.clock;
+        float hold = boundaryHint.getFloat("holdSeconds", .2f);
+        float target = world.boundaryPressedSeconds >= hold
+                ? .45f + .55f * (float)Math.pow(MathUtils.sin((world.boundaryPressedSeconds - hold) * 8), 2) : 0;
+        boundaryOpacity += MathUtils.clamp(target - boundaryOpacity, -delta / .12f, delta / .12f);
+        if (boundaryOpacity <= .001f) return;
+        if (world.boundaryPressedSeconds > 0) {
+            boolean right = world.playableX + world.playableWidth < .999f && world.boundaryPressureX > .1f;
+            float fraction = boundaryHint.getFloat("segmentLength", .14f);
+            float length = fraction * (right ? world.height : world.width);
+            float thickness = world.height / Math.max(1, Gdx.graphics.getHeight()) * 2;
+            hintWidth = right ? thickness : length;
+            hintHeight = right ? length : thickness;
+            hintX = right ? (world.playableX + world.playableWidth) * world.width
+                    : MathUtils.clamp(world.playerX, length * .5f, world.width - length * .5f);
+            hintY = right ? MathUtils.clamp(world.playerY, length * .5f, world.height - length * .5f)
+                    : (world.playableY + world.playableHeight) * world.height;
+        }
+        JsonValue tint = boundaryHint.get("hintColor");
+        batch.setColor(tint.getFloat("r"), tint.getFloat("g"), tint.getFloat("b"), tint.getFloat("a") * boundaryOpacity);
+        batch.draw(assets.whiteRegion, hintX - hintWidth * .5f, hintY - hintHeight * .5f, hintWidth, hintHeight);
+        batch.setColor(1, 1, 1, 1);
     }
 
     private PrefabVisual getVisual(JsonValue record) {

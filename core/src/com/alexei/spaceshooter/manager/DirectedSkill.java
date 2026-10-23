@@ -29,6 +29,7 @@ public class DirectedSkill {
     public float toX;
     public float toY;
     public float width;
+    public float launchX, launchY;
 
     private boolean busy;
     private float elapsed;
@@ -41,6 +42,7 @@ public class DirectedSkill {
     private float strikeTargetX;
     private float strikeTargetY;
     private float damageCooldown;
+    private final BeamContact beamContact = new BeamContact();
 
     public DirectedSkill(CampaignWorld world, CampaignWorld.Enemy enemy, JsonValue definition) {
         if (definition == null) throw new IllegalArgumentException("Missing directed skill definition");
@@ -85,6 +87,10 @@ public class DirectedSkill {
         width = beamWidth;
     }
 
+    public float phaseAge() { return elapsed; }
+
+    public float chargeProgress() { return Math.min(1, elapsed / chargeSeconds); }
+
     public int phase() {
         return busy ? (active ? 3 : elapsed > trackingSeconds ? 2 : 1) : recovery > 0 ? 4 : 0;
     }
@@ -98,6 +104,7 @@ public class DirectedSkill {
         if (enemy == null || enemy.hp <= 0f || !enemy.canShoot || !enemy.holding) return false;
         if (world == null || world.player == null || !world.player.canInput() || world.player.enemyFireGrace > 0 || world.stage != CampaignWorld.Stage.RUNNING) return false;
 
+        beamContact.reset();
         busy = true;
         active = false;
         warning = true;
@@ -159,10 +166,12 @@ public class DirectedSkill {
                 if (kind == KIND_STRIKE) {
                     world.sound(12);
                     enemy.motionPaused = true;
-                    anchorX = enemy.x;
-                    anchorY = enemy.y;
-                    strikeTargetX = aimNormX * vw;
-                    strikeTargetY = aimNormY * vh;
+                    launchX = anchorX = enemy.x;
+                    launchY = anchorY = enemy.y;
+                    float dx = aimNormX - anchorX / vw, dy = aimNormY - anchorY / vh;
+                    float distance = (float)Math.sqrt(dx * dx + dy * dy);
+                    strikeTargetX = (aimNormX + (distance > .000001f ? dx / distance * .12f : 0)) * vw;
+                    strikeTargetY = (aimNormY + (distance > .000001f ? dy / distance * .12f : 0)) * vh;
                 } else {
                     world.sound(14);
                 }
@@ -173,7 +182,6 @@ public class DirectedSkill {
             if (active) {
                 if (elapsed < activeSeconds) {
                     float t = activeSeconds > 0f ? elapsed / activeSeconds : 1f;
-                    t = t * t * (3 - 2 * t);
                     enemy.x = anchorX + (strikeTargetX - anchorX) * t;
                     enemy.y = anchorY + (strikeTargetY - anchorY) * t;
 
@@ -205,23 +213,7 @@ public class DirectedSkill {
         updateTelegraph();
 
         if (active) {
-            float segDx = toX - fromX;
-            float segDy = toY - fromY;
-            float segLenSq = segDx * segDx + segDy * segDy;
-            float t = 0f;
-            if (segLenSq > 1e-6f) {
-                t = ((world.playerX - fromX) * segDx + (world.playerY - fromY) * segDy) / segLenSq;
-                if (t < 0f) t = 0f;
-                else if (t > 1f) t = 1f;
-            }
-
-            float nx = fromX + t * segDx;
-            float ny = fromY + t * segDy;
-            float radius = world.playerSpec.halfWidth + width * 0.5f;
-            if (com.badlogic.gdx.math.Vector2.dst2(world.playerX, world.playerY, nx, ny) <= radius * radius && damageCooldown <= 0f) {
-                world.hitPlayer();
-                damageCooldown = 0.25f;
-            }
+            if (beamContact.hit(fromX, fromY, toX, toY, width, world.playerX, world.playerY, world.playerSpec.halfWidth)) world.hitPlayer();
 
             if (elapsed >= activeSeconds) {
                 recover();
@@ -303,6 +295,7 @@ public class DirectedSkill {
     }
 
     public void cancel() {
+        beamContact.reset();
         if (kind == KIND_STRIKE) {
             if (busy && active) { enemy.x = anchorX; enemy.y = anchorY; }
             enemy.motionPaused = false;

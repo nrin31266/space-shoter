@@ -1,12 +1,15 @@
 #!/usr/bin/env bash
 # Dùng chung cho build/run; không cài SDK hoặc thay Java mặc định của máy.
 space_android_env() {
-  local root="$1" sdk="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-}}" candidate
+  local root="$1" sdk="${ANDROID_SDK_ROOT:-}" candidate
   local -a players=("$HOME"/Unity/Hub/Editor/*/Editor/Data/PlaybackEngines/AndroidPlayer)
   if [[ -z "$sdk" && -f "$root/local.properties" ]]; then
     sdk="$(sed -n 's/^sdk\.dir=//p' "$root/local.properties" | tr -d '\r')"
   fi
-  if [[ -z "$sdk" || ! -f "$sdk/platforms/android-34/android.jar" ]]; then
+  if [[ -z "$sdk" && -n "${ANDROID_HOME:-}" && -f "${ANDROID_HOME}/platforms/android-34/android.jar" ]]; then
+    sdk="$ANDROID_HOME"
+  fi
+  if [[ -z "$sdk" ]]; then
     for candidate in "$HOME/Android/Sdk" "${players[@]/%//SDK}"; do
       if [[ -f "$candidate/platforms/android-34/android.jar" ]]; then
         sdk="$candidate"
@@ -18,8 +21,8 @@ space_android_env() {
     echo "Thiếu Android API 34. Đặt ANDROID_SDK_ROOT tới SDK có platforms/android-34." >&2
     return 1
   }
-  if [[ -z "${JAVA_HOME:-}" ]] || ! "${JAVA_HOME}/bin/java" -version 2>&1 | head -1 | grep -q '"17\.'; then
-    for candidate in "${players[@]/%//OpenJDK}" /usr/lib/jvm/java-17*; do
+  if [[ -z "${JAVA_HOME:-}" ]] || { [[ -e "${JAVA_HOME:-}" ]] && ! "${JAVA_HOME}/bin/java" -version 2>&1 | head -1 | grep -q '"17\.'; }; then
+    for candidate in "${players[@]/%//OpenJDK}" /usr/lib/jvm/java-17* "$HOME/.sdkman/candidates/java/"*17*; do
       if [[ -x "$candidate/bin/java" ]] && "$candidate/bin/java" -version 2>&1 | head -1 | grep -q '"17\.'; then
         JAVA_HOME="$candidate"
         break

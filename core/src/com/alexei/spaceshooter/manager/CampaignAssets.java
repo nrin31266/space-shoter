@@ -17,7 +17,7 @@ import com.badlogic.gdx.utils.ObjectMap;
 
 public final class CampaignAssets implements Disposable {
     public final CampaignCatalog catalog;
-    public final BitmapFont font, titleFont, hudFont;
+    public final BitmapFont font, titleFont, hudFont, buttonFont, digitFont;
     public final TextureRegion whiteRegion;
     private final Texture whiteTexture;
     private final AssetManager manager;
@@ -66,14 +66,22 @@ public final class CampaignAssets implements Disposable {
         FreeTypeFontGenerator.FreeTypeFontParameter p = new FreeTypeFontGenerator.FreeTypeFontParameter();
         p.characters = FreeTypeFontGenerator.DEFAULT_CHARS + "ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚÝàáâãèéêìíòóôõùúýĂăĐđĨĩŨũƠơƯưẠạẢảẤấẦầẨẩẪẫẬậẮắẰằẲẳẴẵẶặẸẹẺẻẼẽẾếỀềỂểỄễỆệỈỉỊịỌọỎỏỐốỒồỔổỖỗỘộỚớỜờỞởỠỡỢợỤụỦủỨứỪừỬửỮữỰựỲỳỴỵỶỷỸỹ·→–";
         p.minFilter = p.magFilter = Texture.TextureFilter.Linear;
-        p.size = 26;
+        p.size = 24;
         font = generator.generateFont(p);
-        p.size = 20;
-        hudFont = generator.generateFont(p);
         generator.dispose();
+
+        FreeTypeFontGenerator semiBoldGen = new FreeTypeFontGenerator(Gdx.files.internal("campaign/fonts/ChakraPetch-SemiBold.ttf"));
+        p.size = 28;
+        buttonFont = semiBoldGen.generateFont(p);
+        p.size = 22;
+        hudFont = semiBoldGen.generateFont(p);
+        semiBoldGen.dispose();
+
         FreeTypeFontGenerator titleGenerator = new FreeTypeFontGenerator(Gdx.files.internal("campaign/fonts/VT323-Regular.ttf"));
         p.size = 64;
         titleFont = titleGenerator.generateFont(p);
+        p.size = 42;
+        digitFont = titleGenerator.generateFont(p);
         titleGenerator.dispose();
     }
 
@@ -109,7 +117,9 @@ public final class CampaignAssets implements Disposable {
     @Override public void dispose() {
         whiteTexture.dispose();
         font.dispose();
+        buttonFont.dispose();
         hudFont.dispose();
         titleFont.dispose();
+        digitFont.dispose();
     }
 }

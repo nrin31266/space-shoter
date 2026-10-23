@@ -32,6 +32,5 @@ hình ảnh chưa nghiệm thu được ghi riêng ở checkpoint.
 
 ## Phần cũ
 
-`assets/data/waves.json`, WaveManager và EnemyFactory thuộc gameplay wave trước
-campaign; không còn được GamePlayScreen custom gọi. Bản original vẫn ở checkout
-riêng, không thay gameplay. Tiến độ thật ở [checkpoint](../production/checkpoint.md).
+WaveManager/EnemyFactory, wave data và gameplay legacy không còn đường gọi đã
+được xóa khỏi bản custom. Bản original vẫn ở checkout riêng, không thay gameplay. Tiến độ thật ở [checkpoint](../production/checkpoint.md).

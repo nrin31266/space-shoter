@@ -2,9 +2,9 @@
 
 ## Runtime campaign
 
-Bộ `assets/campaign` đang được runtime custom dùng: catalog, atlas, 186 PNG nguồn,
-44 WAV và 3 TTF đã export. Có 464 sprite IDs; inventory 238 records chứa cả dữ liệu
-fixture, không có nghĩa mọi record/file đều xuất hiện trong gameplay production.
+Bộ `assets/campaign` đang được runtime custom dùng: catalog, atlas, 169 PNG nguồn,
+44 WAV và 3 TTF đã export. Có 447 sprite IDs và 216 dependency records production;
+22 records không được dùng và 17 ảnh tĩnh thay bằng sheet đã bị loại.
 Art nguồn được giữ để tái pack, atlas giữ rect/pivot/PPU qua loader.
 
 | Nhóm | Ghi nhận và bằng chứng |

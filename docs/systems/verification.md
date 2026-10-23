@@ -26,7 +26,7 @@ Shard high-water/ownership, flight/formation, lives/heat/swept collision, reward
 hazard, 8 mission/21 encounter bằng test damage và sweep attack theo thời gian.
 Kiểm tra test damage không chứng minh balance hoặc cảm giác chơi thực tế.
 
-DebugConfig/Wave19/Lv7 chỉ còn thuộc code legacy, không điều khiển New Game
+DebugConfig/Wave19/Lv7 legacy đã bị loại, không điều khiển New Game
 campaign. Không chỉnh config đó để thử boss mới. CampaignCombatCheck khởi tạo
 state/encounter trực tiếp cho sweep hàng loạt; không ghi save trên thiết bị.
 
@@ -39,3 +39,13 @@ nghe đúng. Kiểm tra layout ở tỉ lệ màn hình hiện tại và một t
 Mốc gameplay bổ sung regression theo domain và một end-to-end flow; không chạy full
 historical suite sau từng đổi text. Device FPS/thermal và iOS cần môi trường thật
 phù hợp, không suy từ Linux/emulator. Ghi rõ mục nào bị chặn và lý do.
+
+## Đường thử Dev UI
+
+Mở DEV ở menu hoặc F1/F2/D khi chơi, hoặc Pause → DEV FAST MODE.
+Chọn Điểm bắt đầu "Bay tới hành tinh 2" để kiểm đủ chuyến bay M4 → M5;
+chọn "Hành tinh 2 · chờ chạm" để bỏ thời gian bay và kiểm chạm màn hình để tiếp tục ngay.
+Hai đường đều isolated, không ghi save. Đạn giả chỉ bỏ damage của friendly shots,
+không đổi collider/hit VFX; God Mode là tùy chọn riêng cho damage lên player.
+`CampaignContractCheck` chạy `DevRunCheck`: validation route, journey/tap,
+phase B, fake direct/splash, live loadout và guard không đổi campaign.

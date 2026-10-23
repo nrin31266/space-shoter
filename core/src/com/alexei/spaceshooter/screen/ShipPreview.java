@@ -35,7 +35,10 @@ final class ShipPreview extends Actor {
 
     @Override public void draw(Batch batch, float parentAlpha) {
         float fit = Math.min(getWidth() / hull.getRegionWidth(), getHeight() / hull.getRegionHeight());
-        float cx = getX() + getWidth() / 2, cy = getY() + getHeight() / 2;
+        float bobX = MathUtils.sin(age * .9f) * 2f;
+        float bobY = MathUtils.sin(age * 1.2f) * 2f;
+        float wobbleRot = MathUtils.sin(age * 1.1f) * 1.4f;
+        float cx = getX() + getWidth() / 2 + bobX, cy = getY() + getHeight() / 2 + bobY;
         batch.setColor(1, 1, 1, parentAlpha);
         float tail = Float.POSITIVE_INFINITY;
         int i = 0;
@@ -57,8 +60,6 @@ final class ShipPreview extends Actor {
         }
         batch.setColor(1, 1, 1, parentAlpha);
         float w = hull.getRegionWidth() * fit, h = hull.getRegionHeight() * fit;
-        batch.draw(hull, cx - w / 2 + MathUtils.sin(age * .9f) * 1.6f,
-                cy - h / 2 + MathUtils.sin(age * 1.2f) * 1.6f,
-                w / 2, h / 2, w, h, 1, 1, MathUtils.sin(age * 1.1f) * 1.4f);
+        batch.draw(hull, cx - w / 2, cy - h / 2, w / 2, h / 2, w, h, 1, 1, wobbleRot);
     }
 }

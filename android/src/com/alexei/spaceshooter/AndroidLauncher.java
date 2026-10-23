@@ -18,6 +18,9 @@ public class AndroidLauncher extends AndroidApplication {
         boolean debug = (getApplicationInfo().flags & android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0;
         int mission = debug ? getIntent().getIntExtra("preview_mission", 0) : 0;
         int encounter = debug ? getIntent().getIntExtra("preview_encounter", 0) : 0;
+        // Preview chỉ dùng một lần; Activity tạo lại không tự mở lại màn thử.
+        getIntent().removeExtra("preview_mission");
+        getIntent().removeExtra("preview_encounter");
         WindowManager.LayoutParams window = getWindow().getAttributes();
         window.layoutInDisplayCutoutMode = Build.VERSION.SDK_INT >= 30
                 ? WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS

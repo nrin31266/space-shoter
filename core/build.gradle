@@ -25,6 +25,7 @@ tasks.register('packCampaignAtlas', JavaExec) {
     inputs.file rootProject.file('tools/campaign-atlas.json')
     outputs.files rootProject.file('assets/campaign/art.atlas'), rootProject.file('assets/campaign/art.png')
     doFirst {
+        delete file("$buildDir/atlas-input")
         copy { from rootProject.file('assets/campaign/art'); into file("$buildDir/atlas-input") }
         copy { from rootProject.file('tools/campaign-atlas.json'); into file("$buildDir/atlas-input"); rename { 'pack.json' } }
     }
@@ -42,6 +43,22 @@ tasks.register('checkCampaign', JavaExec) {
     dependsOn testClasses
     classpath = sourceSets.test.runtimeClasspath
     mainClass = 'com.alexei.spaceshooter.manager.CampaignChecks'
+    enableAssertions = true
+    args rootProject.file('assets/campaign/catalog.json')
+}
+
+tasks.register('checkCampaignPresentation', JavaExec) {
+    dependsOn testClasses
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'com.alexei.spaceshooter.manager.CampaignPresentationCheck'
+    enableAssertions = true
+    args rootProject.file('assets/campaign/catalog.json')
+}
+
+tasks.register('checkCampaignContracts', JavaExec) {
+    dependsOn testClasses
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'com.alexei.spaceshooter.manager.CampaignContractCheck'
     enableAssertions = true
     args rootProject.file('assets/campaign/catalog.json')
 }

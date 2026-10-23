@@ -6,6 +6,7 @@ import json
 import re
 import shutil
 import struct
+import wave
 import subprocess
 from pathlib import Path
 
@@ -83,6 +84,72 @@ def sprite_records(path, meta, target):
     return result
 
 
+def prune_runtime(catalog):
+    """Chỉ giữ dependency production; bỏ sprite tĩnh đã được sheet thay thế."""
+    roots = {'Scenes/02_Gameplay.unity', 'Audio/AudioPalette.asset',
+             'Data/Cosmetics/ShipCosmetics.asset', 'Prefabs/Player/Player.prefab',
+             'Data/Weapons/PulseLaser.asset', 'Data/Weapons/PlasmaSpread.asset',
+             'Data/Weapons/HomingMissile.asset'}
+    records, sprites = catalog['records'], catalog['sprites']
+    def refs(value):
+        if isinstance(value, dict):
+            if 'guid' in value:
+                yield value['guid']
+            for child in value.values():
+                yield from refs(child)
+        elif isinstance(value, list):
+            for child in value:
+                yield from refs(child)
+    pending = [guid for guid, record in records.items() if record['path'] in roots
+               or re.search(r'/Missions/Mission0[1-8]\.asset$', record['path'])]
+    live = set()
+    while pending:
+        guid = pending.pop()
+        if guid in live or guid not in records:
+            continue
+        live.add(guid)
+        pending.extend(refs(records[guid]['documents']))
+    catalog['records'] = {guid: record for guid, record in records.items() if guid in live}
+    first_frames = {}
+    for key, sprite in sorted(sprites.items(), key=lambda pair: pair[1]['name']):
+        if sprite['path'].endswith('-sheet.png'):
+            first_frames.setdefault(sprite['path'].replace('-sheet.png', '.png'), key)
+    replacements = {}
+    for key, sprite in sprites.items():
+        if sprite['path'] in first_frames:
+            replacements[key] = first_frames[sprite['path']]
+        elif sprite['path'].endswith('/legacy-crate.png'):
+            replacements[key] = None
+    def replace(value):
+        if isinstance(value, dict):
+            key = str(value.get('guid', '')) + ':' + str(value.get('fileID', ''))
+            if key in replacements:
+                target = replacements[key]
+                value.clear()
+                if target is None:
+                    value['fileID'] = '0'
+                else:
+                    value['guid'], value['fileID'] = target.split(':')
+                    value['type'] = 3
+            else:
+                for child in value.values():
+                    replace(child)
+        elif isinstance(value, list):
+            for child in value:
+                replace(child)
+    replace(catalog['records'])
+    used = set(refs(catalog['records']))
+    # Hai texture vật liệu được renderer Java dùng trực tiếp, không là SpriteRenderer nguồn.
+    direct = {'art/VFX/beam-energy.png', 'art/VFX/ion-curtain.png'}
+    paths = {path for guid, path in catalog['resources'].items() if guid in used} | direct
+    removed = [path for path in catalog['files'] if path.endswith('.png') and path not in paths]
+    catalog['files'] = [path for path in catalog['files'] if path not in removed]
+    catalog['sha256'] = {path: digest for path, digest in catalog['sha256'].items() if path not in removed}
+    catalog['sprites'] = {key: sprite for key, sprite in sprites.items() if sprite['path'] not in removed}
+    catalog['resources'] = {guid: path for guid, path in catalog['resources'].items() if path not in removed}
+    return removed
+
+
 def export(source, output):
     source, output = source.resolve(), output.resolve()
     if output == source or source in output.parents:
@@ -133,8 +200,16 @@ def export(source, output):
     commit = subprocess.check_output(['git', '-C', str(source), 'rev-parse', 'HEAD'], text=True).strip()
     catalog = {'schema': 1, 'sourceCommit': commit, 'records': records, 'sprites': sprites,
                'scriptTypes': script_types, 'files': files, 'sha256': hashes, 'resources': resources}
+    catalog['audioSeconds'] = {}
+    for relative in files:
+        if relative.endswith('.wav'):
+            with wave.open(str(output / relative), 'rb') as clip:
+                catalog['audioSeconds'][relative] = clip.getnframes() / clip.getframerate()
+    removed = prune_runtime(catalog)
+    for relative in removed:
+        (output / relative).unlink(missing_ok=True)
     (output / 'catalog.json').write_text(json.dumps(catalog, ensure_ascii=False, indent=2) + '\n')
-    print(f'Export: {len(records)} records, {len(sprites)} sprite IDs, {len(files)} files; source {commit}')
+    print(f"Export: {len(catalog['records'])} records, {len(catalog['sprites'])} sprite IDs, {len(catalog['files'])} files; source {commit}")
     return catalog
 
 

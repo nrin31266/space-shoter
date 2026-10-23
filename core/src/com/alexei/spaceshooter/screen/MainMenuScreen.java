@@ -39,21 +39,32 @@ public final class MainMenuScreen extends ScreenAdapter {
 
     public MainMenuScreen(MainGame game) {
         this.game = game;
+        game.audio.clearGameplay();
         ui = new CampaignUi(game.assets);
         backdrop = new Image(ui.icon("Environments/background.png"));
         backdrop.setScaling(Scaling.fill);
         backdrop.setTouchable(Touchable.disabled);
         stage.addActor(backdrop);
         Actor stars = new Actor() {
-            private float distance;
-            @Override public void act(float delta) { distance += delta * .007f; }
+            private float clock;
+            private final com.badlogic.gdx.graphics.g2d.TextureRegion star = ui.icon("VFX/speed-streak.png").getRegion();
+            private static final int STAR_COUNT = 112;
+            @Override public void act(float delta) { clock += delta; }
             @Override public void draw(Batch batch, float parentAlpha) {
-                batch.setColor(.4f, .7f, .85f, parentAlpha * .26f);
-                for (int i = 0; i < 38; i++) {
-                    float x = (i * .618034f) % 1, y = MathUtils.floor(i * .414214f - distance);
-                    y = i * .414214f - distance - y;
-                    float size = (i % 3 == 0 ? 3 : 2) * .8f;
-                    batch.draw(game.assets.whiteRegion, x * stage.getWidth() - size / 2, y * stage.getHeight() - size / 2, size, size);
+                float w = stage.getWidth(), h = stage.getHeight();
+                for (int i = 0; i < STAR_COUNT; i++) {
+                    float depth = 0.35f + (i % 3) * 0.32f;
+                    float speed = 0.005f * depth;
+                    float x = ((i * 0.618034f) % 1f);
+                    float y = (i * 0.3713f - clock * speed) % 1f;
+                    if (y < 0) y += 1f;
+                    float size = (1.6f + (i % 4) * .65f) * depth;
+                    float twinkle = 0.75f + 0.25f * MathUtils.sin(clock * (2f + (i % 5)) + i);
+                    float alpha = parentAlpha * (0.22f + 0.45f * depth) * twinkle;
+                    if (i % 5 == 0) batch.setColor(0.55f, 0.85f, 1f, alpha);
+                    else if (i % 7 == 0) batch.setColor(1f, 0.88f, 0.7f, alpha * 0.9f);
+                    else batch.setColor(0.85f, 0.95f, 1f, alpha);
+                    batch.draw(star, x * w - size * 0.5f, y * h - size * 0.5f, size, size);
                 }
                 batch.setColor(Color.WHITE);
             }
@@ -128,8 +139,8 @@ public final class MainMenuScreen extends ScreenAdapter {
         navigation.add(ui.secondary("NHIỆM VỤ", this::missions)).height(57.6f).row();
         place(navigation, .75f, .54f, 560, 420);
         Table footer = new Table(); footer.defaults().growX().height(54.4f);
-        TextButton[] controls = {ui.secondary("CÁCH CHƠI", this::help), ui.secondary("CÀI ĐẶT", this::settings), ui.secondary("GIỚI THIỆU", this::credits)};
-        for (int i = 0; i < controls.length; i++) { controls[i].getLabel().setFontScale(.72f); footer.add(controls[i]).padRight(i == 2 ? 0 : 12.8f); }
+        TextButton[] controls = {ui.secondary("CÁCH CHƠI", this::help), ui.secondary("CÀI ĐẶT", this::settings), ui.secondary("GIỚI THIỆU", this::credits), ui.secondary("DEV", this::devMenu)};
+        for (int i = 0; i < controls.length; i++) { controls[i].getLabel().setFontScale(.68f); footer.add(controls[i]).padRight(i == 3 ? 0 : 8f); }
         place(footer, .75f, .17f, 560, 68);
         if (game.saveError != null) place(copy("Không đọc/ghi được save. Dữ liệu được giữ nguyên.\n" + game.saveError, true), .5f, .055f, 1300, 60);
         if (game.pendingCheckpoint != null) place(ui.secondary("THỬ LƯU LẠI", () -> { game.flushPending(); home(); }), .28f, .055f, 480, 60);
@@ -141,8 +152,8 @@ public final class MainMenuScreen extends ScreenAdapter {
         Table card = new Table(); card.setBackground(ui.modal); card.pad(28); card.defaults().pad(12);
         card.add(copy(message, true)).colspan(2).grow().row();
         TextButton no = ui.secondary("HỦY", cancel);
-        card.add(ui.button("ĐỒNG Ý", accept)).width(250).height(58);
         card.add(no).width(250).height(58);
+        card.add(ui.button("ĐỒNG Ý", accept)).width(250).height(58);
         place(card, .5f, .5f, 900, 420); focus(no);
     }
     private void confirmNewGame() {
@@ -286,9 +297,19 @@ public final class MainMenuScreen extends ScreenAdapter {
         place(text, .5f, .45f, 1360, 600);
     }
 
+    private void devMenu() {
+        clear(); header("DEV FAST MODE");
+        DevPanel panel = new DevPanel(game, ui, this::home);
+        place(panel, .5f, .47f, 1050, 570);
+    }
+
     @Override public void show() {
         Gdx.input.setInputProcessor(new InputMultiplexer(stage, new InputAdapter() {
             @Override public boolean keyDown(int key) {
+                if (key == Input.Keys.F1 || key == Input.Keys.F2 || key == Input.Keys.D) {
+                    devMenu();
+                    return true;
+                }
                 if (key == Input.Keys.BACK || key == Input.Keys.ESCAPE) { back.run(); return true; }
                 return false;
             }

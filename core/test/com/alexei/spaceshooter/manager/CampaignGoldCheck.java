@@ -93,12 +93,21 @@ public final class CampaignGoldCheck {
             if (boss != null) break;
         }
         assert boss != null : "Production boss arrives";
+        CampaignWorld.Shot probe = new CampaignWorld.Shot();
+        probe.x = probe.previousX = boss.x; probe.y = probe.previousY = boss.y;
+        assert boss.boss.coreHitFraction(probe, 0, 0) != Float.POSITIVE_INFINITY : "Core receives contact";
+        probe.x = probe.previousX = boss.x + 6 * boss.scale;
+        probe.y = probe.previousY = boss.y - 1.8f * boss.scale;
+        assert boss.boss.coreHitFraction(probe, 0, 0) == Float.POSITIVE_INFINITY : "Flight envelope is not a boss hitbox";
         for (BossCombat.Node node : boss.boss.nodes) node.hp = 0;
         CampaignWorld.Shot shot = new CampaignWorld.Shot();
         shot.x = shot.previousX = boss.x; shot.y = shot.previousY = boss.y;
         shot.life = 1; shot.damage = boss.hp + 1;
         world.shots.add(shot); world.update(DT);
         assert world.enemies.size == 0 : "Boss defeated through collision";
+        assert world.pickups.size == 0 && world.corpses.size == 1 : "Boss reward waits for staged destruction";
+        for (int tick = 0; tick < 300 && world.corpses.size > 0; tick++) { world.player.protection = 100; world.update(DT); }
+        assert world.corpses.size == 0;
         int shards = 0, majors = 0;
         for (CampaignWorld.Pickup pickup : world.pickups) {
             if (pickup.definition.getInt("Kind") == 0) shards++; else majors++;

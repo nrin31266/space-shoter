@@ -20,7 +20,7 @@ Tap tiếp tục chỉ nhận release bình thường trong .6 giây, drag/cance
 Death giữ hostile attacks đang chạy; enemy grace chỉ chặn attack mới.
 Pause không tiến simulation.
 Thông số weapon/drop thuộc [weapon/item/drop](../content/weapons-items-drops.md).
-Các class Ship/weapon cũ còn trong source nhưng không là runtime custom hiện tại.
+Các class Ship/weapon legacy đã được loại khỏi bản custom; bản original giữ riêng.
 
 ## Cần đối chiếu tiếp
 

@@ -6,8 +6,9 @@
 MainMenuScreen → GamePlayScreen. CampaignWorld chạy simulation, CombatState và
 RewardRules giữ combat/drop; BossCombat/DirectedSkill/EscortController giữ ability.
 CampaignRenderer/PrefabVisual xử lý atlas/transform/animation, Scene2D giữ UI.
-Các lớp GameState/WaveManager/entity/weapon legacy còn trong source nhưng không
-được màn custom mới gọi. Không coi việc còn file là runtime đang dùng.
+Các lớp gameplay legacy không còn đường gọi đã được xóa; bản original ở checkout
+riêng. MovementTrail nối ribbon theo scaled time; BeamContact giữ sweep trong
+active window; AudioVoices giữ 16 slot theo nhóm âm thanh.
 
 AssetManager sở hữu atlas/audio; font do CampaignAssets tạo một lần và dispose.
 Shot/pickup/burst dùng pool; không tạo texture/sound/font mỗi frame. Catalog là

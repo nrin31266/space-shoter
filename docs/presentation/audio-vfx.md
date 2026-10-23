@@ -13,6 +13,18 @@ stream/crossfade và ducking khi cue quan trọng. Pause Activity dừng audio;
 settings giữ volume và reduced motion. AssetManager sở hữu atlas/audio; font
 được CampaignAssets dispose. Không tạo Texture/Sound/font trong render.
 
+## Tinh chỉnh theo phản hồi ngày 2026-10-24
+
+- Sao menu/combat tăng footprint nhẹ: baseline 1.6 + 0.65 × lớp kích thước,
+  giữ mật độ 112/96 và twinkle hiện tại; combat scale theo view/900.
+- Movement trail dùng ribbon màu trắng được tô gradient như TrailRenderer Unity,
+  không nhân alpha của animation sprite; width Ion .09/Rainbow .10, lifetime tối đa .16 s.
+- Cảnh báo beam dày tối đa .10 world unit; curtain warning alpha .24;
+  boss prepare/lock cue alpha tối thiểu .9. Đây là tuning presentation theo yêu cầu,
+  không thay thời gian báo trước hoặc vùng damage.
+- Boss nhận đạn qua các BoxCollider2D đang enabled của bộ phận/thân trong prefab;
+  bỏ khung flight disabled khỏi narrow-phase. Shield nodes vẫn nhận damage riêng.
+
 ## Phần chưa tương đương hoàn toàn
 
 Cinematic PlanetJourney, staged fragments/armor destruction, boss skill cue,

@@ -1216,2633 +1216,6 @@
         }
       ]
     },
-    "4ba754d9865477110b1604b8e9a11136": {
-      "path": "Data/Fixtures/Encounters/L1EncounterA.asset",
-      "documents": [
-        {
-          "fileID": "11400000",
-          "type": "MonoBehaviour",
-          "data": {
-            "m_ObjectHideFlags": 0,
-            "m_CorrespondingSourceObject": {
-              "fileID": "0"
-            },
-            "m_PrefabInstance": {
-              "fileID": "0"
-            },
-            "m_PrefabAsset": {
-              "fileID": "0"
-            },
-            "m_GameObject": {
-              "fileID": "0"
-            },
-            "m_Enabled": 1,
-            "m_EditorHideFlags": 0,
-            "m_Script": {
-              "fileID": "11500000",
-              "guid": "9f1d586d44955cc0fa3b4b57b2d5444f",
-              "type": 3
-            },
-            "m_Name": "L1EncounterA",
-            "m_EditorClassIdentifier": "Assembly-CSharp::StarShift.Encounters.EncounterDefinition",
-            "Id": "ENCOUNTER_1",
-            "Completion": 0,
-            "CompleteWhenScheduleExhausted": 0,
-            "ScoutPrefab": {
-              "fileID": "2966396641657307375",
-              "guid": "01a518f29274925a191b17ec41cf6a99",
-              "type": 3
-            },
-            "Duration": 20,
-            "Groups": [
-              {
-                "Count": 5,
-                "StartTime": 0,
-                "Stagger": 0.12,
-                "EnemyPrefab": {
-                  "fileID": "2966396641657307375",
-                  "guid": "01a518f29274925a191b17ec41cf6a99",
-                  "type": 3
-                },
-                "EnemyDefinition": {
-                  "fileID": "11400000",
-                  "guid": "2c37a090b272d820c9642dfd8f189abe",
-                  "type": 2
-                },
-                "RewardOverride": {
-                  "fileID": "0"
-                },
-                "Required": 1,
-                "Formation": 1,
-                "Anchor": {
-                  "x": 0,
-                  "y": 0
-                },
-                "SlotStep": {
-                  "x": 0.1,
-                  "y": 0.08
-                },
-                "FormationRise": 0.025,
-                "Sequence": {
-                  "fileID": "11400000",
-                  "guid": "698c678b4615b200b83d8bac86d4378b",
-                  "type": 2
-                },
-                "EntryAnchor": {
-                  "x": 0.5,
-                  "y": 1.12
-                },
-                "HoldAnchor": {
-                  "x": 0.5,
-                  "y": 0.78
-                },
-                "EntryCurve": {
-                  "x": 0,
-                  "y": 0
-                },
-                "EntryDuration": 1.2,
-                "HoldDuration": 3,
-                "ExitAnchor": {
-                  "x": 1.18,
-                  "y": 0.3
-                },
-                "ExitDuration": 3
-              },
-              {
-                "Count": 1,
-                "StartTime": 1.8,
-                "Stagger": 0.12,
-                "EnemyPrefab": {
-                  "fileID": "2966396641657307375",
-                  "guid": "01a518f29274925a191b17ec41cf6a99",
-                  "type": 3
-                },
-                "EnemyDefinition": {
-                  "fileID": "11400000",
-                  "guid": "2c37a090b272d820c9642dfd8f189abe",
-                  "type": 2
-                },
-                "RewardOverride": {
-                  "fileID": "11400000",
-                  "guid": "e8ff475379109b7e2b8d535f14a67031",
-                  "type": 2
-                },
-                "Required": 1,
-                "Formation": 1,
-                "Anchor": {
-                  "x": 0,
-                  "y": -0.2
-                },
-                "SlotStep": {
-                  "x": 0.1,
-                  "y": 0.08
-                },
-                "FormationRise": 0.025,
-                "Sequence": {
-                  "fileID": "11400000",
-                  "guid": "698c678b4615b200b83d8bac86d4378b",
-                  "type": 2
-                },
-                "EntryAnchor": {
-                  "x": 0.5,
-                  "y": 1.12
-                },
-                "HoldAnchor": {
-                  "x": 0.5,
-                  "y": 0.78
-                },
-                "EntryCurve": {
-                  "x": 0,
-                  "y": 0
-                },
-                "EntryDuration": 1.2,
-                "HoldDuration": 3,
-                "ExitAnchor": {
-                  "x": 1.18,
-                  "y": 0.3
-                },
-                "ExitDuration": 3
-              }
-            ],
-            "OptionalEvents": [],
-            "CameraOverride": {
-              "fileID": "0"
-            },
-            "ActiveShooterLimit": 2,
-            "ShotSpacing": 0.7,
-            "ShotsPerVolley": 2,
-            "VolleyPause": 1.7,
-            "ClearPauseSeconds": 1,
-            "HandoffTravelSeconds": 1.5,
-            "HandoffDelay": 2,
-            "ProjectileGraceSeconds": 0.65,
-            "ProjectileFadeSeconds": 0.3,
-            "TransitionTitle": "Encounter 1",
-            "TransitionDescription": null,
-            "RewardGraceSeconds": 1.5,
-            "BossPostDeathSeconds": 1
-          }
-        }
-      ]
-    },
-    "496c8abd1c1857ea7a1cd78ccabf0b9a": {
-      "path": "Data/Fixtures/Encounters/L1EncounterB.asset",
-      "documents": [
-        {
-          "fileID": "11400000",
-          "type": "MonoBehaviour",
-          "data": {
-            "m_ObjectHideFlags": 0,
-            "m_CorrespondingSourceObject": {
-              "fileID": "0"
-            },
-            "m_PrefabInstance": {
-              "fileID": "0"
-            },
-            "m_PrefabAsset": {
-              "fileID": "0"
-            },
-            "m_GameObject": {
-              "fileID": "0"
-            },
-            "m_Enabled": 1,
-            "m_EditorHideFlags": 0,
-            "m_Script": {
-              "fileID": "11500000",
-              "guid": "9f1d586d44955cc0fa3b4b57b2d5444f",
-              "type": 3
-            },
-            "m_Name": "L1EncounterB",
-            "m_EditorClassIdentifier": "Assembly-CSharp::StarShift.Encounters.EncounterDefinition",
-            "Id": "ENCOUNTER_2",
-            "Completion": 1,
-            "CompleteWhenScheduleExhausted": 1,
-            "ScoutPrefab": {
-              "fileID": "2966396641657307375",
-              "guid": "01a518f29274925a191b17ec41cf6a99",
-              "type": 3
-            },
-            "Duration": 20,
-            "Groups": [
-              {
-                "Count": 6,
-                "StartTime": 0,
-                "Stagger": 0.12,
-                "EnemyPrefab": {
-                  "fileID": "2966396641657307375",
-                  "guid": "01a518f29274925a191b17ec41cf6a99",
-                  "type": 3
-                },
-                "EnemyDefinition": {
-                  "fileID": "11400000",
-                  "guid": "2c37a090b272d820c9642dfd8f189abe",
-                  "type": 2
-                },
-                "RewardOverride": {
-                  "fileID": "11400000",
-                  "guid": "3df01b008d0456981a6ba9e3c09af7d6",
-                  "type": 2
-                },
-                "Required": 1,
-                "Formation": 3,
-                "Anchor": {
-                  "x": 0,
-                  "y": 0
-                },
-                "SlotStep": {
-                  "x": 0.1,
-                  "y": 0.08
-                },
-                "FormationRise": 0.025,
-                "Sequence": {
-                  "fileID": "11400000",
-                  "guid": "561777152fe9c1fb78dc20b8fd4f50e9",
-                  "type": 2
-                },
-                "EntryAnchor": {
-                  "x": 0.5,
-                  "y": 1.12
-                },
-                "HoldAnchor": {
-                  "x": 0.5,
-                  "y": 0.78
-                },
-                "EntryCurve": {
-                  "x": 0,
-                  "y": 0
-                },
-                "EntryDuration": 1.2,
-                "HoldDuration": 3,
-                "ExitAnchor": {
-                  "x": 1.18,
-                  "y": 0.3
-                },
-                "ExitDuration": 3
-              },
-              {
-                "Count": 6,
-                "StartTime": 0.4,
-                "Stagger": 0.12,
-                "EnemyPrefab": {
-                  "fileID": "2966396641657307375",
-                  "guid": "01a518f29274925a191b17ec41cf6a99",
-                  "type": 3
-                },
-                "EnemyDefinition": {
-                  "fileID": "11400000",
-                  "guid": "2c37a090b272d820c9642dfd8f189abe",
-                  "type": 2
-                },
-                "RewardOverride": {
-                  "fileID": "11400000",
-                  "guid": "3df01b008d0456981a6ba9e3c09af7d6",
-                  "type": 2
-                },
-                "Required": 1,
-                "Formation": 5,
-                "Anchor": {
-                  "x": 0,
-                  "y": -0.17
-                },
-                "SlotStep": {
-                  "x": 0.1,
-                  "y": 0.08
-                },
-                "FormationRise": 0.025,
-                "Sequence": {
-                  "fileID": "11400000",
-                  "guid": "865cd30d8a7610da4a764cc1bab15452",
-                  "type": 2
-                },
-                "EntryAnchor": {
-                  "x": 0.5,
-                  "y": 1.12
-                },
-                "HoldAnchor": {
-                  "x": 0.5,
-                  "y": 0.78
-                },
-                "EntryCurve": {
-                  "x": 0,
-                  "y": 0
-                },
-                "EntryDuration": 1.2,
-                "HoldDuration": 3,
-                "ExitAnchor": {
-                  "x": 1.18,
-                  "y": 0.3
-                },
-                "ExitDuration": 3
-              },
-              {
-                "Count": 1,
-                "StartTime": 4,
-                "Stagger": 0.12,
-                "EnemyPrefab": {
-                  "fileID": "2966396641657307375",
-                  "guid": "01a518f29274925a191b17ec41cf6a99",
-                  "type": 3
-                },
-                "EnemyDefinition": {
-                  "fileID": "11400000",
-                  "guid": "2c37a090b272d820c9642dfd8f189abe",
-                  "type": 2
-                },
-                "RewardOverride": {
-                  "fileID": "11400000",
-                  "guid": "8c8d7320c40c24df5beb8328d354e12b",
-                  "type": 2
-                },
-                "Required": 1,
-                "Formation": 1,
-                "Anchor": {
-                  "x": 0,
-                  "y": -0.28
-                },
-                "SlotStep": {
-                  "x": 0.1,
-                  "y": 0.08
-                },
-                "FormationRise": 0.025,
-                "Sequence": {
-                  "fileID": "11400000",
-                  "guid": "561777152fe9c1fb78dc20b8fd4f50e9",
-                  "type": 2
-                },
-                "EntryAnchor": {
-                  "x": 0.5,
-                  "y": 1.12
-                },
-                "HoldAnchor": {
-                  "x": 0.5,
-                  "y": 0.78
-                },
-                "EntryCurve": {
-                  "x": 0,
-                  "y": 0
-                },
-                "EntryDuration": 1.2,
-                "HoldDuration": 3,
-                "ExitAnchor": {
-                  "x": 1.18,
-                  "y": 0.3
-                },
-                "ExitDuration": 3
-              }
-            ],
-            "OptionalEvents": [],
-            "CameraOverride": {
-              "fileID": "0"
-            },
-            "ActiveShooterLimit": 2,
-            "ShotSpacing": 0.7,
-            "ShotsPerVolley": 2,
-            "VolleyPause": 1.7,
-            "ClearPauseSeconds": 1,
-            "HandoffTravelSeconds": 1.5,
-            "HandoffDelay": 2,
-            "ProjectileGraceSeconds": 0.65,
-            "ProjectileFadeSeconds": 0.3,
-            "TransitionTitle": "Encounter 2",
-            "TransitionDescription": null,
-            "RewardGraceSeconds": 1.5,
-            "BossPostDeathSeconds": 1
-          }
-        }
-      ]
-    },
-    "9ab226fd2ab9fe2d39fcf335fcd6193e": {
-      "path": "Data/Fixtures/Encounters/L1EncounterC.asset",
-      "documents": [
-        {
-          "fileID": "11400000",
-          "type": "MonoBehaviour",
-          "data": {
-            "m_ObjectHideFlags": 0,
-            "m_CorrespondingSourceObject": {
-              "fileID": "0"
-            },
-            "m_PrefabInstance": {
-              "fileID": "0"
-            },
-            "m_PrefabAsset": {
-              "fileID": "0"
-            },
-            "m_GameObject": {
-              "fileID": "0"
-            },
-            "m_Enabled": 1,
-            "m_EditorHideFlags": 0,
-            "m_Script": {
-              "fileID": "11500000",
-              "guid": "9f1d586d44955cc0fa3b4b57b2d5444f",
-              "type": 3
-            },
-            "m_Name": "L1EncounterC",
-            "m_EditorClassIdentifier": "Assembly-CSharp::StarShift.Encounters.EncounterDefinition",
-            "Id": "ENCOUNTER_3",
-            "Completion": 1,
-            "CompleteWhenScheduleExhausted": 1,
-            "ScoutPrefab": {
-              "fileID": "2966396641657307375",
-              "guid": "01a518f29274925a191b17ec41cf6a99",
-              "type": 3
-            },
-            "Duration": 24,
-            "Groups": [
-              {
-                "Count": 4,
-                "StartTime": 0,
-                "Stagger": 0.12,
-                "EnemyPrefab": {
-                  "fileID": "2966396641657307375",
-                  "guid": "01a518f29274925a191b17ec41cf6a99",
-                  "type": 3
-                },
-                "EnemyDefinition": {
-                  "fileID": "11400000",
-                  "guid": "2c37a090b272d820c9642dfd8f189abe",
-                  "type": 2
-                },
-                "RewardOverride": {
-                  "fileID": "0"
-                },
-                "Required": 1,
-                "Formation": 1,
-                "Anchor": {
-                  "x": 0,
-                  "y": 0
-                },
-                "SlotStep": {
-                  "x": 0.1,
-                  "y": 0.08
-                },
-                "FormationRise": 0.025,
-                "Sequence": {
-                  "fileID": "11400000",
-                  "guid": "8e685e3df37c7c6ba9944694129ce98f",
-                  "type": 2
-                },
-                "EntryAnchor": {
-                  "x": 0.5,
-                  "y": 1.12
-                },
-                "HoldAnchor": {
-                  "x": 0.5,
-                  "y": 0.78
-                },
-                "EntryCurve": {
-                  "x": 0,
-                  "y": 0
-                },
-                "EntryDuration": 1.2,
-                "HoldDuration": 3,
-                "ExitAnchor": {
-                  "x": 1.18,
-                  "y": 0.3
-                },
-                "ExitDuration": 3
-              },
-              {
-                "Count": 1,
-                "StartTime": 1,
-                "Stagger": 0.12,
-                "EnemyPrefab": {
-                  "fileID": "2966396641657307375",
-                  "guid": "01a518f29274925a191b17ec41cf6a99",
-                  "type": 3
-                },
-                "EnemyDefinition": {
-                  "fileID": "11400000",
-                  "guid": "2c37a090b272d820c9642dfd8f189abe",
-                  "type": 2
-                },
-                "RewardOverride": {
-                  "fileID": "11400000",
-                  "guid": "2a948f280397c2264b6114d950898293",
-                  "type": 2
-                },
-                "Required": 1,
-                "Formation": 1,
-                "Anchor": {
-                  "x": 0,
-                  "y": -0.17
-                },
-                "SlotStep": {
-                  "x": 0.1,
-                  "y": 0.08
-                },
-                "FormationRise": 0.025,
-                "Sequence": {
-                  "fileID": "11400000",
-                  "guid": "561777152fe9c1fb78dc20b8fd4f50e9",
-                  "type": 2
-                },
-                "EntryAnchor": {
-                  "x": 0.5,
-                  "y": 1.12
-                },
-                "HoldAnchor": {
-                  "x": 0.5,
-                  "y": 0.78
-                },
-                "EntryCurve": {
-                  "x": 0,
-                  "y": 0
-                },
-                "EntryDuration": 1.2,
-                "HoldDuration": 3,
-                "ExitAnchor": {
-                  "x": 1.18,
-                  "y": 0.3
-                },
-                "ExitDuration": 3
-              },
-              {
-                "Count": 1,
-                "StartTime": 3,
-                "Stagger": 0.12,
-                "EnemyPrefab": {
-                  "fileID": "2966396641657307375",
-                  "guid": "01a518f29274925a191b17ec41cf6a99",
-                  "type": 3
-                },
-                "EnemyDefinition": {
-                  "fileID": "11400000",
-                  "guid": "2c37a090b272d820c9642dfd8f189abe",
-                  "type": 2
-                },
-                "RewardOverride": {
-                  "fileID": "11400000",
-                  "guid": "11e412df49676bd29823d5329eec872a",
-                  "type": 2
-                },
-                "Required": 1,
-                "Formation": 1,
-                "Anchor": {
-                  "x": 0,
-                  "y": -0.28
-                },
-                "SlotStep": {
-                  "x": 0.1,
-                  "y": 0.08
-                },
-                "FormationRise": 0.025,
-                "Sequence": {
-                  "fileID": "11400000",
-                  "guid": "8e685e3df37c7c6ba9944694129ce98f",
-                  "type": 2
-                },
-                "EntryAnchor": {
-                  "x": 0.5,
-                  "y": 1.12
-                },
-                "HoldAnchor": {
-                  "x": 0.5,
-                  "y": 0.78
-                },
-                "EntryCurve": {
-                  "x": 0,
-                  "y": 0
-                },
-                "EntryDuration": 1.2,
-                "HoldDuration": 3,
-                "ExitAnchor": {
-                  "x": 1.18,
-                  "y": 0.3
-                },
-                "ExitDuration": 3
-              },
-              {
-                "Count": 1,
-                "StartTime": 5,
-                "Stagger": 0.12,
-                "EnemyPrefab": {
-                  "fileID": "2966396641657307375",
-                  "guid": "01a518f29274925a191b17ec41cf6a99",
-                  "type": 3
-                },
-                "EnemyDefinition": {
-                  "fileID": "11400000",
-                  "guid": "2c37a090b272d820c9642dfd8f189abe",
-                  "type": 2
-                },
-                "RewardOverride": {
-                  "fileID": "11400000",
-                  "guid": "355b774e6e8797c4c9cc0bfebf3b0f86",
-                  "type": 2
-                },
-                "Required": 1,
-                "Formation": 1,
-                "Anchor": {
-                  "x": 0,
-                  "y": -0.39
-                },
-                "SlotStep": {
-                  "x": 0.1,
-                  "y": 0.08
-                },
-                "FormationRise": 0.025,
-                "Sequence": {
-                  "fileID": "11400000",
-                  "guid": "561777152fe9c1fb78dc20b8fd4f50e9",
-                  "type": 2
-                },
-                "EntryAnchor": {
-                  "x": 0.5,
-                  "y": 1.12
-                },
-                "HoldAnchor": {
-                  "x": 0.5,
-                  "y": 0.78
-                },
-                "EntryCurve": {
-                  "x": 0,
-                  "y": 0
-                },
-                "EntryDuration": 1.2,
-                "HoldDuration": 3,
-                "ExitAnchor": {
-                  "x": 1.18,
-                  "y": 0.3
-                },
-                "ExitDuration": 3
-              },
-              {
-                "Count": 4,
-                "StartTime": 9,
-                "Stagger": 0.12,
-                "EnemyPrefab": {
-                  "fileID": "2966396641657307375",
-                  "guid": "01a518f29274925a191b17ec41cf6a99",
-                  "type": 3
-                },
-                "EnemyDefinition": {
-                  "fileID": "11400000",
-                  "guid": "2c37a090b272d820c9642dfd8f189abe",
-                  "type": 2
-                },
-                "RewardOverride": {
-                  "fileID": "0"
-                },
-                "Required": 1,
-                "Formation": 1,
-                "Anchor": {
-                  "x": 0,
-                  "y": 0
-                },
-                "SlotStep": {
-                  "x": 0.1,
-                  "y": 0.08
-                },
-                "FormationRise": 0.025,
-                "Sequence": {
-                  "fileID": "11400000",
-                  "guid": "8e685e3df37c7c6ba9944694129ce98f",
-                  "type": 2
-                },
-                "EntryAnchor": {
-                  "x": 0.5,
-                  "y": 1.12
-                },
-                "HoldAnchor": {
-                  "x": 0.5,
-                  "y": 0.78
-                },
-                "EntryCurve": {
-                  "x": 0,
-                  "y": 0
-                },
-                "EntryDuration": 1.2,
-                "HoldDuration": 3,
-                "ExitAnchor": {
-                  "x": 1.18,
-                  "y": 0.3
-                },
-                "ExitDuration": 3
-              }
-            ],
-            "OptionalEvents": [
-              {
-                "Id": "M4_SUPPLY",
-                "Kind": 0,
-                "TimeOffset": 7,
-                "Condition": 0,
-                "Group": {
-                  "Count": 1,
-                  "StartTime": 0,
-                  "Stagger": 0.12,
-                  "EnemyPrefab": {
-                    "fileID": "2027060936374800042",
-                    "guid": "837e4d72d27b32aada7e68b065e5c13a",
-                    "type": 3
-                  },
-                  "EnemyDefinition": {
-                    "fileID": "11400000",
-                    "guid": "1bd9a719821aaacbab35e7767f4f5659",
-                    "type": 2
-                  },
-                  "RewardOverride": {
-                    "fileID": "11400000",
-                    "guid": "f22d75d4b02bcfa0b85bbd87d7a2c4af",
-                    "type": 2
-                  },
-                  "Required": 1,
-                  "Formation": 1,
-                  "Anchor": {
-                    "x": 0,
-                    "y": 0
-                  },
-                  "SlotStep": {
-                    "x": 0.1,
-                    "y": 0.08
-                  },
-                  "FormationRise": 0.025,
-                  "Sequence": {
-                    "fileID": "11400000",
-                    "guid": "ce215c88b6ec06e9fa5c3b1e8bfe40ac",
-                    "type": 2
-                  },
-                  "EntryAnchor": {
-                    "x": 0.5,
-                    "y": 1.12
-                  },
-                  "HoldAnchor": {
-                    "x": 0.5,
-                    "y": 0.78
-                  },
-                  "EntryCurve": {
-                    "x": 0,
-                    "y": 0
-                  },
-                  "EntryDuration": 1.2,
-                  "HoldDuration": 3,
-                  "ExitAnchor": {
-                    "x": 1.18,
-                    "y": 0.3
-                  },
-                  "ExitDuration": 3
-                }
-              }
-            ],
-            "CameraOverride": {
-              "fileID": "0"
-            },
-            "ActiveShooterLimit": 2,
-            "ShotSpacing": 0.7,
-            "ShotsPerVolley": 2,
-            "VolleyPause": 1.7,
-            "ClearPauseSeconds": 1,
-            "HandoffTravelSeconds": 1.5,
-            "HandoffDelay": 2,
-            "ProjectileGraceSeconds": 0.65,
-            "ProjectileFadeSeconds": 0.3,
-            "TransitionTitle": "Encounter 3",
-            "TransitionDescription": null,
-            "RewardGraceSeconds": 1.5,
-            "BossPostDeathSeconds": 1
-          }
-        }
-      ]
-    },
-    "b97534e64345a99f494423684a0aaa13": {
-      "path": "Data/Fixtures/Encounters/L1EncounterD.asset",
-      "documents": [
-        {
-          "fileID": "11400000",
-          "type": "MonoBehaviour",
-          "data": {
-            "m_ObjectHideFlags": 0,
-            "m_CorrespondingSourceObject": {
-              "fileID": "0"
-            },
-            "m_PrefabInstance": {
-              "fileID": "0"
-            },
-            "m_PrefabAsset": {
-              "fileID": "0"
-            },
-            "m_GameObject": {
-              "fileID": "0"
-            },
-            "m_Enabled": 1,
-            "m_EditorHideFlags": 0,
-            "m_Script": {
-              "fileID": "11500000",
-              "guid": "9f1d586d44955cc0fa3b4b57b2d5444f",
-              "type": 3
-            },
-            "m_Name": "L1EncounterD",
-            "m_EditorClassIdentifier": "Assembly-CSharp::StarShift.Encounters.EncounterDefinition",
-            "Id": "ENCOUNTER_4",
-            "Completion": 1,
-            "CompleteWhenScheduleExhausted": 1,
-            "ScoutPrefab": {
-              "fileID": "2966396641657307375",
-              "guid": "01a518f29274925a191b17ec41cf6a99",
-              "type": 3
-            },
-            "Duration": 21,
-            "Groups": [
-              {
-                "Count": 6,
-                "StartTime": 0,
-                "Stagger": 0.12,
-                "EnemyPrefab": {
-                  "fileID": "2966396641657307375",
-                  "guid": "01a518f29274925a191b17ec41cf6a99",
-                  "type": 3
-                },
-                "EnemyDefinition": {
-                  "fileID": "11400000",
-                  "guid": "2c37a090b272d820c9642dfd8f189abe",
-                  "type": 2
-                },
-                "RewardOverride": {
-                  "fileID": "11400000",
-                  "guid": "3df01b008d0456981a6ba9e3c09af7d6",
-                  "type": 2
-                },
-                "Required": 1,
-                "Formation": 4,
-                "Anchor": {
-                  "x": 0,
-                  "y": 0
-                },
-                "SlotStep": {
-                  "x": 0.1,
-                  "y": 0.08
-                },
-                "FormationRise": 0.025,
-                "Sequence": {
-                  "fileID": "11400000",
-                  "guid": "594376ddd384f2ca1800c6866e970e41",
-                  "type": 2
-                },
-                "EntryAnchor": {
-                  "x": 0.5,
-                  "y": 1.12
-                },
-                "HoldAnchor": {
-                  "x": 0.5,
-                  "y": 0.78
-                },
-                "EntryCurve": {
-                  "x": 0,
-                  "y": 0
-                },
-                "EntryDuration": 1.2,
-                "HoldDuration": 3,
-                "ExitAnchor": {
-                  "x": 1.18,
-                  "y": 0.3
-                },
-                "ExitDuration": 3
-              },
-              {
-                "Count": 1,
-                "StartTime": 2,
-                "Stagger": 0.12,
-                "EnemyPrefab": {
-                  "fileID": "2966396641657307375",
-                  "guid": "01a518f29274925a191b17ec41cf6a99",
-                  "type": 3
-                },
-                "EnemyDefinition": {
-                  "fileID": "11400000",
-                  "guid": "2c37a090b272d820c9642dfd8f189abe",
-                  "type": 2
-                },
-                "RewardOverride": {
-                  "fileID": "11400000",
-                  "guid": "8dbddd972d0d6ac41ae4966409e21b1e",
-                  "type": 2
-                },
-                "Required": 1,
-                "Formation": 1,
-                "Anchor": {
-                  "x": 0,
-                  "y": -0.25
-                },
-                "SlotStep": {
-                  "x": 0.1,
-                  "y": 0.08
-                },
-                "FormationRise": 0.025,
-                "Sequence": {
-                  "fileID": "11400000",
-                  "guid": "865cd30d8a7610da4a764cc1bab15452",
-                  "type": 2
-                },
-                "EntryAnchor": {
-                  "x": 0.5,
-                  "y": 1.12
-                },
-                "HoldAnchor": {
-                  "x": 0.5,
-                  "y": 0.78
-                },
-                "EntryCurve": {
-                  "x": 0,
-                  "y": 0
-                },
-                "EntryDuration": 1.2,
-                "HoldDuration": 3,
-                "ExitAnchor": {
-                  "x": 1.18,
-                  "y": 0.3
-                },
-                "ExitDuration": 3
-              },
-              {
-                "Count": 1,
-                "StartTime": 4,
-                "Stagger": 0.12,
-                "EnemyPrefab": {
-                  "fileID": "2966396641657307375",
-                  "guid": "01a518f29274925a191b17ec41cf6a99",
-                  "type": 3
-                },
-                "EnemyDefinition": {
-                  "fileID": "11400000",
-                  "guid": "2c37a090b272d820c9642dfd8f189abe",
-                  "type": 2
-                },
-                "RewardOverride": {
-                  "fileID": "11400000",
-                  "guid": "09ef5a870610e9149a426695bd395232",
-                  "type": 2
-                },
-                "Required": 1,
-                "Formation": 1,
-                "Anchor": {
-                  "x": 0,
-                  "y": -0.38
-                },
-                "SlotStep": {
-                  "x": 0.1,
-                  "y": 0.08
-                },
-                "FormationRise": 0.025,
-                "Sequence": {
-                  "fileID": "11400000",
-                  "guid": "594376ddd384f2ca1800c6866e970e41",
-                  "type": 2
-                },
-                "EntryAnchor": {
-                  "x": 0.5,
-                  "y": 1.12
-                },
-                "HoldAnchor": {
-                  "x": 0.5,
-                  "y": 0.78
-                },
-                "EntryCurve": {
-                  "x": 0,
-                  "y": 0
-                },
-                "EntryDuration": 1.2,
-                "HoldDuration": 3,
-                "ExitAnchor": {
-                  "x": 1.18,
-                  "y": 0.3
-                },
-                "ExitDuration": 3
-              },
-              {
-                "Count": 4,
-                "StartTime": 7,
-                "Stagger": 0.12,
-                "EnemyPrefab": {
-                  "fileID": "2966396641657307375",
-                  "guid": "01a518f29274925a191b17ec41cf6a99",
-                  "type": 3
-                },
-                "EnemyDefinition": {
-                  "fileID": "11400000",
-                  "guid": "2c37a090b272d820c9642dfd8f189abe",
-                  "type": 2
-                },
-                "RewardOverride": {
-                  "fileID": "0"
-                },
-                "Required": 1,
-                "Formation": 1,
-                "Anchor": {
-                  "x": 0,
-                  "y": -0.12
-                },
-                "SlotStep": {
-                  "x": 0.1,
-                  "y": 0.08
-                },
-                "FormationRise": 0.025,
-                "Sequence": {
-                  "fileID": "11400000",
-                  "guid": "865cd30d8a7610da4a764cc1bab15452",
-                  "type": 2
-                },
-                "EntryAnchor": {
-                  "x": 0.5,
-                  "y": 1.12
-                },
-                "HoldAnchor": {
-                  "x": 0.5,
-                  "y": 0.78
-                },
-                "EntryCurve": {
-                  "x": 0,
-                  "y": 0
-                },
-                "EntryDuration": 1.2,
-                "HoldDuration": 3,
-                "ExitAnchor": {
-                  "x": 1.18,
-                  "y": 0.3
-                },
-                "ExitDuration": 3
-              }
-            ],
-            "OptionalEvents": [],
-            "CameraOverride": {
-              "fileID": "0"
-            },
-            "ActiveShooterLimit": 2,
-            "ShotSpacing": 0.7,
-            "ShotsPerVolley": 2,
-            "VolleyPause": 1.7,
-            "ClearPauseSeconds": 1,
-            "HandoffTravelSeconds": 1.5,
-            "HandoffDelay": 2,
-            "ProjectileGraceSeconds": 0.65,
-            "ProjectileFadeSeconds": 0.3,
-            "TransitionTitle": "Encounter 4",
-            "TransitionDescription": null,
-            "RewardGraceSeconds": 1.5,
-            "BossPostDeathSeconds": 1
-          }
-        }
-      ]
-    },
-    "7d5bf5722bdd0653d97d94ce92ac8f91": {
-      "path": "Data/Fixtures/Encounters/L1EncounterE.asset",
-      "documents": [
-        {
-          "fileID": "11400000",
-          "type": "MonoBehaviour",
-          "data": {
-            "m_ObjectHideFlags": 0,
-            "m_CorrespondingSourceObject": {
-              "fileID": "0"
-            },
-            "m_PrefabInstance": {
-              "fileID": "0"
-            },
-            "m_PrefabAsset": {
-              "fileID": "0"
-            },
-            "m_GameObject": {
-              "fileID": "0"
-            },
-            "m_Enabled": 1,
-            "m_EditorHideFlags": 0,
-            "m_Script": {
-              "fileID": "11500000",
-              "guid": "9f1d586d44955cc0fa3b4b57b2d5444f",
-              "type": 3
-            },
-            "m_Name": "L1EncounterE",
-            "m_EditorClassIdentifier": "Assembly-CSharp::StarShift.Encounters.EncounterDefinition",
-            "Id": "ENCOUNTER_5",
-            "Completion": 0,
-            "CompleteWhenScheduleExhausted": 0,
-            "ScoutPrefab": {
-              "fileID": "2966396641657307375",
-              "guid": "01a518f29274925a191b17ec41cf6a99",
-              "type": 3
-            },
-            "Duration": 20,
-            "Groups": [
-              {
-                "Count": 5,
-                "StartTime": 0,
-                "Stagger": 0.12,
-                "EnemyPrefab": {
-                  "fileID": "2966396641657307375",
-                  "guid": "01a518f29274925a191b17ec41cf6a99",
-                  "type": 3
-                },
-                "EnemyDefinition": {
-                  "fileID": "11400000",
-                  "guid": "2c37a090b272d820c9642dfd8f189abe",
-                  "type": 2
-                },
-                "RewardOverride": {
-                  "fileID": "0"
-                },
-                "Required": 1,
-                "Formation": 1,
-                "Anchor": {
-                  "x": 0,
-                  "y": 0
-                },
-                "SlotStep": {
-                  "x": 0.1,
-                  "y": 0.08
-                },
-                "FormationRise": 0.025,
-                "Sequence": {
-                  "fileID": "11400000",
-                  "guid": "4e1ad407c211e0832ab0c6a631da62e0",
-                  "type": 2
-                },
-                "EntryAnchor": {
-                  "x": 0.5,
-                  "y": 1.12
-                },
-                "HoldAnchor": {
-                  "x": 0.5,
-                  "y": 0.78
-                },
-                "EntryCurve": {
-                  "x": 0,
-                  "y": 0
-                },
-                "EntryDuration": 1.2,
-                "HoldDuration": 3,
-                "ExitAnchor": {
-                  "x": 1.18,
-                  "y": 0.3
-                },
-                "ExitDuration": 3
-              },
-              {
-                "Count": 1,
-                "StartTime": 0,
-                "Stagger": 0.12,
-                "EnemyPrefab": {
-                  "fileID": "2966396641657307375",
-                  "guid": "01a518f29274925a191b17ec41cf6a99",
-                  "type": 3
-                },
-                "EnemyDefinition": {
-                  "fileID": "11400000",
-                  "guid": "2c37a090b272d820c9642dfd8f189abe",
-                  "type": 2
-                },
-                "RewardOverride": {
-                  "fileID": "11400000",
-                  "guid": "78df3f64030f32e6394b86dcd668a616",
-                  "type": 2
-                },
-                "Required": 1,
-                "Formation": 1,
-                "Anchor": {
-                  "x": 0,
-                  "y": -0.2
-                },
-                "SlotStep": {
-                  "x": 0.1,
-                  "y": 0.08
-                },
-                "FormationRise": 0.025,
-                "Sequence": {
-                  "fileID": "11400000",
-                  "guid": "698c678b4615b200b83d8bac86d4378b",
-                  "type": 2
-                },
-                "EntryAnchor": {
-                  "x": 0.5,
-                  "y": 1.12
-                },
-                "HoldAnchor": {
-                  "x": 0.5,
-                  "y": 0.78
-                },
-                "EntryCurve": {
-                  "x": 0,
-                  "y": 0
-                },
-                "EntryDuration": 1.2,
-                "HoldDuration": 3,
-                "ExitAnchor": {
-                  "x": 1.18,
-                  "y": 0.3
-                },
-                "ExitDuration": 3
-              },
-              {
-                "Count": 1,
-                "StartTime": 0,
-                "Stagger": 0.12,
-                "EnemyPrefab": {
-                  "fileID": "2966396641657307375",
-                  "guid": "01a518f29274925a191b17ec41cf6a99",
-                  "type": 3
-                },
-                "EnemyDefinition": {
-                  "fileID": "11400000",
-                  "guid": "2c37a090b272d820c9642dfd8f189abe",
-                  "type": 2
-                },
-                "RewardOverride": {
-                  "fileID": "11400000",
-                  "guid": "e8ff475379109b7e2b8d535f14a67031",
-                  "type": 2
-                },
-                "Required": 1,
-                "Formation": 1,
-                "Anchor": {
-                  "x": 0,
-                  "y": -0.35
-                },
-                "SlotStep": {
-                  "x": 0.1,
-                  "y": 0.08
-                },
-                "FormationRise": 0.025,
-                "Sequence": {
-                  "fileID": "11400000",
-                  "guid": "698c678b4615b200b83d8bac86d4378b",
-                  "type": 2
-                },
-                "EntryAnchor": {
-                  "x": 0.5,
-                  "y": 1.12
-                },
-                "HoldAnchor": {
-                  "x": 0.5,
-                  "y": 0.78
-                },
-                "EntryCurve": {
-                  "x": 0,
-                  "y": 0
-                },
-                "EntryDuration": 1.2,
-                "HoldDuration": 3,
-                "ExitAnchor": {
-                  "x": 1.18,
-                  "y": 0.3
-                },
-                "ExitDuration": 3
-              }
-            ],
-            "OptionalEvents": [
-              {
-                "Id": "M4_RESOURCE",
-                "Kind": 1,
-                "TimeOffset": 1,
-                "Condition": 0,
-                "Group": {
-                  "Count": 1,
-                  "StartTime": 0,
-                  "Stagger": 0.12,
-                  "EnemyPrefab": {
-                    "fileID": "1863935525804757048",
-                    "guid": "cef18b7c2480ba7b083fc4938730cfcb",
-                    "type": 3
-                  },
-                  "EnemyDefinition": {
-                    "fileID": "11400000",
-                    "guid": "a5b258a4b397a9a3fa2edc1d7e575060",
-                    "type": 2
-                  },
-                  "RewardOverride": {
-                    "fileID": "11400000",
-                    "guid": "4bef1defd37ed76e2a3bcb1144caff3f",
-                    "type": 2
-                  },
-                  "Required": 1,
-                  "Formation": 1,
-                  "Anchor": {
-                    "x": 0,
-                    "y": -0.18
-                  },
-                  "SlotStep": {
-                    "x": 0.1,
-                    "y": 0.08
-                  },
-                  "FormationRise": 0.025,
-                  "Sequence": {
-                    "fileID": "11400000",
-                    "guid": "ce215c88b6ec06e9fa5c3b1e8bfe40ac",
-                    "type": 2
-                  },
-                  "EntryAnchor": {
-                    "x": 0.5,
-                    "y": 1.12
-                  },
-                  "HoldAnchor": {
-                    "x": 0.5,
-                    "y": 0.78
-                  },
-                  "EntryCurve": {
-                    "x": 0,
-                    "y": 0
-                  },
-                  "EntryDuration": 1.2,
-                  "HoldDuration": 3,
-                  "ExitAnchor": {
-                    "x": 1.18,
-                    "y": 0.3
-                  },
-                  "ExitDuration": 3
-                }
-              }
-            ],
-            "CameraOverride": {
-              "fileID": "0"
-            },
-            "ActiveShooterLimit": 2,
-            "ShotSpacing": 0.7,
-            "ShotsPerVolley": 2,
-            "VolleyPause": 1.7,
-            "ClearPauseSeconds": 1,
-            "HandoffTravelSeconds": 1.5,
-            "HandoffDelay": 2,
-            "ProjectileGraceSeconds": 0.65,
-            "ProjectileFadeSeconds": 0.3,
-            "TransitionTitle": "Encounter 5",
-            "TransitionDescription": null,
-            "RewardGraceSeconds": 1.5,
-            "BossPostDeathSeconds": 1
-          }
-        }
-      ]
-    },
-    "8af116d544e70f259986357f866e188d": {
-      "path": "Data/Fixtures/Levels/EncounterSystemsFixture.asset",
-      "documents": [
-        {
-          "fileID": "11400000",
-          "type": "MonoBehaviour",
-          "data": {
-            "m_ObjectHideFlags": 0,
-            "m_CorrespondingSourceObject": {
-              "fileID": "0"
-            },
-            "m_PrefabInstance": {
-              "fileID": "0"
-            },
-            "m_PrefabAsset": {
-              "fileID": "0"
-            },
-            "m_GameObject": {
-              "fileID": "0"
-            },
-            "m_Enabled": 1,
-            "m_EditorHideFlags": 0,
-            "m_Script": {
-              "fileID": "11500000",
-              "guid": "c4179b97c92ab72e0bcc1e13a4938118",
-              "type": 3
-            },
-            "m_Name": "EncounterSystemsFixture",
-            "m_EditorClassIdentifier": "Assembly-CSharp::StarShift.Encounters.LevelDefinition",
-            "Id": "M4_FIXTURE",
-            "DisplayName": "First Contact",
-            "MissionNumber": 1,
-            "EnemyHealthMultiplier": 1,
-            "RegionId": "astra-frontier",
-            "LocationName": null,
-            "MissionBriefing": null,
-            "Direction": 0,
-            "Camera": {
-              "fileID": "11400000",
-              "guid": "f15e6f16905e5380b9f1a05f63962ceb",
-              "type": 2
-            },
-            "ReplayPreset": {
-              "Lives": 3,
-              "Missiles": 1,
-              "ActiveWeapon": 0,
-              "WeaponLevels": [
-                1,
-                0,
-                0
-              ]
-            },
-            "Intro": {
-              "Enabled": 1,
-              "ContinueDelaySeconds": 0.01,
-              "ArrivalTitle": "Mission 01",
-              "MissionTitleSeconds": 2.8,
-              "MissionEntryLeadSeconds": 0.75,
-              "ApproachView": {
-                "orthographicSize": 8,
-                "playableViewport": {
-                  "serializedVersion": 2,
-                  "x": 0,
-                  "y": 0,
-                  "width": 1,
-                  "height": 1
-                }
-              },
-              "TravelView": {
-                "orthographicSize": 9,
-                "playableViewport": {
-                  "serializedVersion": 2,
-                  "x": 0,
-                  "y": 0,
-                  "width": 1,
-                  "height": 1
-                }
-              },
-              "ApproachSeconds": 0.7,
-              "TravelSeconds": 1.8,
-              "BrakeSeconds": 0.8
-            },
-            "Encounters": [
-              {
-                "fileID": "11400000",
-                "guid": "4ba754d9865477110b1604b8e9a11136",
-                "type": 2
-              },
-              {
-                "fileID": "11400000",
-                "guid": "496c8abd1c1857ea7a1cd78ccabf0b9a",
-                "type": 2
-              },
-              {
-                "fileID": "11400000",
-                "guid": "9ab226fd2ab9fe2d39fcf335fcd6193e",
-                "type": 2
-              },
-              {
-                "fileID": "11400000",
-                "guid": "b97534e64345a99f494423684a0aaa13",
-                "type": 2
-              },
-              {
-                "fileID": "11400000",
-                "guid": "7d5bf5722bdd0653d97d94ce92ac8f91",
-                "type": 2
-              }
-            ],
-            "AdditionalStarts": [
-              {
-                "Id": "SYSTEM_DENSITY",
-                "Encounter": {
-                  "fileID": "11400000",
-                  "guid": "496c8abd1c1857ea7a1cd78ccabf0b9a",
-                  "type": 2
-                }
-              },
-              {
-                "Id": "SYSTEM_EFFECTS",
-                "Encounter": {
-                  "fileID": "11400000",
-                  "guid": "9ab226fd2ab9fe2d39fcf335fcd6193e",
-                  "type": 2
-                }
-              },
-              {
-                "Id": "SYSTEM_SURVIVAL",
-                "Encounter": {
-                  "fileID": "11400000",
-                  "guid": "b97534e64345a99f494423684a0aaa13",
-                  "type": 2
-                }
-              },
-              {
-                "Id": "SYSTEM_REWARDS",
-                "Encounter": {
-                  "fileID": "11400000",
-                  "guid": "7d5bf5722bdd0653d97d94ce92ac8f91",
-                  "type": 2
-                }
-              }
-            ]
-          }
-        }
-      ]
-    },
-    "12cba1f275a1ea51cb31dfd2dfb6ad0d": {
-      "path": "Data/Fixtures/RegionAFlights/TopHold.asset",
-      "documents": [
-        {
-          "fileID": "11400000",
-          "type": "MonoBehaviour",
-          "data": {
-            "m_ObjectHideFlags": 0,
-            "m_CorrespondingSourceObject": {
-              "fileID": "0"
-            },
-            "m_PrefabInstance": {
-              "fileID": "0"
-            },
-            "m_PrefabAsset": {
-              "fileID": "0"
-            },
-            "m_GameObject": {
-              "fileID": "0"
-            },
-            "m_Enabled": 1,
-            "m_EditorHideFlags": 0,
-            "m_Script": {
-              "fileID": "11500000",
-              "guid": "c2f6350926592ff089bf19c5c3a58927",
-              "type": 3
-            },
-            "m_Name": "TopHold",
-            "m_EditorClassIdentifier": "Assembly-CSharp::StarShift.Encounters.FlightSequence",
-            "Phases": [
-              {
-                "Kind": 0,
-                "Path": 0,
-                "From": {
-                  "x": 0.5,
-                  "y": 1.2
-                },
-                "To": {
-                  "x": 0.5,
-                  "y": 0.76
-                },
-                "Curve": {
-                  "x": 0,
-                  "y": 0
-                },
-                "Duration": 2.2,
-                "CanShoot": 0,
-                "ClampToView": 0,
-                "HoldUntilResolved": 0,
-                "Smooth": 1,
-                "Cycles": 1
-              },
-              {
-                "Kind": 3,
-                "Path": 0,
-                "From": {
-                  "x": 0.5,
-                  "y": 0.76
-                },
-                "To": {
-                  "x": 0.5,
-                  "y": 0.76
-                },
-                "Curve": {
-                  "x": 0,
-                  "y": 0
-                },
-                "Duration": 10,
-                "CanShoot": 1,
-                "ClampToView": 1,
-                "HoldUntilResolved": 1,
-                "Smooth": 1,
-                "Cycles": 2
-              }
-            ]
-          }
-        }
-      ]
-    },
-    "78df3f64030f32e6394b86dcd668a616": {
-      "path": "Data/Fixtures/Rewards/ExtraLifeDrop.asset",
-      "documents": [
-        {
-          "fileID": "11400000",
-          "type": "MonoBehaviour",
-          "data": {
-            "m_ObjectHideFlags": 0,
-            "m_CorrespondingSourceObject": {
-              "fileID": "0"
-            },
-            "m_PrefabInstance": {
-              "fileID": "0"
-            },
-            "m_PrefabAsset": {
-              "fileID": "0"
-            },
-            "m_GameObject": {
-              "fileID": "0"
-            },
-            "m_Enabled": 1,
-            "m_EditorHideFlags": 0,
-            "m_Script": {
-              "fileID": "11500000",
-              "guid": "a1118c710ce289527acf9dff8006adbc",
-              "type": 3
-            },
-            "m_Name": "ExtraLifeDrop",
-            "m_EditorClassIdentifier": "Assembly-CSharp::StarShift.Rewards.RewardDropTable",
-            "Source": 0,
-            "MajorChance": 0.0075,
-            "ShardChance": 0.035,
-            "Shard": {
-              "fileID": "11400000",
-              "guid": "c9a7fb08849c837d29680c750ea5ed1a",
-              "type": 2
-            },
-            "BossShardCount": 0,
-            "GuaranteedPickup": {
-              "fileID": "11400000",
-              "guid": "1147246fa5c68f5ba9bba00d024a3b99",
-              "type": 2
-            },
-            "MajorItems": []
-          }
-        }
-      ]
-    },
-    "09ef5a870610e9149a426695bd395232": {
-      "path": "Data/Fixtures/Rewards/HomingCoreDrop.asset",
-      "documents": [
-        {
-          "fileID": "11400000",
-          "type": "MonoBehaviour",
-          "data": {
-            "m_ObjectHideFlags": 0,
-            "m_CorrespondingSourceObject": {
-              "fileID": "0"
-            },
-            "m_PrefabInstance": {
-              "fileID": "0"
-            },
-            "m_PrefabAsset": {
-              "fileID": "0"
-            },
-            "m_GameObject": {
-              "fileID": "0"
-            },
-            "m_Enabled": 1,
-            "m_EditorHideFlags": 0,
-            "m_Script": {
-              "fileID": "11500000",
-              "guid": "a1118c710ce289527acf9dff8006adbc",
-              "type": 3
-            },
-            "m_Name": "HomingCoreDrop",
-            "m_EditorClassIdentifier": "Assembly-CSharp::StarShift.Rewards.RewardDropTable",
-            "Source": 0,
-            "MajorChance": 0.0075,
-            "ShardChance": 0.035,
-            "Shard": {
-              "fileID": "11400000",
-              "guid": "c9a7fb08849c837d29680c750ea5ed1a",
-              "type": 2
-            },
-            "BossShardCount": 0,
-            "GuaranteedPickup": {
-              "fileID": "11400000",
-              "guid": "52279b7e5eb0bf970827a9f04ce52921",
-              "type": 2
-            },
-            "MajorItems": []
-          }
-        }
-      ]
-    },
-    "8dbddd972d0d6ac41ae4966409e21b1e": {
-      "path": "Data/Fixtures/Rewards/MissileAmmoDrop.asset",
-      "documents": [
-        {
-          "fileID": "11400000",
-          "type": "MonoBehaviour",
-          "data": {
-            "m_ObjectHideFlags": 0,
-            "m_CorrespondingSourceObject": {
-              "fileID": "0"
-            },
-            "m_PrefabInstance": {
-              "fileID": "0"
-            },
-            "m_PrefabAsset": {
-              "fileID": "0"
-            },
-            "m_GameObject": {
-              "fileID": "0"
-            },
-            "m_Enabled": 1,
-            "m_EditorHideFlags": 0,
-            "m_Script": {
-              "fileID": "11500000",
-              "guid": "a1118c710ce289527acf9dff8006adbc",
-              "type": 3
-            },
-            "m_Name": "MissileAmmoDrop",
-            "m_EditorClassIdentifier": "Assembly-CSharp::StarShift.Rewards.RewardDropTable",
-            "Source": 0,
-            "MajorChance": 0.0075,
-            "ShardChance": 0.035,
-            "Shard": {
-              "fileID": "11400000",
-              "guid": "c9a7fb08849c837d29680c750ea5ed1a",
-              "type": 2
-            },
-            "BossShardCount": 0,
-            "GuaranteedPickup": {
-              "fileID": "11400000",
-              "guid": "a35f9e6fb30bba787ac5c742ba5129ed",
-              "type": 2
-            },
-            "MajorItems": []
-          }
-        }
-      ]
-    },
-    "11e412df49676bd29823d5329eec872a": {
-      "path": "Data/Fixtures/Rewards/OverdriveDrop.asset",
-      "documents": [
-        {
-          "fileID": "11400000",
-          "type": "MonoBehaviour",
-          "data": {
-            "m_ObjectHideFlags": 0,
-            "m_CorrespondingSourceObject": {
-              "fileID": "0"
-            },
-            "m_PrefabInstance": {
-              "fileID": "0"
-            },
-            "m_PrefabAsset": {
-              "fileID": "0"
-            },
-            "m_GameObject": {
-              "fileID": "0"
-            },
-            "m_Enabled": 1,
-            "m_EditorHideFlags": 0,
-            "m_Script": {
-              "fileID": "11500000",
-              "guid": "a1118c710ce289527acf9dff8006adbc",
-              "type": 3
-            },
-            "m_Name": "OverdriveDrop",
-            "m_EditorClassIdentifier": "Assembly-CSharp::StarShift.Rewards.RewardDropTable",
-            "Source": 0,
-            "MajorChance": 0.0075,
-            "ShardChance": 0.035,
-            "Shard": {
-              "fileID": "11400000",
-              "guid": "c9a7fb08849c837d29680c750ea5ed1a",
-              "type": 2
-            },
-            "BossShardCount": 0,
-            "GuaranteedPickup": {
-              "fileID": "11400000",
-              "guid": "ed78a615609a925e1ba5b129ac38a891",
-              "type": 2
-            },
-            "MajorItems": []
-          }
-        }
-      ]
-    },
-    "8c8d7320c40c24df5beb8328d354e12b": {
-      "path": "Data/Fixtures/Rewards/PlasmaCoreDrop.asset",
-      "documents": [
-        {
-          "fileID": "11400000",
-          "type": "MonoBehaviour",
-          "data": {
-            "m_ObjectHideFlags": 0,
-            "m_CorrespondingSourceObject": {
-              "fileID": "0"
-            },
-            "m_PrefabInstance": {
-              "fileID": "0"
-            },
-            "m_PrefabAsset": {
-              "fileID": "0"
-            },
-            "m_GameObject": {
-              "fileID": "0"
-            },
-            "m_Enabled": 1,
-            "m_EditorHideFlags": 0,
-            "m_Script": {
-              "fileID": "11500000",
-              "guid": "a1118c710ce289527acf9dff8006adbc",
-              "type": 3
-            },
-            "m_Name": "PlasmaCoreDrop",
-            "m_EditorClassIdentifier": "Assembly-CSharp::StarShift.Rewards.RewardDropTable",
-            "Source": 0,
-            "MajorChance": 0.0075,
-            "ShardChance": 0.035,
-            "Shard": {
-              "fileID": "11400000",
-              "guid": "c9a7fb08849c837d29680c750ea5ed1a",
-              "type": 2
-            },
-            "BossShardCount": 0,
-            "GuaranteedPickup": {
-              "fileID": "11400000",
-              "guid": "42f828de135191c78bb824e5ec9e98e9",
-              "type": 2
-            },
-            "MajorItems": []
-          }
-        }
-      ]
-    },
-    "e8ff475379109b7e2b8d535f14a67031": {
-      "path": "Data/Fixtures/Rewards/PulseCoreDrop.asset",
-      "documents": [
-        {
-          "fileID": "11400000",
-          "type": "MonoBehaviour",
-          "data": {
-            "m_ObjectHideFlags": 0,
-            "m_CorrespondingSourceObject": {
-              "fileID": "0"
-            },
-            "m_PrefabInstance": {
-              "fileID": "0"
-            },
-            "m_PrefabAsset": {
-              "fileID": "0"
-            },
-            "m_GameObject": {
-              "fileID": "0"
-            },
-            "m_Enabled": 1,
-            "m_EditorHideFlags": 0,
-            "m_Script": {
-              "fileID": "11500000",
-              "guid": "a1118c710ce289527acf9dff8006adbc",
-              "type": 3
-            },
-            "m_Name": "PulseCoreDrop",
-            "m_EditorClassIdentifier": "Assembly-CSharp::StarShift.Rewards.RewardDropTable",
-            "Source": 0,
-            "MajorChance": 0.0075,
-            "ShardChance": 0.035,
-            "Shard": {
-              "fileID": "11400000",
-              "guid": "c9a7fb08849c837d29680c750ea5ed1a",
-              "type": 2
-            },
-            "BossShardCount": 0,
-            "GuaranteedPickup": {
-              "fileID": "11400000",
-              "guid": "61dc5e8a5c6a167268972dc97f30c4bf",
-              "type": 2
-            },
-            "MajorItems": []
-          }
-        }
-      ]
-    },
-    "2a948f280397c2264b6114d950898293": {
-      "path": "Data/Fixtures/Rewards/ShieldCellDrop.asset",
-      "documents": [
-        {
-          "fileID": "11400000",
-          "type": "MonoBehaviour",
-          "data": {
-            "m_ObjectHideFlags": 0,
-            "m_CorrespondingSourceObject": {
-              "fileID": "0"
-            },
-            "m_PrefabInstance": {
-              "fileID": "0"
-            },
-            "m_PrefabAsset": {
-              "fileID": "0"
-            },
-            "m_GameObject": {
-              "fileID": "0"
-            },
-            "m_Enabled": 1,
-            "m_EditorHideFlags": 0,
-            "m_Script": {
-              "fileID": "11500000",
-              "guid": "a1118c710ce289527acf9dff8006adbc",
-              "type": 3
-            },
-            "m_Name": "ShieldCellDrop",
-            "m_EditorClassIdentifier": "Assembly-CSharp::StarShift.Rewards.RewardDropTable",
-            "Source": 0,
-            "MajorChance": 0.0075,
-            "ShardChance": 0.035,
-            "Shard": {
-              "fileID": "11400000",
-              "guid": "c9a7fb08849c837d29680c750ea5ed1a",
-              "type": 2
-            },
-            "BossShardCount": 0,
-            "GuaranteedPickup": {
-              "fileID": "11400000",
-              "guid": "a352b8ae1e0ad9583beee5d845461ffb",
-              "type": 2
-            },
-            "MajorItems": []
-          }
-        }
-      ]
-    },
-    "355b774e6e8797c4c9cc0bfebf3b0f86": {
-      "path": "Data/Fixtures/Rewards/SupportDroneDrop.asset",
-      "documents": [
-        {
-          "fileID": "11400000",
-          "type": "MonoBehaviour",
-          "data": {
-            "m_ObjectHideFlags": 0,
-            "m_CorrespondingSourceObject": {
-              "fileID": "0"
-            },
-            "m_PrefabInstance": {
-              "fileID": "0"
-            },
-            "m_PrefabAsset": {
-              "fileID": "0"
-            },
-            "m_GameObject": {
-              "fileID": "0"
-            },
-            "m_Enabled": 1,
-            "m_EditorHideFlags": 0,
-            "m_Script": {
-              "fileID": "11500000",
-              "guid": "a1118c710ce289527acf9dff8006adbc",
-              "type": 3
-            },
-            "m_Name": "SupportDroneDrop",
-            "m_EditorClassIdentifier": "Assembly-CSharp::StarShift.Rewards.RewardDropTable",
-            "Source": 0,
-            "MajorChance": 0.0075,
-            "ShardChance": 0.035,
-            "Shard": {
-              "fileID": "11400000",
-              "guid": "c9a7fb08849c837d29680c750ea5ed1a",
-              "type": 2
-            },
-            "BossShardCount": 0,
-            "GuaranteedPickup": {
-              "fileID": "11400000",
-              "guid": "a38f447571bec1e25ba701d80d21c437",
-              "type": 2
-            },
-            "MajorItems": []
-          }
-        }
-      ]
-    },
-    "8e685e3df37c7c6ba9944694129ce98f": {
-      "path": "Data/Flights/DiagonalPassFlight.asset",
-      "documents": [
-        {
-          "fileID": "11400000",
-          "type": "MonoBehaviour",
-          "data": {
-            "m_ObjectHideFlags": 0,
-            "m_CorrespondingSourceObject": {
-              "fileID": "0"
-            },
-            "m_PrefabInstance": {
-              "fileID": "0"
-            },
-            "m_PrefabAsset": {
-              "fileID": "0"
-            },
-            "m_GameObject": {
-              "fileID": "0"
-            },
-            "m_Enabled": 1,
-            "m_EditorHideFlags": 0,
-            "m_Script": {
-              "fileID": "11500000",
-              "guid": "c2f6350926592ff089bf19c5c3a58927",
-              "type": 3
-            },
-            "m_Name": "DiagonalPassFlight",
-            "m_EditorClassIdentifier": "Assembly-CSharp::StarShift.Encounters.FlightSequence",
-            "Phases": [
-              {
-                "Kind": 0,
-                "Path": 3,
-                "From": {
-                  "x": -0.6,
-                  "y": 1.6
-                },
-                "To": {
-                  "x": 0.5,
-                  "y": 0.72
-                },
-                "Curve": {
-                  "x": 0.15,
-                  "y": 0.12
-                },
-                "Duration": 1.3,
-                "CanShoot": 0,
-                "ClampToView": 0,
-                "HoldUntilResolved": 0,
-                "Smooth": 1,
-                "Cycles": 1
-              },
-              {
-                "Kind": 3,
-                "Path": 0,
-                "From": {
-                  "x": 0.5,
-                  "y": 0.72
-                },
-                "To": {
-                  "x": 0.5,
-                  "y": 0.72
-                },
-                "Curve": {
-                  "x": 0,
-                  "y": 0
-                },
-                "Duration": 9,
-                "CanShoot": 1,
-                "ClampToView": 1,
-                "HoldUntilResolved": 0,
-                "Smooth": 1,
-                "Cycles": 1
-              },
-              {
-                "Kind": 5,
-                "Path": 0,
-                "From": {
-                  "x": 0.5,
-                  "y": 0.72
-                },
-                "To": {
-                  "x": 1.8,
-                  "y": -0.8
-                },
-                "Curve": {
-                  "x": 0,
-                  "y": 0
-                },
-                "Duration": 3,
-                "CanShoot": 1,
-                "ClampToView": 0,
-                "HoldUntilResolved": 0,
-                "Smooth": 1,
-                "Cycles": 1
-              }
-            ]
-          }
-        }
-      ]
-    },
-    "698c678b4615b200b83d8bac86d4378b": {
-      "path": "Data/Flights/FormationHold.asset",
-      "documents": [
-        {
-          "fileID": "11400000",
-          "type": "MonoBehaviour",
-          "data": {
-            "m_ObjectHideFlags": 0,
-            "m_CorrespondingSourceObject": {
-              "fileID": "0"
-            },
-            "m_PrefabInstance": {
-              "fileID": "0"
-            },
-            "m_PrefabAsset": {
-              "fileID": "0"
-            },
-            "m_GameObject": {
-              "fileID": "0"
-            },
-            "m_Enabled": 1,
-            "m_EditorHideFlags": 0,
-            "m_Script": {
-              "fileID": "11500000",
-              "guid": "c2f6350926592ff089bf19c5c3a58927",
-              "type": 3
-            },
-            "m_Name": "FormationHold",
-            "m_EditorClassIdentifier": "Assembly-CSharp::StarShift.Encounters.FlightSequence",
-            "Phases": [
-              {
-                "Kind": 0,
-                "Path": 0,
-                "From": {
-                  "x": 0.5,
-                  "y": 1.12
-                },
-                "To": {
-                  "x": 0.5,
-                  "y": 0.73
-                },
-                "Curve": {
-                  "x": 0,
-                  "y": 0
-                },
-                "Duration": 1.3,
-                "CanShoot": 0,
-                "ClampToView": 0,
-                "HoldUntilResolved": 0,
-                "Smooth": 1,
-                "Cycles": 1
-              },
-              {
-                "Kind": 3,
-                "Path": 0,
-                "From": {
-                  "x": 0.5,
-                  "y": 0.73
-                },
-                "To": {
-                  "x": 0.5,
-                  "y": 0.73
-                },
-                "Curve": {
-                  "x": 0,
-                  "y": 0
-                },
-                "Duration": 1,
-                "CanShoot": 1,
-                "ClampToView": 1,
-                "HoldUntilResolved": 1,
-                "Smooth": 1,
-                "Cycles": 1
-              }
-            ]
-          }
-        }
-      ]
-    },
-    "4e1ad407c211e0832ab0c6a631da62e0": {
-      "path": "Data/Flights/RightFormationHold.asset",
-      "documents": [
-        {
-          "fileID": "11400000",
-          "type": "MonoBehaviour",
-          "data": {
-            "m_ObjectHideFlags": 0,
-            "m_CorrespondingSourceObject": {
-              "fileID": "0"
-            },
-            "m_PrefabInstance": {
-              "fileID": "0"
-            },
-            "m_PrefabAsset": {
-              "fileID": "0"
-            },
-            "m_GameObject": {
-              "fileID": "0"
-            },
-            "m_Enabled": 1,
-            "m_EditorHideFlags": 0,
-            "m_Script": {
-              "fileID": "11500000",
-              "guid": "c2f6350926592ff089bf19c5c3a58927",
-              "type": 3
-            },
-            "m_Name": "RightFormationHold",
-            "m_EditorClassIdentifier": "Assembly-CSharp::StarShift.Encounters.FlightSequence",
-            "Phases": [
-              {
-                "Kind": 0,
-                "Path": 2,
-                "From": {
-                  "x": 1.6,
-                  "y": 0.86
-                },
-                "To": {
-                  "x": 0.5,
-                  "y": 0.72
-                },
-                "Curve": {
-                  "x": 0.15,
-                  "y": 0.12
-                },
-                "Duration": 1.3,
-                "CanShoot": 0,
-                "ClampToView": 0,
-                "HoldUntilResolved": 0,
-                "Smooth": 1,
-                "Cycles": 1
-              },
-              {
-                "Kind": 3,
-                "Path": 0,
-                "From": {
-                  "x": 0.5,
-                  "y": 0.72
-                },
-                "To": {
-                  "x": 0.5,
-                  "y": 0.72
-                },
-                "Curve": {
-                  "x": 0,
-                  "y": 0
-                },
-                "Duration": 9,
-                "CanShoot": 1,
-                "ClampToView": 1,
-                "HoldUntilResolved": 1,
-                "Smooth": 1,
-                "Cycles": 1
-              }
-            ]
-          }
-        }
-      ]
-    },
-    "865cd30d8a7610da4a764cc1bab15452": {
-      "path": "Data/Flights/RightSweepFlight.asset",
-      "documents": [
-        {
-          "fileID": "11400000",
-          "type": "MonoBehaviour",
-          "data": {
-            "m_ObjectHideFlags": 0,
-            "m_CorrespondingSourceObject": {
-              "fileID": "0"
-            },
-            "m_PrefabInstance": {
-              "fileID": "0"
-            },
-            "m_PrefabAsset": {
-              "fileID": "0"
-            },
-            "m_GameObject": {
-              "fileID": "0"
-            },
-            "m_Enabled": 1,
-            "m_EditorHideFlags": 0,
-            "m_Script": {
-              "fileID": "11500000",
-              "guid": "c2f6350926592ff089bf19c5c3a58927",
-              "type": 3
-            },
-            "m_Name": "RightSweepFlight",
-            "m_EditorClassIdentifier": "Assembly-CSharp::StarShift.Encounters.FlightSequence",
-            "Phases": [
-              {
-                "Kind": 0,
-                "Path": 2,
-                "From": {
-                  "x": 1.6,
-                  "y": 0.86
-                },
-                "To": {
-                  "x": 0.5,
-                  "y": 0.72
-                },
-                "Curve": {
-                  "x": 0.15,
-                  "y": 0.12
-                },
-                "Duration": 1.3,
-                "CanShoot": 0,
-                "ClampToView": 0,
-                "HoldUntilResolved": 0,
-                "Smooth": 1,
-                "Cycles": 1
-              },
-              {
-                "Kind": 3,
-                "Path": 0,
-                "From": {
-                  "x": 0.5,
-                  "y": 0.72
-                },
-                "To": {
-                  "x": 0.5,
-                  "y": 0.72
-                },
-                "Curve": {
-                  "x": 0,
-                  "y": 0
-                },
-                "Duration": 9,
-                "CanShoot": 1,
-                "ClampToView": 1,
-                "HoldUntilResolved": 0,
-                "Smooth": 1,
-                "Cycles": 1
-              },
-              {
-                "Kind": 5,
-                "Path": 0,
-                "From": {
-                  "x": 0.5,
-                  "y": 0.72
-                },
-                "To": {
-                  "x": -0.8,
-                  "y": 0.45
-                },
-                "Curve": {
-                  "x": 0,
-                  "y": 0
-                },
-                "Duration": 3,
-                "CanShoot": 1,
-                "ClampToView": 0,
-                "HoldUntilResolved": 0,
-                "Smooth": 1,
-                "Cycles": 1
-              }
-            ]
-          }
-        }
-      ]
-    },
-    "ce215c88b6ec06e9fa5c3b1e8bfe40ac": {
-      "path": "Data/Flights/SupplyFlyby.asset",
-      "documents": [
-        {
-          "fileID": "11400000",
-          "type": "MonoBehaviour",
-          "data": {
-            "m_ObjectHideFlags": 0,
-            "m_CorrespondingSourceObject": {
-              "fileID": "0"
-            },
-            "m_PrefabInstance": {
-              "fileID": "0"
-            },
-            "m_PrefabAsset": {
-              "fileID": "0"
-            },
-            "m_GameObject": {
-              "fileID": "0"
-            },
-            "m_Enabled": 1,
-            "m_EditorHideFlags": 0,
-            "m_Script": {
-              "fileID": "11500000",
-              "guid": "c2f6350926592ff089bf19c5c3a58927",
-              "type": 3
-            },
-            "m_Name": "SupplyFlyby",
-            "m_EditorClassIdentifier": "Assembly-CSharp::StarShift.Encounters.FlightSequence",
-            "Phases": [
-              {
-                "Kind": 0,
-                "Path": 0,
-                "From": {
-                  "x": -0.1,
-                  "y": 0.56
-                },
-                "To": {
-                  "x": 0.5,
-                  "y": 0.55
-                },
-                "Curve": {
-                  "x": 0,
-                  "y": 0
-                },
-                "Duration": 1.3,
-                "CanShoot": 0,
-                "ClampToView": 0,
-                "HoldUntilResolved": 0,
-                "Smooth": 1,
-                "Cycles": 1
-              },
-              {
-                "Kind": 3,
-                "Path": 0,
-                "From": {
-                  "x": 0.5,
-                  "y": 0.55
-                },
-                "To": {
-                  "x": 0.5,
-                  "y": 0.55
-                },
-                "Curve": {
-                  "x": 0,
-                  "y": 0
-                },
-                "Duration": 6,
-                "CanShoot": 1,
-                "ClampToView": 1,
-                "HoldUntilResolved": 0,
-                "Smooth": 1,
-                "Cycles": 1
-              },
-              {
-                "Kind": 5,
-                "Path": 0,
-                "From": {
-                  "x": 0.5,
-                  "y": 0.55
-                },
-                "To": {
-                  "x": 1.2,
-                  "y": 0.43
-                },
-                "Curve": {
-                  "x": 0,
-                  "y": 0
-                },
-                "Duration": 4,
-                "CanShoot": 1,
-                "ClampToView": 0,
-                "HoldUntilResolved": 0,
-                "Smooth": 1,
-                "Cycles": 1
-              }
-            ]
-          }
-        }
-      ]
-    },
-    "594376ddd384f2ca1800c6866e970e41": {
-      "path": "Data/Flights/TopDiveFlight.asset",
-      "documents": [
-        {
-          "fileID": "11400000",
-          "type": "MonoBehaviour",
-          "data": {
-            "m_ObjectHideFlags": 0,
-            "m_CorrespondingSourceObject": {
-              "fileID": "0"
-            },
-            "m_PrefabInstance": {
-              "fileID": "0"
-            },
-            "m_PrefabAsset": {
-              "fileID": "0"
-            },
-            "m_GameObject": {
-              "fileID": "0"
-            },
-            "m_Enabled": 1,
-            "m_EditorHideFlags": 0,
-            "m_Script": {
-              "fileID": "11500000",
-              "guid": "c2f6350926592ff089bf19c5c3a58927",
-              "type": 3
-            },
-            "m_Name": "TopDiveFlight",
-            "m_EditorClassIdentifier": "Assembly-CSharp::StarShift.Encounters.FlightSequence",
-            "Phases": [
-              {
-                "Kind": 0,
-                "Path": 0,
-                "From": {
-                  "x": 0.5,
-                  "y": 1.8
-                },
-                "To": {
-                  "x": 0.5,
-                  "y": 0.72
-                },
-                "Curve": {
-                  "x": 0.15,
-                  "y": 0.12
-                },
-                "Duration": 1.3,
-                "CanShoot": 0,
-                "ClampToView": 0,
-                "HoldUntilResolved": 0,
-                "Smooth": 1,
-                "Cycles": 1
-              },
-              {
-                "Kind": 3,
-                "Path": 0,
-                "From": {
-                  "x": 0.5,
-                  "y": 0.72
-                },
-                "To": {
-                  "x": 0.5,
-                  "y": 0.72
-                },
-                "Curve": {
-                  "x": 0,
-                  "y": 0
-                },
-                "Duration": 9,
-                "CanShoot": 1,
-                "ClampToView": 1,
-                "HoldUntilResolved": 0,
-                "Smooth": 1,
-                "Cycles": 1
-              },
-              {
-                "Kind": 5,
-                "Path": 0,
-                "From": {
-                  "x": 0.5,
-                  "y": 0.72
-                },
-                "To": {
-                  "x": 0.5,
-                  "y": -0.8
-                },
-                "Curve": {
-                  "x": 0,
-                  "y": 0
-                },
-                "Duration": 3,
-                "CanShoot": 1,
-                "ClampToView": 0,
-                "HoldUntilResolved": 0,
-                "Smooth": 1,
-                "Cycles": 1
-              }
-            ]
-          }
-        }
-      ]
-    },
-    "561777152fe9c1fb78dc20b8fd4f50e9": {
-      "path": "Data/Flights/TopRetreatFlight.asset",
-      "documents": [
-        {
-          "fileID": "11400000",
-          "type": "MonoBehaviour",
-          "data": {
-            "m_ObjectHideFlags": 0,
-            "m_CorrespondingSourceObject": {
-              "fileID": "0"
-            },
-            "m_PrefabInstance": {
-              "fileID": "0"
-            },
-            "m_PrefabAsset": {
-              "fileID": "0"
-            },
-            "m_GameObject": {
-              "fileID": "0"
-            },
-            "m_Enabled": 1,
-            "m_EditorHideFlags": 0,
-            "m_Script": {
-              "fileID": "11500000",
-              "guid": "c2f6350926592ff089bf19c5c3a58927",
-              "type": 3
-            },
-            "m_Name": "TopRetreatFlight",
-            "m_EditorClassIdentifier": "Assembly-CSharp::StarShift.Encounters.FlightSequence",
-            "Phases": [
-              {
-                "Kind": 0,
-                "Path": 0,
-                "From": {
-                  "x": 0.5,
-                  "y": 1.8
-                },
-                "To": {
-                  "x": 0.5,
-                  "y": 0.72
-                },
-                "Curve": {
-                  "x": 0.15,
-                  "y": 0.12
-                },
-                "Duration": 1.3,
-                "CanShoot": 0,
-                "ClampToView": 0,
-                "HoldUntilResolved": 0,
-                "Smooth": 1,
-                "Cycles": 1
-              },
-              {
-                "Kind": 3,
-                "Path": 0,
-                "From": {
-                  "x": 0.5,
-                  "y": 0.72
-                },
-                "To": {
-                  "x": 0.5,
-                  "y": 0.72
-                },
-                "Curve": {
-                  "x": 0,
-                  "y": 0
-                },
-                "Duration": 9,
-                "CanShoot": 1,
-                "ClampToView": 1,
-                "HoldUntilResolved": 0,
-                "Smooth": 1,
-                "Cycles": 1
-              },
-              {
-                "Kind": 5,
-                "Path": 0,
-                "From": {
-                  "x": 0.5,
-                  "y": 0.72
-                },
-                "To": {
-                  "x": 0.5,
-                  "y": 1.8
-                },
-                "Curve": {
-                  "x": 0,
-                  "y": 0
-                },
-                "Duration": 3,
-                "CanShoot": 1,
-                "ClampToView": 0,
-                "HoldUntilResolved": 0,
-                "Smooth": 1,
-                "Cycles": 1
-              }
-            ]
-          }
-        }
-      ]
-    },
     "6d565f2dcb17f4e4b89b8208cc287d8f": {
       "path": "Data/RegionA/Boss/BossGold.asset",
       "documents": [
@@ -3882,8 +1255,8 @@
               "a": 1
             },
             "Sprite": {
-              "fileID": "21300000",
-              "guid": "1bdbeb5344a099beaa2fbaaa77367316",
+              "guid": "a9a0ce0d33c81a3e2bb988465c6ff937",
+              "fileID": "-2070659882",
               "type": 3
             },
             "AnimationFrames": [
@@ -4072,8 +1445,8 @@
             "burstCount": 1,
             "burstInterval": 0.22,
             "projectileSprite": {
-              "fileID": "21300000",
-              "guid": "8affc6f2286746d49abd818ac1a09d09",
+              "guid": "25a0ab503bc538da091b20bcb2d63536",
+              "fileID": "-1209492434",
               "type": 3
             },
             "projectileColor": {
@@ -24972,8 +22345,8 @@
               "a": 1
             },
             "Sprite": {
-              "fileID": "21300000",
-              "guid": "1bdbeb5344a099beaa2fbaaa77367316",
+              "guid": "a9a0ce0d33c81a3e2bb988465c6ff937",
+              "fileID": "-2070659882",
               "type": 3
             },
             "AnimationFrames": [
@@ -26322,8 +23695,8 @@
               "a": 1
             },
             "Sprite": {
-              "fileID": "21300000",
-              "guid": "8a4acfa6b57a9ed72bf55276172e9160",
+              "guid": "a86a1cbf0ac076f25b98996db44bffc9",
+              "fileID": "-960478256",
               "type": 3
             },
             "AnimationFrames": [
@@ -26400,8 +23773,8 @@
               "a": 1
             },
             "Sprite": {
-              "fileID": "21300000",
-              "guid": "d0e68b0c914a38d5b9f72a35c4386ba7",
+              "guid": "c258a29877cc5c3bd879192886b866d1",
+              "fileID": "449963769",
               "type": 3
             },
             "AnimationFrames": [
@@ -26478,8 +23851,8 @@
               "a": 1
             },
             "Sprite": {
-              "fileID": "21300000",
-              "guid": "2a79eb64cb0515c2fbd7e4ea7ad41068",
+              "guid": "1ee8ea4a3825110ecb55030031ad7b69",
+              "fileID": "791377277",
               "type": 3
             },
             "AnimationFrames": [
@@ -26667,8 +24040,8 @@
               "a": 1
             },
             "Sprite": {
-              "fileID": "21300000",
-              "guid": "6bb8edc9fc6fc26e59ee3d3dcafdb33b",
+              "guid": "fd3c617f406c8bcb19648f7f0e3a79dd",
+              "fileID": "-1989764421",
               "type": 3
             },
             "AnimationFrames": [
@@ -26745,8 +24118,8 @@
               "a": 1
             },
             "Sprite": {
-              "fileID": "21300000",
-              "guid": "4943f9e4f12b1da669b749054f109da0",
+              "guid": "bbd35e35dbd070c18abf6ad075fdde43",
+              "fileID": "-667000622",
               "type": 3
             },
             "AnimationFrames": [
@@ -26823,8 +24196,8 @@
               "a": 1
             },
             "Sprite": {
-              "fileID": "21300000",
-              "guid": "97c69312d2ffa4602850699efdc8913c",
+              "guid": "60445ffe0b3494d6fa1b8ba2e91c9a46",
+              "fileID": "1856829678",
               "type": 3
             },
             "AnimationFrames": [
@@ -26946,8 +24319,8 @@
               "a": 1
             },
             "Sprite": {
-              "fileID": "21300000",
-              "guid": "a5a07116ad5a45bfe8ff8549b81339bd",
+              "guid": "19d808d38dabf07e896e350f6d8e2c85",
+              "fileID": "-901221950",
               "type": 3
             },
             "AnimationFrames": [
@@ -27024,8 +24397,8 @@
               "a": 1
             },
             "Sprite": {
-              "fileID": "21300000",
-              "guid": "1bdbeb5344a099beaa2fbaaa77367316",
+              "guid": "a9a0ce0d33c81a3e2bb988465c6ff937",
+              "fileID": "-2070659882",
               "type": 3
             },
             "AnimationFrames": [
@@ -27212,8 +24585,8 @@
               "a": 1
             },
             "Sprite": {
-              "fileID": "21300000",
-              "guid": "0064cd919baa8a5e6994c4d7c5e1bc77",
+              "guid": "cce2a11c5ef47f6499b442ab6b560a90",
+              "fileID": "-974987810",
               "type": 3
             },
             "AnimationFrames": [
@@ -28406,8 +25779,8 @@
             "m_SortingOrder": 7,
             "m_MaskInteraction": 0,
             "m_Sprite": {
-              "fileID": "21300000",
-              "guid": "ebd3a523066c4a3358ec348dab188ea9",
+              "guid": "975bf02079abb2c539a9cdf0a0de18d4",
+              "fileID": "-129386422",
               "type": 3
             },
             "m_Color": {
@@ -30726,8 +28099,8 @@
             "m_SortingOrder": 7,
             "m_MaskInteraction": 0,
             "m_Sprite": {
-              "fileID": "21300000",
-              "guid": "ebd3a523066c4a3358ec348dab188ea9",
+              "guid": "975bf02079abb2c539a9cdf0a0de18d4",
+              "fileID": "-129386422",
               "type": 3
             },
             "m_Color": {
@@ -32843,8 +30216,8 @@
             "m_SortingOrder": 7,
             "m_MaskInteraction": 0,
             "m_Sprite": {
-              "fileID": "21300000",
-              "guid": "64f41bb9851152e78bcc82b5fa395232",
+              "guid": "406c238945c93997e9a0c75c319bdb59",
+              "fileID": "-1307209575",
               "type": 3
             },
             "m_Color": {
@@ -33025,8 +30398,8 @@
             "m_SortingOrder": 7,
             "m_MaskInteraction": 0,
             "m_Sprite": {
-              "fileID": "21300000",
-              "guid": "ebd3a523066c4a3358ec348dab188ea9",
+              "guid": "975bf02079abb2c539a9cdf0a0de18d4",
+              "fileID": "-129386422",
               "type": 3
             },
             "m_Color": {
@@ -34864,8 +32237,8 @@
             "m_SortingOrder": 7,
             "m_MaskInteraction": 0,
             "m_Sprite": {
-              "fileID": "21300000",
-              "guid": "64f41bb9851152e78bcc82b5fa395232",
+              "guid": "406c238945c93997e9a0c75c319bdb59",
+              "fileID": "-1307209575",
               "type": 3
             },
             "m_Color": {
@@ -37774,8 +35147,8 @@
             "m_SortingOrder": 7,
             "m_MaskInteraction": 0,
             "m_Sprite": {
-              "fileID": "21300000",
-              "guid": "ebd3a523066c4a3358ec348dab188ea9",
+              "guid": "975bf02079abb2c539a9cdf0a0de18d4",
+              "fileID": "-129386422",
               "type": 3
             },
             "m_Color": {
@@ -42627,8 +40000,8 @@
             "m_SortingOrder": 14,
             "m_MaskInteraction": 0,
             "m_Sprite": {
-              "fileID": "21300000",
-              "guid": "35a414d86198d0452aeed6860a5f3659",
+              "guid": "6c44ea7eaa71829948114dc9ae5bc581",
+              "fileID": "300732477",
               "type": 3
             },
             "m_Color": {
@@ -43591,8 +40964,8 @@
             "m_SortingOrder": 7,
             "m_MaskInteraction": 0,
             "m_Sprite": {
-              "fileID": "21300000",
-              "guid": "ebd3a523066c4a3358ec348dab188ea9",
+              "guid": "975bf02079abb2c539a9cdf0a0de18d4",
+              "fileID": "-129386422",
               "type": 3
             },
             "m_Color": {
@@ -44056,8 +41429,8 @@
             "m_SortingOrder": 15,
             "m_MaskInteraction": 0,
             "m_Sprite": {
-              "fileID": "21300000",
-              "guid": "46e72643c9589761aab52958de1463a1",
+              "guid": "b45cad5f0b44c10cd9c4e11644111b71",
+              "fileID": "-385177466",
               "type": 3
             },
             "m_Color": {
@@ -53739,8 +51112,8 @@
             "m_SortingOrder": 14,
             "m_MaskInteraction": 0,
             "m_Sprite": {
-              "fileID": "21300000",
-              "guid": "35a414d86198d0452aeed6860a5f3659",
+              "guid": "6c44ea7eaa71829948114dc9ae5bc581",
+              "fileID": "300732477",
               "type": 3
             },
             "m_Color": {
@@ -54593,8 +51966,8 @@
             "m_SortingOrder": 15,
             "m_MaskInteraction": 0,
             "m_Sprite": {
-              "fileID": "21300000",
-              "guid": "46e72643c9589761aab52958de1463a1",
+              "guid": "b45cad5f0b44c10cd9c4e11644111b71",
+              "fileID": "-385177466",
               "type": 3
             },
             "m_Color": {
@@ -55591,8 +52964,8 @@
             "m_SortingOrder": 15,
             "m_MaskInteraction": 0,
             "m_Sprite": {
-              "fileID": "21300000",
-              "guid": "46e72643c9589761aab52958de1463a1",
+              "guid": "b45cad5f0b44c10cd9c4e11644111b71",
+              "fileID": "-385177466",
               "type": 3
             },
             "m_Color": {
@@ -58511,8 +55884,8 @@
             "m_SortingOrder": 7,
             "m_MaskInteraction": 0,
             "m_Sprite": {
-              "fileID": "21300000",
-              "guid": "ebd3a523066c4a3358ec348dab188ea9",
+              "guid": "975bf02079abb2c539a9cdf0a0de18d4",
+              "fileID": "-129386422",
               "type": 3
             },
             "m_Color": {
@@ -62503,8 +59876,8 @@
             "m_SortingOrder": 7,
             "m_MaskInteraction": 0,
             "m_Sprite": {
-              "fileID": "21300000",
-              "guid": "ebd3a523066c4a3358ec348dab188ea9",
+              "guid": "975bf02079abb2c539a9cdf0a0de18d4",
+              "fileID": "-129386422",
               "type": 3
             },
             "m_Color": {
@@ -63236,8 +60609,8 @@
             "m_SortingOrder": 7,
             "m_MaskInteraction": 0,
             "m_Sprite": {
-              "fileID": "21300000",
-              "guid": "ebd3a523066c4a3358ec348dab188ea9",
+              "guid": "975bf02079abb2c539a9cdf0a0de18d4",
+              "fileID": "-129386422",
               "type": 3
             },
             "m_Color": {
@@ -73205,8 +70578,8 @@
             "m_SortingOrder": 14,
             "m_MaskInteraction": 0,
             "m_Sprite": {
-              "fileID": "21300000",
-              "guid": "35a414d86198d0452aeed6860a5f3659",
+              "guid": "6c44ea7eaa71829948114dc9ae5bc581",
+              "fileID": "300732477",
               "type": 3
             },
             "m_Color": {
@@ -76402,8 +73775,8 @@
             "m_SortingOrder": 7,
             "m_MaskInteraction": 0,
             "m_Sprite": {
-              "fileID": "21300000",
-              "guid": "ebd3a523066c4a3358ec348dab188ea9",
+              "guid": "975bf02079abb2c539a9cdf0a0de18d4",
+              "fileID": "-129386422",
               "type": 3
             },
             "m_Color": {
@@ -79045,8 +76418,8 @@
             "m_SortingOrder": 14,
             "m_MaskInteraction": 0,
             "m_Sprite": {
-              "fileID": "21300000",
-              "guid": "35a414d86198d0452aeed6860a5f3659",
+              "guid": "6c44ea7eaa71829948114dc9ae5bc581",
+              "fileID": "300732477",
               "type": 3
             },
             "m_Color": {
@@ -81900,8 +79273,8 @@
             "m_SortingOrder": 7,
             "m_MaskInteraction": 0,
             "m_Sprite": {
-              "fileID": "21300000",
-              "guid": "ebd3a523066c4a3358ec348dab188ea9",
+              "guid": "975bf02079abb2c539a9cdf0a0de18d4",
+              "fileID": "-129386422",
               "type": 3
             },
             "m_Color": {
@@ -83922,8 +81295,8 @@
             "m_SortingOrder": 9,
             "m_MaskInteraction": 0,
             "m_Sprite": {
-              "fileID": "21300000",
-              "guid": "f25c716b59f6e07aeb77eba066b37f3f",
+              "guid": "2544e564cc4dea76b99c75312fd6fd20",
+              "fileID": "451907225",
               "type": 3
             },
             "m_Color": {
@@ -84428,8 +81801,8 @@
             "m_SortingOrder": 9,
             "m_MaskInteraction": 0,
             "m_Sprite": {
-              "fileID": "21300000",
-              "guid": "f25c716b59f6e07aeb77eba066b37f3f",
+              "guid": "2544e564cc4dea76b99c75312fd6fd20",
+              "fileID": "451907225",
               "type": 3
             },
             "m_Color": {
@@ -85579,8 +82952,8 @@
             "m_SortingOrder": -1,
             "m_MaskInteraction": 0,
             "m_Sprite": {
-              "fileID": "21300000",
-              "guid": "46e72643c9589761aab52958de1463a1",
+              "guid": "b45cad5f0b44c10cd9c4e11644111b71",
+              "fileID": "-385177466",
               "type": 3
             },
             "m_Color": {
@@ -87283,8 +84656,8 @@
             "m_SortingOrder": 12,
             "m_MaskInteraction": 0,
             "m_Sprite": {
-              "fileID": "21300000",
-              "guid": "40e61d51d0036935198e8fc04cb12509",
+              "guid": "c346e7feeed2e673d8b8d633e84b2990",
+              "fileID": "847903551",
               "type": 3
             },
             "m_Color": {
@@ -89639,9 +87012,7 @@
             "m_SortingOrder": 6,
             "m_MaskInteraction": 0,
             "m_Sprite": {
-              "fileID": "21300000",
-              "guid": "53fa4c614c3156c67a2e6d7573620279",
-              "type": 3
+              "fileID": "0"
             },
             "m_Color": {
               "r": 1,
@@ -92872,8 +90243,8 @@
               }
             },
             "m_Sprite": {
-              "fileID": "21300000",
-              "guid": "f25c716b59f6e07aeb77eba066b37f3f",
+              "guid": "2544e564cc4dea76b99c75312fd6fd20",
+              "fileID": "451907225",
               "type": 3
             },
             "m_Type": 0,
@@ -93064,8 +90435,8 @@
               }
             },
             "m_Sprite": {
-              "fileID": "21300000",
-              "guid": "f25c716b59f6e07aeb77eba066b37f3f",
+              "guid": "2544e564cc4dea76b99c75312fd6fd20",
+              "fileID": "451907225",
               "type": 3
             },
             "m_Type": 0,
@@ -100853,8 +98224,8 @@
               }
             },
             "m_Sprite": {
-              "fileID": "21300000",
-              "guid": "f25c716b59f6e07aeb77eba066b37f3f",
+              "guid": "2544e564cc4dea76b99c75312fd6fd20",
+              "fileID": "451907225",
               "type": 3
             },
             "m_Type": 0,
@@ -109041,8 +106412,8 @@
               }
             },
             "m_Sprite": {
-              "fileID": "21300000",
-              "guid": "f25c716b59f6e07aeb77eba066b37f3f",
+              "guid": "2544e564cc4dea76b99c75312fd6fd20",
+              "fileID": "451907225",
               "type": 3
             },
             "m_Type": 0,
@@ -109233,8 +106604,8 @@
               }
             },
             "m_Sprite": {
-              "fileID": "21300000",
-              "guid": "f25c716b59f6e07aeb77eba066b37f3f",
+              "guid": "2544e564cc4dea76b99c75312fd6fd20",
+              "fileID": "451907225",
               "type": 3
             },
             "m_Type": 0,
@@ -128563,8 +125934,8 @@
               }
             },
             "m_Sprite": {
-              "fileID": "21300000",
-              "guid": "f25c716b59f6e07aeb77eba066b37f3f",
+              "guid": "2544e564cc4dea76b99c75312fd6fd20",
+              "fileID": "451907225",
               "type": 3
             },
             "m_Type": 0,
@@ -141330,8 +138701,8 @@
               }
             },
             "m_Sprite": {
-              "fileID": "21300000",
-              "guid": "f25c716b59f6e07aeb77eba066b37f3f",
+              "guid": "2544e564cc4dea76b99c75312fd6fd20",
+              "fileID": "451907225",
               "type": 3
             },
             "m_Type": 0,
@@ -144425,8 +141796,8 @@
               }
             },
             "m_Sprite": {
-              "fileID": "21300000",
-              "guid": "f25c716b59f6e07aeb77eba066b37f3f",
+              "guid": "2544e564cc4dea76b99c75312fd6fd20",
+              "fileID": "451907225",
               "type": 3
             },
             "m_Type": 0,
@@ -146885,8 +144256,8 @@
               }
             },
             "m_Sprite": {
-              "fileID": "21300000",
-              "guid": "f25c716b59f6e07aeb77eba066b37f3f",
+              "guid": "2544e564cc4dea76b99c75312fd6fd20",
+              "fileID": "451907225",
               "type": 3
             },
             "m_Type": 0,
@@ -147451,8 +144822,8 @@
               }
             },
             "m_Sprite": {
-              "fileID": "21300000",
-              "guid": "f25c716b59f6e07aeb77eba066b37f3f",
+              "guid": "2544e564cc4dea76b99c75312fd6fd20",
+              "fileID": "451907225",
               "type": 3
             },
             "m_Type": 0,
@@ -148966,8 +146337,8 @@
               }
             },
             "m_Sprite": {
-              "fileID": "21300000",
-              "guid": "f25c716b59f6e07aeb77eba066b37f3f",
+              "guid": "2544e564cc4dea76b99c75312fd6fd20",
+              "fileID": "451907225",
               "type": 3
             },
             "m_Type": 0,
@@ -150217,8 +147588,8 @@
             "m_SortingOrder": 9,
             "m_MaskInteraction": 0,
             "m_Sprite": {
-              "fileID": "21300000",
-              "guid": "f25c716b59f6e07aeb77eba066b37f3f",
+              "guid": "2544e564cc4dea76b99c75312fd6fd20",
+              "fileID": "451907225",
               "type": 3
             },
             "m_Color": {
@@ -151106,8 +148477,8 @@
             "m_SortingOrder": 1,
             "m_MaskInteraction": 0,
             "m_Sprite": {
-              "fileID": "21300000",
-              "guid": "f25c716b59f6e07aeb77eba066b37f3f",
+              "guid": "2544e564cc4dea76b99c75312fd6fd20",
+              "fileID": "451907225",
               "type": 3
             },
             "m_Color": {
@@ -151879,8 +149250,8 @@
               }
             },
             "m_Sprite": {
-              "fileID": "21300000",
-              "guid": "f25c716b59f6e07aeb77eba066b37f3f",
+              "guid": "2544e564cc4dea76b99c75312fd6fd20",
+              "fileID": "451907225",
               "type": 3
             },
             "m_Type": 0,
@@ -160162,8 +157533,8 @@
               }
             },
             "m_Sprite": {
-              "fileID": "21300000",
-              "guid": "f25c716b59f6e07aeb77eba066b37f3f",
+              "guid": "2544e564cc4dea76b99c75312fd6fd20",
+              "fileID": "451907225",
               "type": 3
             },
             "m_Type": 0,
@@ -162163,8 +159534,8 @@
               }
             },
             "m_Sprite": {
-              "fileID": "21300000",
-              "guid": "f25c716b59f6e07aeb77eba066b37f3f",
+              "guid": "2544e564cc4dea76b99c75312fd6fd20",
+              "fileID": "451907225",
               "type": 3
             },
             "m_Type": 0,
@@ -165690,8 +163061,8 @@
               }
             },
             "m_Sprite": {
-              "fileID": "21300000",
-              "guid": "f25c716b59f6e07aeb77eba066b37f3f",
+              "guid": "2544e564cc4dea76b99c75312fd6fd20",
+              "fileID": "451907225",
               "type": 3
             },
             "m_Type": 0,
@@ -165950,8 +163321,8 @@
               }
             },
             "m_Sprite": {
-              "fileID": "21300000",
-              "guid": "f25c716b59f6e07aeb77eba066b37f3f",
+              "guid": "2544e564cc4dea76b99c75312fd6fd20",
+              "fileID": "451907225",
               "type": 3
             },
             "m_Type": 0,
@@ -167280,8 +164651,8 @@
             "m_SortingOrder": 9,
             "m_MaskInteraction": 0,
             "m_Sprite": {
-              "fileID": "21300000",
-              "guid": "f25c716b59f6e07aeb77eba066b37f3f",
+              "guid": "2544e564cc4dea76b99c75312fd6fd20",
+              "fileID": "451907225",
               "type": 3
             },
             "m_Color": {
@@ -171486,8 +168857,8 @@
             "m_SortingOrder": 1,
             "m_MaskInteraction": 0,
             "m_Sprite": {
-              "fileID": "21300000",
-              "guid": "f25c716b59f6e07aeb77eba066b37f3f",
+              "guid": "2544e564cc4dea76b99c75312fd6fd20",
+              "fileID": "451907225",
               "type": 3
             },
             "m_Color": {
@@ -180470,21 +177841,6 @@
       },
       "ppu": 56.25
     },
-    "8a4acfa6b57a9ed72bf55276172e9160:21300000": {
-      "path": "art/Pickups/extra-life.png",
-      "name": "extra-life",
-      "rect": {
-        "x": 0,
-        "y": 0,
-        "width": 64,
-        "height": 64
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      },
-      "ppu": 56.25
-    },
     "c258a29877cc5c3bd879192886b866d1:449963769": {
       "path": "art/Pickups/homing-core-sheet.png",
       "name": "homing-core_00",
@@ -180539,21 +177895,6 @@
       "rect": {
         "serializedVersion": 2,
         "x": 192,
-        "y": 0,
-        "width": 64,
-        "height": 64
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      },
-      "ppu": 56.25
-    },
-    "d0e68b0c914a38d5b9f72a35c4386ba7:21300000": {
-      "path": "art/Pickups/homing-core.png",
-      "name": "homing-core",
-      "rect": {
-        "x": 0,
         "y": 0,
         "width": 64,
         "height": 64
@@ -180628,21 +177969,6 @@
       },
       "ppu": 56.25
     },
-    "2a79eb64cb0515c2fbd7e4ea7ad41068:21300000": {
-      "path": "art/Pickups/missile-ammo.png",
-      "name": "missile-ammo",
-      "rect": {
-        "x": 0,
-        "y": 0,
-        "width": 64,
-        "height": 64
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      },
-      "ppu": 56.25
-    },
     "fd3c617f406c8bcb19648f7f0e3a79dd:-1989764421": {
       "path": "art/Pickups/overdrive-sheet.png",
       "name": "overdrive_00",
@@ -180697,21 +178023,6 @@
       "rect": {
         "serializedVersion": 2,
         "x": 192,
-        "y": 0,
-        "width": 64,
-        "height": 64
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      },
-      "ppu": 56.25
-    },
-    "6bb8edc9fc6fc26e59ee3d3dcafdb33b:21300000": {
-      "path": "art/Pickups/overdrive.png",
-      "name": "overdrive",
-      "rect": {
-        "x": 0,
         "y": 0,
         "width": 64,
         "height": 64
@@ -180786,21 +178097,6 @@
       },
       "ppu": 56.25
     },
-    "4943f9e4f12b1da669b749054f109da0:21300000": {
-      "path": "art/Pickups/plasma-core.png",
-      "name": "plasma-core",
-      "rect": {
-        "x": 0,
-        "y": 0,
-        "width": 64,
-        "height": 64
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      },
-      "ppu": 56.25
-    },
     "60445ffe0b3494d6fa1b8ba2e91c9a46:1856829678": {
       "path": "art/Pickups/pulse-core-sheet.png",
       "name": "pulse-core_00",
@@ -180855,21 +178151,6 @@
       "rect": {
         "serializedVersion": 2,
         "x": 192,
-        "y": 0,
-        "width": 64,
-        "height": 64
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      },
-      "ppu": 56.25
-    },
-    "97c69312d2ffa4602850699efdc8913c:21300000": {
-      "path": "art/Pickups/pulse-core.png",
-      "name": "pulse-core",
-      "rect": {
-        "x": 0,
         "y": 0,
         "width": 64,
         "height": 64
@@ -180944,21 +178225,6 @@
       },
       "ppu": 56.25
     },
-    "a5a07116ad5a45bfe8ff8549b81339bd:21300000": {
-      "path": "art/Pickups/shield-cell.png",
-      "name": "shield-cell",
-      "rect": {
-        "x": 0,
-        "y": 0,
-        "width": 64,
-        "height": 64
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      },
-      "ppu": 56.25
-    },
     "a9a0ce0d33c81a3e2bb988465c6ff937:-2070659882": {
       "path": "art/Pickups/stellar-shard-sheet.png",
       "name": "stellar-shard_00",
@@ -181023,21 +178289,6 @@
       },
       "ppu": 56.25
     },
-    "1bdbeb5344a099beaa2fbaaa77367316:21300000": {
-      "path": "art/Pickups/stellar-shard.png",
-      "name": "stellar-shard",
-      "rect": {
-        "x": 0,
-        "y": 0,
-        "width": 32,
-        "height": 40
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      },
-      "ppu": 56.25
-    },
     "cce2a11c5ef47f6499b442ab6b560a90:-974987810": {
       "path": "art/Pickups/support-drone-sheet.png",
       "name": "support-drone_00",
@@ -181092,21 +178343,6 @@
       "rect": {
         "serializedVersion": 2,
         "x": 192,
-        "y": 0,
-        "width": 64,
-        "height": 64
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      },
-      "ppu": 56.25
-    },
-    "0064cd919baa8a5e6994c4d7c5e1bc77:21300000": {
-      "path": "art/Pickups/support-drone.png",
-      "name": "support-drone",
-      "rect": {
-        "x": 0,
         "y": 0,
         "width": 64,
         "height": 64
@@ -181316,21 +178552,6 @@
       },
       "ppu": 56.25
     },
-    "8affc6f2286746d49abd818ac1a09d09:21300000": {
-      "path": "art/Projectiles/vanguard-curtain-bolt.png",
-      "name": "vanguard-curtain-bolt",
-      "rect": {
-        "x": 0,
-        "y": 0,
-        "width": 96,
-        "height": 24
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      },
-      "ppu": 56.25
-    },
     "d18d18f2ea1932d7b928df03a45d87e2:21300000": {
       "path": "art/Ships/bulwark-critical.png",
       "name": "bulwark-critical",
@@ -181430,21 +178651,6 @@
       "rect": {
         "serializedVersion": 2,
         "x": 192,
-        "y": 0,
-        "width": 64,
-        "height": 32
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      },
-      "ppu": 56.25
-    },
-    "64f41bb9851152e78bcc82b5fa395232:21300000": {
-      "path": "art/Ships/carrier-bay-loop.png",
-      "name": "carrier-bay-loop",
-      "rect": {
-        "x": 0,
         "y": 0,
         "width": 64,
         "height": 32
@@ -182713,21 +179919,6 @@
       },
       "ppu": 56.25
     },
-    "40e61d51d0036935198e8fc04cb12509:21300000": {
-      "path": "art/VFX/death-respawn.png",
-      "name": "death-respawn",
-      "rect": {
-        "x": 0,
-        "y": 0,
-        "width": 64,
-        "height": 64
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      },
-      "ppu": 56.25
-    },
     "6c44ea7eaa71829948114dc9ae5bc581:300732477": {
       "path": "art/VFX/debris-heavy-sheet.png",
       "name": "debris-heavy_00",
@@ -182782,21 +179973,6 @@
       "rect": {
         "serializedVersion": 2,
         "x": 192,
-        "y": 0,
-        "width": 64,
-        "height": 64
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      },
-      "ppu": 56.25
-    },
-    "35a414d86198d0452aeed6860a5f3659:21300000": {
-      "path": "art/VFX/debris-heavy.png",
-      "name": "debris-heavy",
-      "rect": {
-        "x": 0,
         "y": 0,
         "width": 64,
         "height": 64
@@ -182891,21 +180067,6 @@
       "rect": {
         "serializedVersion": 2,
         "x": 96,
-        "y": 0,
-        "width": 32,
-        "height": 40
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      },
-      "ppu": 56.25
-    },
-    "f25c716b59f6e07aeb77eba066b37f3f:21300000": {
-      "path": "art/VFX/engine-loop.png",
-      "name": "engine-loop",
-      "rect": {
-        "x": 0,
         "y": 0,
         "width": 32,
         "height": 40
@@ -184147,21 +181308,6 @@
       },
       "ppu": 56.25
     },
-    "53fa4c614c3156c67a2e6d7573620279:21300000": {
-      "path": "art/VFX/legacy-crate.png",
-      "name": "legacy-crate",
-      "rect": {
-        "x": 0,
-        "y": 0,
-        "width": 56,
-        "height": 56
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      },
-      "ppu": 56.25
-    },
     "249d0b438dbb2c29abb88bf4f1b9853c:-2051427126": {
       "path": "art/VFX/missile-splash-sheet.png",
       "name": "missile-splash_00",
@@ -185182,21 +182328,6 @@
       },
       "ppu": 56.25
     },
-    "46e72643c9589761aab52958de1463a1:21300000": {
-      "path": "art/VFX/shield-activate-break.png",
-      "name": "shield-activate-break",
-      "rect": {
-        "x": 0,
-        "y": 0,
-        "width": 64,
-        "height": 64
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      },
-      "ppu": 56.25
-    },
     "975bf02079abb2c539a9cdf0a0de18d4:-129386422": {
       "path": "art/VFX/smoke-debris-sheet.png",
       "name": "smoke-debris_00",
@@ -185251,21 +182382,6 @@
       "rect": {
         "serializedVersion": 2,
         "x": 192,
-        "y": 0,
-        "width": 64,
-        "height": 64
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      },
-      "ppu": 56.25
-    },
-    "ebd3a523066c4a3358ec348dab188ea9:21300000": {
-      "path": "art/VFX/smoke-debris.png",
-      "name": "smoke-debris",
-      "rect": {
-        "x": 0,
         "y": 0,
         "width": 64,
         "height": 64
@@ -187216,23 +184332,14 @@
     "art/Environments/resource-asteroid-damaged.png",
     "art/Environments/resource-asteroid.png",
     "art/Pickups/extra-life-sheet.png",
-    "art/Pickups/extra-life.png",
     "art/Pickups/homing-core-sheet.png",
-    "art/Pickups/homing-core.png",
     "art/Pickups/missile-ammo-sheet.png",
-    "art/Pickups/missile-ammo.png",
     "art/Pickups/overdrive-sheet.png",
-    "art/Pickups/overdrive.png",
     "art/Pickups/plasma-core-sheet.png",
-    "art/Pickups/plasma-core.png",
     "art/Pickups/pulse-core-sheet.png",
-    "art/Pickups/pulse-core.png",
     "art/Pickups/shield-cell-sheet.png",
-    "art/Pickups/shield-cell.png",
     "art/Pickups/stellar-shard-sheet.png",
-    "art/Pickups/stellar-shard.png",
     "art/Pickups/support-drone-sheet.png",
-    "art/Pickups/support-drone.png",
     "art/Projectiles/enemy-bolt.png",
     "art/Projectiles/hostile-coral.png",
     "art/Projectiles/hostile-lemon.png",
@@ -187243,12 +184350,10 @@
     "art/Projectiles/pulse-bolt.png",
     "art/Projectiles/reserve-missile.png",
     "art/Projectiles/vanguard-curtain-bolt-sheet.png",
-    "art/Projectiles/vanguard-curtain-bolt.png",
     "art/Ships/bulwark-critical.png",
     "art/Ships/bulwark-damaged.png",
     "art/Ships/bulwark.png",
     "art/Ships/carrier-bay-loop-sheet.png",
-    "art/Ships/carrier-bay-loop.png",
     "art/Ships/carrier-critical.png",
     "art/Ships/carrier-damaged.png",
     "art/Ships/carrier.png",
@@ -187306,13 +184411,10 @@
     "art/VFX/boss-armor-rupture-sheet.png",
     "art/VFX/boss-blast-sheet.png",
     "art/VFX/death-respawn-sheet.png",
-    "art/VFX/death-respawn.png",
     "art/VFX/debris-heavy-sheet.png",
-    "art/VFX/debris-heavy.png",
     "art/VFX/elite-accent.png",
     "art/VFX/enemy-telegraph.png",
     "art/VFX/engine-loop-sheet.png",
-    "art/VFX/engine-loop.png",
     "art/VFX/explosion-sheet.png",
     "art/VFX/focus-gun-sheet.png",
     "art/VFX/focus-missile-sheet.png",
@@ -187325,7 +184427,6 @@
     "art/VFX/hit-rock-sheet.png",
     "art/VFX/hit-shield-sheet.png",
     "art/VFX/ion-curtain.png",
-    "art/VFX/legacy-crate.png",
     "art/VFX/missile-splash-sheet.png",
     "art/VFX/muzzle-missile-sheet.png",
     "art/VFX/muzzle-plasma-sheet.png",
@@ -187339,9 +184440,7 @@
     "art/VFX/player-fragment-3.png",
     "art/VFX/rock-shatter-sheet.png",
     "art/VFX/shield-activate-break-sheet.png",
-    "art/VFX/shield-activate-break.png",
     "art/VFX/smoke-debris-sheet.png",
-    "art/VFX/smoke-debris.png",
     "art/VFX/speed-streak.png",
     "art/VFX/strike-launch-sheet.png",
     "art/VFX/supply-burst-polished-sheet.png",
@@ -187453,23 +184552,14 @@
     "art/Environments/resource-asteroid-damaged.png": "a81b83b15be52a88e61209aece62c13c2ae576e1acb57c787d84e06d9411c8a9",
     "art/Environments/resource-asteroid.png": "7d4eb26089fb44c9489157a84166abfc5127c3c001a2d3810d0b050b540e9ebb",
     "art/Pickups/extra-life-sheet.png": "18e68510fd4f53628ac07e92ac05aa5557f54591f8c88192dfcaa922c4d3e0f6",
-    "art/Pickups/extra-life.png": "47ab12dac9fb92d4b67505bf51b6bd9506a9985721101dd2c2563f64eee01de0",
     "art/Pickups/homing-core-sheet.png": "838a85e72f2ea94d0dcaee88eeff332fdadfb1c5da2a8bd2f2342116c0b802e0",
-    "art/Pickups/homing-core.png": "e5878b5a88a8c8405ce0ece67b01dc63fd3ee70c17a594fd5bb9a208b256dfdf",
     "art/Pickups/missile-ammo-sheet.png": "2719ca5e2ae9939f9c7c25603d07960119b58365f876e407698da019ce21d9ce",
-    "art/Pickups/missile-ammo.png": "2e89302f22de7f6bf1b26bf00544963343e4069c476e809cbb7a3b8f19eafe4c",
     "art/Pickups/overdrive-sheet.png": "9ff47220cb7ed1f6c1079d1effd6bc06a88fc228e94c98bed98fb4935c8fed94",
-    "art/Pickups/overdrive.png": "55c7754e78b53bb2bdaf916dd00856291402abf89972b0cb8fb0d26b57b805fd",
     "art/Pickups/plasma-core-sheet.png": "2de69057605a16983b56368ef8a12b4af18684502dc737e580f190d3e3acf691",
-    "art/Pickups/plasma-core.png": "ebd6d149e7393a301e2672397b3dcfaed79708955d4a83c0cc84e4cd5a1e7788",
     "art/Pickups/pulse-core-sheet.png": "d299c23017190d8b5bd2eb4162df33fde51a7ac5622c94d21a755f0d44be7d5e",
-    "art/Pickups/pulse-core.png": "13dd3904ec7e7066d137dbdef3b97c0c5102546eecb96358e4ff0ccb2f8a676a",
     "art/Pickups/shield-cell-sheet.png": "800fc42b57628c7b9dc1d53e12bcc55c49ac60482146186c33b1c4bfd3daaed4",
-    "art/Pickups/shield-cell.png": "21ad20ebfdb9214cbff29a620064305cd917dcc6d08a5c73eb23c5b935069504",
     "art/Pickups/stellar-shard-sheet.png": "809683596e1a7bdd976fb1eaf26dec77454c20b9de2acb8819a0b654d65eb149",
-    "art/Pickups/stellar-shard.png": "c6146f08d7387ce35edb2c8af0f00cf8e699975879e407c89294e679c878a545",
     "art/Pickups/support-drone-sheet.png": "a90f67d3aa01ba1892ef1c903f4a2168580a95625af0490bc85b86f80e03ea34",
-    "art/Pickups/support-drone.png": "4da0afe85261b29d2e234778e559438b8b43b07f6c42c40ee2d186818df9d7fa",
     "art/Projectiles/enemy-bolt.png": "b2f83ef1ccb2a063e828960b039e2fc689586b683351fccf37c4024e5786b6d9",
     "art/Projectiles/hostile-coral.png": "1887000067e883f173296a1a473b1fc9912d8505dc272fcec65f561cb7255444",
     "art/Projectiles/hostile-lemon.png": "1619d993452059953cfe207c9d9fd2b59b56a2b651392b946c560bc9ab14edfb",
@@ -187480,12 +184570,10 @@
     "art/Projectiles/pulse-bolt.png": "a67e4b8f004cff6987fc9bec3fde24afdda21e426086a3b3d026737ca197f452",
     "art/Projectiles/reserve-missile.png": "1e525a5ccb01e45f6d634cfd15fd263b51fdc4ba458c2f84dcf4bfd84ccff2a9",
     "art/Projectiles/vanguard-curtain-bolt-sheet.png": "4c94a29d0b8b108802f956d79240a9126b8bc8ca55d45f0786db6d6cf0309438",
-    "art/Projectiles/vanguard-curtain-bolt.png": "11e072d58c37cb94d558d6bd53bccd713f9b693a1359ee3b750d260db61a12f5",
     "art/Ships/bulwark-critical.png": "df3854553f018930874c078bb2bc054197738eb0ad2c2a12ffe3b92480d21856",
     "art/Ships/bulwark-damaged.png": "ddd535b4be9336099f55258aae9e839c84c1e202dbafee535ff44118f145761c",
     "art/Ships/bulwark.png": "39e40d0f2c633b0e45ec1761480762a320e8c060965d84cedbc64ecc4ac46006",
     "art/Ships/carrier-bay-loop-sheet.png": "09ecb3deb4e6e893c1e23b1c1c02ac4fe80244c5e84ec6d6bdb6f68805343f09",
-    "art/Ships/carrier-bay-loop.png": "a77ad3c885cb8299075aaee33b88df7144a4be850c98c6eb67717d07b39bba20",
     "art/Ships/carrier-critical.png": "7a1db584015481c0e8491a5eee1017e33796f03d939f6fb6b513b581a8500e64",
     "art/Ships/carrier-damaged.png": "0c4f1e1d8f368b392ca0ee3c752fae5b1da346df3b639e8e8605feea0e8ba2e2",
     "art/Ships/carrier.png": "b945efa8ad852ebb81f46266a5e248fcb5acd65fefba0e96b5633baa9974e93e",
@@ -187543,13 +184631,10 @@
     "art/VFX/boss-armor-rupture-sheet.png": "d5ba3206ffbaa85a26e7c6c4b0f2bf02e831d3543e11bf2fd7965b82f642ade2",
     "art/VFX/boss-blast-sheet.png": "64dd92ae02d7db307c25e4fc60aacd2d729202777d51b6635bace8b75bd09053",
     "art/VFX/death-respawn-sheet.png": "28ec9bbd1cd0de4a5581b5072858d530f9ec631d6e6f274740d0b7c07cc9fbeb",
-    "art/VFX/death-respawn.png": "c798adf1a6017716591b444b2dc18cac884a5aae9821787cd966eec9584c1ecb",
     "art/VFX/debris-heavy-sheet.png": "c45e54eb4d1b9438481ced141569560423e0c1c65366fe4e9903dc182bb87a5d",
-    "art/VFX/debris-heavy.png": "514717ac3559a5eb439257ceccfed7bd4a7eadc17fd6f218b3c073b57447dd67",
     "art/VFX/elite-accent.png": "ea2a62cbbc413794fe76900f3d5de3da4fa11e9aaa3629051cba703d6d6dfbb6",
     "art/VFX/enemy-telegraph.png": "ae020cb236ae394ed774c936c78adcc5fcfb61e88e124970bcf85d9b6d031753",
     "art/VFX/engine-loop-sheet.png": "50a529c5d925f5d4e5897c3d763b2fd32b8c421c236c59016a4fc94465a1f348",
-    "art/VFX/engine-loop.png": "869d8184cfa61a35dff78be7dd1e0b11e1ac8c8c2bc8eac3f72190aab2889139",
     "art/VFX/explosion-sheet.png": "4150785f320edd44dabf00ca1ca3ade95177acac1feb3dc1edc80cc5b75509ba",
     "art/VFX/focus-gun-sheet.png": "83a4830063f6b418cea2ce707d7146d9a2f7205bc882545827f6e8663cc1791b",
     "art/VFX/focus-missile-sheet.png": "910064e8c654d0c6274fba2bfe1bc1963639c19fc5e2ad06b9da2af0e289c058",
@@ -187562,7 +184647,6 @@
     "art/VFX/hit-rock-sheet.png": "d62eb93448d677cc074994873951bbc0b7dfa14d709c9471aac9f441d1a59509",
     "art/VFX/hit-shield-sheet.png": "3367a3a8b620edd72d0828ff86870b76f91cdfa87380f05d9663b95669bfa830",
     "art/VFX/ion-curtain.png": "bfec664c6c8672e23da5d0ca11a42f5ea6bcb037370034cbc902f54e90d9458f",
-    "art/VFX/legacy-crate.png": "848051f51f78ef2e635502d9f5bf3c51babef52e3bdda55ed4751ff38d6eb805",
     "art/VFX/missile-splash-sheet.png": "caec526b0fea794fd8a0f2094addb51682ba1700a23fa9905ffe2749ee81e090",
     "art/VFX/muzzle-missile-sheet.png": "fccb485d3add3eb787ff3c29c0c4c2cbae14316e2ff9b8120bbc742144ec18d3",
     "art/VFX/muzzle-plasma-sheet.png": "6842b1aa550d1e798999770565dbf210311b48470abf6859e14acae76a1608c9",
@@ -187576,9 +184660,7 @@
     "art/VFX/player-fragment-3.png": "3a4874e30b6c4a666896bb65e91c6ce52b1f62e866abb199f15d09c491d7df03",
     "art/VFX/rock-shatter-sheet.png": "f238314afb4fe1677e88a006de973566c4c6d030311883545d57724ff17e19d7",
     "art/VFX/shield-activate-break-sheet.png": "28ec9bbd1cd0de4a5581b5072858d530f9ec631d6e6f274740d0b7c07cc9fbeb",
-    "art/VFX/shield-activate-break.png": "c798adf1a6017716591b444b2dc18cac884a5aae9821787cd966eec9584c1ecb",
     "art/VFX/smoke-debris-sheet.png": "f7575c34b17c44fc29f40c31c5d3c9ec9e9bed958710b24564cafa3912eca7be",
-    "art/VFX/smoke-debris.png": "0ba4c7efd9c1ec0eefc4e1d040abf549e8e331c07881dcf3f7e518d1651db942",
     "art/VFX/speed-streak.png": "e70acbdd99ee99af943dd27b456990e7a6719aff9456a7fc41441a49fda71078",
     "art/VFX/strike-launch-sheet.png": "fffc3f0bf06c1e45042df2abe2b24312af3315274f87178b026a1952b709afb5",
     "art/VFX/supply-burst-polished-sheet.png": "c8b1d2950d42cd2ca918ec126df8f0456b28a2a4e8e23eedc0b6690c9f833c65",
@@ -187690,23 +184772,14 @@
     "8e234be0c9a14679e8a4aa6293d631f6": "art/Environments/resource-asteroid-damaged.png",
     "97aa99924cd178870a5d7b60dcc76f87": "art/Environments/resource-asteroid.png",
     "a86a1cbf0ac076f25b98996db44bffc9": "art/Pickups/extra-life-sheet.png",
-    "8a4acfa6b57a9ed72bf55276172e9160": "art/Pickups/extra-life.png",
     "c258a29877cc5c3bd879192886b866d1": "art/Pickups/homing-core-sheet.png",
-    "d0e68b0c914a38d5b9f72a35c4386ba7": "art/Pickups/homing-core.png",
     "1ee8ea4a3825110ecb55030031ad7b69": "art/Pickups/missile-ammo-sheet.png",
-    "2a79eb64cb0515c2fbd7e4ea7ad41068": "art/Pickups/missile-ammo.png",
     "fd3c617f406c8bcb19648f7f0e3a79dd": "art/Pickups/overdrive-sheet.png",
-    "6bb8edc9fc6fc26e59ee3d3dcafdb33b": "art/Pickups/overdrive.png",
     "bbd35e35dbd070c18abf6ad075fdde43": "art/Pickups/plasma-core-sheet.png",
-    "4943f9e4f12b1da669b749054f109da0": "art/Pickups/plasma-core.png",
     "60445ffe0b3494d6fa1b8ba2e91c9a46": "art/Pickups/pulse-core-sheet.png",
-    "97c69312d2ffa4602850699efdc8913c": "art/Pickups/pulse-core.png",
     "19d808d38dabf07e896e350f6d8e2c85": "art/Pickups/shield-cell-sheet.png",
-    "a5a07116ad5a45bfe8ff8549b81339bd": "art/Pickups/shield-cell.png",
     "a9a0ce0d33c81a3e2bb988465c6ff937": "art/Pickups/stellar-shard-sheet.png",
-    "1bdbeb5344a099beaa2fbaaa77367316": "art/Pickups/stellar-shard.png",
     "cce2a11c5ef47f6499b442ab6b560a90": "art/Pickups/support-drone-sheet.png",
-    "0064cd919baa8a5e6994c4d7c5e1bc77": "art/Pickups/support-drone.png",
     "90f95b35aded169968dd4f3cca1bf957": "art/Projectiles/enemy-bolt.png",
     "89885cc3c14d215119df9e6af8fe66aa": "art/Projectiles/hostile-coral.png",
     "9af81ce4e99d81249bb4914cc398683e": "art/Projectiles/hostile-lemon.png",
@@ -187717,12 +184790,10 @@
     "2c332e1ed1ff13f3a91895f93abdd45b": "art/Projectiles/pulse-bolt.png",
     "f1ac53e937564627db163456d6efcc91": "art/Projectiles/reserve-missile.png",
     "25a0ab503bc538da091b20bcb2d63536": "art/Projectiles/vanguard-curtain-bolt-sheet.png",
-    "8affc6f2286746d49abd818ac1a09d09": "art/Projectiles/vanguard-curtain-bolt.png",
     "d18d18f2ea1932d7b928df03a45d87e2": "art/Ships/bulwark-critical.png",
     "8a1a81f040fe7de6f9152e2bc8018da5": "art/Ships/bulwark-damaged.png",
     "e9fe700955d99714c8653b1e606657b7": "art/Ships/bulwark.png",
     "406c238945c93997e9a0c75c319bdb59": "art/Ships/carrier-bay-loop-sheet.png",
-    "64f41bb9851152e78bcc82b5fa395232": "art/Ships/carrier-bay-loop.png",
     "9ed01a4dd11bfb9509981c228de9452f": "art/Ships/carrier-critical.png",
     "e3b064e22b065da81b7f474a93f1082f": "art/Ships/carrier-damaged.png",
     "ca5e18cee78d07dce937ebec7a4c53c3": "art/Ships/carrier.png",
@@ -187780,13 +184851,10 @@
     "4db7e90980011199b967f2a631ebc323": "art/VFX/boss-armor-rupture-sheet.png",
     "9a9382dc8a9f7ebdc9089f6ceea492db": "art/VFX/boss-blast-sheet.png",
     "c346e7feeed2e673d8b8d633e84b2990": "art/VFX/death-respawn-sheet.png",
-    "40e61d51d0036935198e8fc04cb12509": "art/VFX/death-respawn.png",
     "6c44ea7eaa71829948114dc9ae5bc581": "art/VFX/debris-heavy-sheet.png",
-    "35a414d86198d0452aeed6860a5f3659": "art/VFX/debris-heavy.png",
     "486ed6e0c19a99ceebc6ae72cffd6672": "art/VFX/elite-accent.png",
     "cdc7a462e2cc3e5fb89a9173d4a73cd1": "art/VFX/enemy-telegraph.png",
     "2544e564cc4dea76b99c75312fd6fd20": "art/VFX/engine-loop-sheet.png",
-    "f25c716b59f6e07aeb77eba066b37f3f": "art/VFX/engine-loop.png",
     "0dd80c5515edd7b198a1a9308bdb9a98": "art/VFX/explosion-sheet.png",
     "6d2d500631669f093aaa0f5de8b2695d": "art/VFX/focus-gun-sheet.png",
     "880cb4b9c04e9d0c68fe820965c6684f": "art/VFX/focus-missile-sheet.png",
@@ -187799,7 +184867,6 @@
     "248c403d7b60bc838b68ee99155c0c06": "art/VFX/hit-rock-sheet.png",
     "3d7537594750de5f7b489d81070255e7": "art/VFX/hit-shield-sheet.png",
     "0163008d4fb9eb6b99fd118dd67a0c08": "art/VFX/ion-curtain.png",
-    "53fa4c614c3156c67a2e6d7573620279": "art/VFX/legacy-crate.png",
     "249d0b438dbb2c29abb88bf4f1b9853c": "art/VFX/missile-splash-sheet.png",
     "9555f8daa6557a8f08ef45fa5198a8b8": "art/VFX/muzzle-missile-sheet.png",
     "ff8c1e4d1045a6bf9a71e6e8f1188cbc": "art/VFX/muzzle-plasma-sheet.png",
@@ -187813,9 +184880,7 @@
     "c8899266bc7997c1ba0847a1cc48f4ad": "art/VFX/player-fragment-3.png",
     "1fa8880f4ec9f902485345e96ebab983": "art/VFX/rock-shatter-sheet.png",
     "b45cad5f0b44c10cd9c4e11644111b71": "art/VFX/shield-activate-break-sheet.png",
-    "46e72643c9589761aab52958de1463a1": "art/VFX/shield-activate-break.png",
     "975bf02079abb2c539a9cdf0a0de18d4": "art/VFX/smoke-debris-sheet.png",
-    "ebd3a523066c4a3358ec348dab188ea9": "art/VFX/smoke-debris.png",
     "0c4c2ebc3de88217ca818977981135c6": "art/VFX/speed-streak.png",
     "9d1e39be0478de0bdb14d3177e821240": "art/VFX/strike-launch-sheet.png",
     "3d1b9a95920ea8b1699113d42d42f48c": "art/VFX/supply-burst-polished-sheet.png",
@@ -187881,5 +184946,51 @@
     "6a7d00a9a6ae62ecaa39e3c169069959": "fonts/VT323-Regular.ttf",
     "1e2885fa423534ad6bbafe1485f0ecfa": "fonts/chakrapetch-OFL.txt",
     "c0c339570dcd492feaadd1c3526ff967": "fonts/vt323-OFL.txt"
+  },
+  "audioSeconds": {
+    "audio/Music/bgm-boss.wav": 44.77802721088435,
+    "audio/Music/bgm-combat.wav": 47.98,
+    "audio/Music/bgm-hub.wav": 31.98,
+    "audio/SFX/armor-break.wav": 0.3,
+    "audio/SFX/asteroid-break.wav": 0.42,
+    "audio/SFX/back.wav": 0.2584126984126984,
+    "audio/SFX/boss-beam-warning.wav": 0.65,
+    "audio/SFX/boss-burst.wav": 0.5,
+    "audio/SFX/boss-cannon-warning.wav": 0.6,
+    "audio/SFX/boss-curtain-warning.wav": 0.65,
+    "audio/SFX/boss-enter.wav": 0.85,
+    "audio/SFX/boss-escort-warning.wav": 0.01163265306122449,
+    "audio/SFX/boss-final.wav": 1.0000680272108844,
+    "audio/SFX/boss-shelter-warning.wav": 0.65,
+    "audio/SFX/coin.wav": 0.55,
+    "audio/SFX/confirm.wav": 0.14,
+    "audio/SFX/enemy-death.wav": 0.4,
+    "audio/SFX/error.wav": 0.24,
+    "audio/SFX/extra-life.wav": 1.15,
+    "audio/SFX/game-over.wav": 2.8714285714285714,
+    "audio/SFX/heavy-charge.wav": 0.55,
+    "audio/SFX/heavy-death.wav": 0.62,
+    "audio/SFX/heavy-shot.wav": 0.42,
+    "audio/SFX/homing-impact.wav": 0.6,
+    "audio/SFX/homing.wav": 0.22,
+    "audio/SFX/hostile-shot.wav": 0.12,
+    "audio/SFX/interceptor-charge.wav": 0.65,
+    "audio/SFX/interceptor-dash.wav": 0.28,
+    "audio/SFX/overheat.wav": 0.2,
+    "audio/SFX/plasma.wav": 0.34,
+    "audio/SFX/player-death.wav": 0.85,
+    "audio/SFX/player-hit.wav": 0.12,
+    "audio/SFX/power-up.wav": 0.4,
+    "audio/SFX/pulse.wav": 0.17,
+    "audio/SFX/shield-absorb.wav": 0.19,
+    "audio/SFX/shield-break.wav": 0.4,
+    "audio/SFX/sniper-charge.wav": 0.65,
+    "audio/SFX/sniper-fire.wav": 0.32,
+    "audio/SFX/transition-wind.wav": 1.4,
+    "audio/SFX/vent.wav": 0.58,
+    "audio/SFX/victory.wav": 2.3812698412698414,
+    "audio/SFX/warp-arrival.wav": 0.75,
+    "audio/SFX/warp-pass.wav": 1.2,
+    "audio/SFX/warp-start.wav": 0.7
   }
 }
