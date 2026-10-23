@@ -1,0 +1,1168 @@
+
+art.png
+size: 2048, 2048
+format: RGBA8888
+filter: Nearest, Nearest
+repeat: none
+Bosses/vanguard-beam-pod
+  rotate: false
+  xy: 875, 991
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+Bosses/vanguard-critical
+  rotate: false
+  xy: 1029, 1597
+  size: 256, 192
+  orig: 256, 192
+  offset: 0, 0
+  index: -1
+Bosses/vanguard-damaged
+  rotate: false
+  xy: 1287, 1855
+  size: 256, 192
+  orig: 256, 192
+  offset: 0, 0
+  index: -1
+Bosses/vanguard-engine
+  rotate: false
+  xy: 873, 893
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+Bosses/vanguard-hull
+  rotate: false
+  xy: 1, 663
+  size: 256, 192
+  orig: 256, 192
+  offset: 0, 0
+  index: -1
+Bosses/vanguard-missile-pod
+  rotate: false
+  xy: 775, 575
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+Bosses/vanguard-reactor
+  rotate: false
+  xy: 775, 477
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+Bosses/vanguard-truss
+  rotate: false
+  xy: 517, 13
+  size: 192, 48
+  orig: 192, 48
+  offset: 0, 0
+  index: -1
+Bosses/vanguard-wing
+  rotate: false
+  xy: 517, 771
+  size: 256, 112
+  orig: 256, 112
+  offset: 0, 0
+  index: -1
+Bosses/warden-beam-node
+  rotate: false
+  xy: 775, 379
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+Bosses/warden-beam-node-critical
+  rotate: false
+  xy: 775, 281
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+Bosses/warden-beam-node-damaged
+  rotate: false
+  xy: 775, 183
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+Bosses/warden-core
+  rotate: false
+  xy: 775, 85
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+Bosses/warden-critical
+  rotate: false
+  xy: 259, 1081
+  size: 256, 192
+  orig: 256, 192
+  offset: 0, 0
+  index: -1
+Bosses/warden-damaged
+  rotate: false
+  xy: 1287, 1661
+  size: 256, 192
+  orig: 256, 192
+  offset: 0, 0
+  index: -1
+Bosses/warden-drone-node-critical
+  rotate: false
+  xy: 857, 697
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+Bosses/warden-drone-node-damaged
+  rotate: false
+  xy: 873, 599
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+Bosses/warden-hull
+  rotate: false
+  xy: 1545, 1855
+  size: 256, 192
+  orig: 256, 192
+  offset: 0, 0
+  index: -1
+Bosses/warden-plasma-node
+  rotate: false
+  xy: 873, 501
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+Bosses/warden-plasma-node-critical
+  rotate: false
+  xy: 873, 403
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+Bosses/warden-plasma-node-damaged
+  rotate: false
+  xy: 873, 305
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+Bosses/warden-truss
+  rotate: false
+  xy: 1017, 1259
+  size: 192, 48
+  orig: 192, 48
+  offset: 0, 0
+  index: -1
+Bosses/warden-wing
+  rotate: false
+  xy: 517, 657
+  size: 256, 112
+  orig: 256, 112
+  offset: 0, 0
+  index: -1
+Environments/asteroid-huge
+  rotate: false
+  xy: 1803, 1398
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+Environments/asteroid-huge-critical
+  rotate: false
+  xy: 517, 1145
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+Environments/asteroid-huge-damaged
+  rotate: false
+  xy: 517, 1015
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+Environments/asteroid-large
+  rotate: false
+  xy: 647, 1177
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+Environments/asteroid-large-critical
+  rotate: false
+  xy: 1775, 1300
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+Environments/asteroid-large-damaged
+  rotate: false
+  xy: 1775, 1202
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+Environments/asteroid-medium
+  rotate: false
+  xy: 1071, 1091
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+Environments/asteroid-medium-critical
+  rotate: false
+  xy: 1211, 1243
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+Environments/asteroid-medium-damaged
+  rotate: false
+  xy: 857, 9
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+Environments/asteroid-small
+  rotate: false
+  xy: 1999, 1482
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+Environments/asteroid-small-critical
+  rotate: false
+  xy: 1999, 1432
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+Environments/asteroid-small-damaged
+  rotate: false
+  xy: 1993, 1999
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+Environments/astra-planet
+  rotate: false
+  xy: 771, 1791
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+Environments/background
+  rotate: false
+  xy: 1, 1711
+  size: 768, 336
+  orig: 768, 336
+  offset: 0, 0
+  index: -1
+Environments/crimson-background
+  rotate: false
+  xy: 1, 1373
+  size: 768, 336
+  orig: 768, 336
+  offset: 0, 0
+  index: -1
+Environments/crimson-planet
+  rotate: false
+  xy: 771, 1533
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+Environments/parallax-debris
+  rotate: false
+  xy: 875, 1171
+  size: 128, 64
+  orig: 128, 64
+  offset: 0, 0
+  index: -1
+Environments/resource-asteroid
+  rotate: false
+  xy: 777, 1097
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+Environments/resource-asteroid-critical
+  rotate: false
+  xy: 777, 999
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+Environments/resource-asteroid-damaged
+  rotate: false
+  xy: 775, 901
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+Pickups/extra-life-sheet
+  rotate: false
+  xy: 1029, 1309
+  size: 256, 64
+  orig: 256, 64
+  offset: 0, 0
+  index: -1
+Pickups/homing-core-sheet
+  rotate: false
+  xy: 517, 393
+  size: 256, 64
+  orig: 256, 64
+  offset: 0, 0
+  index: -1
+Pickups/missile-ammo-sheet
+  rotate: false
+  xy: 517, 327
+  size: 256, 64
+  orig: 256, 64
+  offset: 0, 0
+  index: -1
+Pickups/overdrive-sheet
+  rotate: false
+  xy: 517, 261
+  size: 256, 64
+  orig: 256, 64
+  offset: 0, 0
+  index: -1
+Pickups/plasma-core-sheet
+  rotate: false
+  xy: 517, 195
+  size: 256, 64
+  orig: 256, 64
+  offset: 0, 0
+  index: -1
+Pickups/pulse-core-sheet
+  rotate: false
+  xy: 517, 129
+  size: 256, 64
+  orig: 256, 64
+  offset: 0, 0
+  index: -1
+Pickups/shield-cell-sheet
+  rotate: false
+  xy: 517, 63
+  size: 256, 64
+  orig: 256, 64
+  offset: 0, 0
+  index: -1
+Pickups/stellar-shard-sheet
+  rotate: false
+  xy: 745, 1195
+  size: 128, 40
+  orig: 128, 40
+  offset: 0, 0
+  index: -1
+Pickups/support-drone-sheet
+  rotate: false
+  xy: 759, 1237
+  size: 256, 64
+  orig: 256, 64
+  offset: 0, 0
+  index: -1
+Projectiles/hostile-coral
+  rotate: false
+  xy: 2031, 1893
+  size: 16, 24
+  orig: 16, 24
+  offset: 0, 0
+  index: -1
+Projectiles/hostile-lemon
+  rotate: false
+  xy: 2031, 1867
+  size: 16, 24
+  orig: 16, 24
+  offset: 0, 0
+  index: -1
+Projectiles/hostile-special
+  rotate: false
+  xy: 2031, 1841
+  size: 16, 24
+  orig: 16, 24
+  offset: 0, 0
+  index: -1
+Projectiles/plasma-orb
+  rotate: false
+  xy: 1967, 1416
+  size: 28, 28
+  orig: 28, 28
+  offset: 0, 0
+  index: -1
+Projectiles/player-homing
+  rotate: false
+  xy: 1005, 269
+  size: 20, 36
+  orig: 20, 36
+  offset: 0, 0
+  index: -1
+Projectiles/reserve-missile
+  rotate: false
+  xy: 1005, 269
+  size: 20, 36
+  orig: 20, 36
+  offset: 0, 0
+  index: -1
+Projectiles/pulse-bolt
+  rotate: false
+  xy: 2031, 1815
+  size: 16, 24
+  orig: 16, 24
+  offset: 0, 0
+  index: -1
+Projectiles/vanguard-curtain-bolt-sheet
+  rotate: false
+  xy: 1029, 1375
+  size: 384, 24
+  orig: 384, 24
+  offset: 0, 0
+  index: -1
+Ships/bulwark
+  rotate: false
+  xy: 645, 1275
+  size: 112, 96
+  orig: 112, 96
+  offset: 0, 0
+  index: -1
+Ships/bulwark-critical
+  rotate: false
+  xy: 1417, 1303
+  size: 112, 96
+  orig: 112, 96
+  offset: 0, 0
+  index: -1
+Ships/bulwark-damaged
+  rotate: false
+  xy: 1661, 1301
+  size: 112, 96
+  orig: 112, 96
+  offset: 0, 0
+  index: -1
+Ships/carrier
+  rotate: false
+  xy: 1803, 1788
+  size: 160, 128
+  orig: 160, 128
+  offset: 0, 0
+  index: -1
+Ships/carrier-bay-loop-sheet
+  rotate: false
+  xy: 771, 1369
+  size: 256, 32
+  orig: 256, 32
+  offset: 0, 0
+  index: -1
+Ships/carrier-critical
+  rotate: false
+  xy: 1803, 1658
+  size: 160, 128
+  orig: 160, 128
+  offset: 0, 0
+  index: -1
+Ships/carrier-damaged
+  rotate: false
+  xy: 1803, 1528
+  size: 160, 128
+  orig: 160, 128
+  offset: 0, 0
+  index: -1
+Ships/heavy
+  rotate: false
+  xy: 647, 1063
+  size: 128, 112
+  orig: 128, 112
+  offset: 0, 0
+  index: -1
+Ships/heavy-critical
+  rotate: false
+  xy: 1287, 1261
+  size: 128, 112
+  orig: 128, 112
+  offset: 0, 0
+  index: -1
+Ships/heavy-damaged
+  rotate: false
+  xy: 1531, 1285
+  size: 128, 112
+  orig: 128, 112
+  offset: 0, 0
+  index: -1
+Ships/interceptor
+  rotate: false
+  xy: 1933, 1446
+  size: 64, 80
+  orig: 64, 80
+  offset: 0, 0
+  index: -1
+Ships/interceptor-critical
+  rotate: false
+  xy: 1965, 1836
+  size: 64, 80
+  orig: 64, 80
+  offset: 0, 0
+  index: -1
+Ships/interceptor-damaged
+  rotate: false
+  xy: 1965, 1754
+  size: 64, 80
+  orig: 64, 80
+  offset: 0, 0
+  index: -1
+Ships/player
+  rotate: false
+  xy: 1965, 1672
+  size: 64, 80
+  orig: 64, 80
+  offset: 0, 0
+  index: -1
+Ships/player-amber
+  rotate: false
+  xy: 1965, 1590
+  size: 64, 80
+  orig: 64, 80
+  offset: 0, 0
+  index: -1
+Ships/player-swept
+  rotate: false
+  xy: 955, 811
+  size: 64, 80
+  orig: 64, 80
+  offset: 0, 0
+  index: -1
+Ships/player-swept-amber
+  rotate: false
+  xy: 955, 729
+  size: 64, 80
+  orig: 64, 80
+  offset: 0, 0
+  index: -1
+Ships/raider
+  rotate: false
+  xy: 1873, 1202
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: -1
+Ships/raider-critical
+  rotate: false
+  xy: 873, 223
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: -1
+Ships/raider-damaged
+  rotate: false
+  xy: 873, 141
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: -1
+Ships/scout
+  rotate: false
+  xy: 873, 75
+  size: 80, 64
+  orig: 80, 64
+  offset: 0, 0
+  index: -1
+Ships/scout-critical
+  rotate: false
+  xy: 989, 1091
+  size: 80, 64
+  orig: 80, 64
+  offset: 0, 0
+  index: -1
+Ships/scout-damaged
+  rotate: false
+  xy: 775, 19
+  size: 80, 64
+  orig: 80, 64
+  offset: 0, 0
+  index: -1
+Ships/sniper
+  rotate: false
+  xy: 1873, 1284
+  size: 80, 112
+  orig: 80, 112
+  offset: 0, 0
+  index: -1
+Ships/sniper-critical
+  rotate: false
+  xy: 775, 787
+  size: 80, 112
+  orig: 80, 112
+  offset: 0, 0
+  index: -1
+Ships/sniper-damaged
+  rotate: false
+  xy: 775, 673
+  size: 80, 112
+  orig: 80, 112
+  offset: 0, 0
+  index: -1
+Ships/supply-drone
+  rotate: false
+  xy: 1417, 1221
+  size: 112, 80
+  orig: 112, 80
+  offset: 0, 0
+  index: -1
+Ships/supply-drone-critical
+  rotate: false
+  xy: 1661, 1219
+  size: 112, 80
+  orig: 112, 80
+  offset: 0, 0
+  index: -1
+Ships/supply-drone-damaged
+  rotate: false
+  xy: 875, 1089
+  size: 112, 80
+  orig: 112, 80
+  offset: 0, 0
+  index: -1
+Ships/support-companion
+  rotate: false
+  xy: 423, 7
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+Ships/warden-drone
+  rotate: false
+  xy: 955, 155
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+Ships/warden-drone-critical
+  rotate: false
+  xy: 955, 105
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+Ships/warden-drone-damaged
+  rotate: false
+  xy: 973, 1039
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+Ships/warden-drone-node
+  rotate: false
+  xy: 857, 795
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+UI/ui-ammo
+  rotate: false
+  xy: 1965, 1532
+  size: 56, 56
+  orig: 56, 56
+  offset: 0, 0
+  index: -1
+UI/ui-button
+  rotate: false
+  xy: 457, 7
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+UI/ui-button-secondary
+  rotate: false
+  xy: 973, 1005
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+UI/ui-card
+  rotate: false
+  xy: 1023, 1057
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+UI/ui-heat-fill
+  rotate: false
+  xy: 1277, 1299
+  size: 8, 8
+  orig: 8, 8
+  offset: 0, 0
+  index: -1
+UI/ui-heat-housing
+  rotate: false
+  xy: 769, 1
+  size: 64, 16
+  orig: 64, 16
+  offset: 0, 0
+  index: -1
+UI/ui-heat-notch
+  rotate: false
+  xy: 857, 893
+  size: 2, 6
+  orig: 2, 6
+  offset: 0, 0
+  index: -1
+UI/ui-icon-pause
+  rotate: false
+  xy: 1993, 1949
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+UI/ui-life
+  rotate: false
+  xy: 711, 5
+  size: 56, 56
+  orig: 56, 56
+  offset: 0, 0
+  index: -1
+UI/ui-modal
+  rotate: false
+  xy: 1057, 1057
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+UI/ui-overdrive
+  rotate: false
+  xy: 971, 307
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+UI/ui-panel
+  rotate: false
+  xy: 1091, 1057
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+UI/ui-shard
+  rotate: false
+  xy: 1147, 1201
+  size: 56, 56
+  orig: 56, 56
+  offset: 0, 0
+  index: -1
+UI/ui-shield
+  rotate: false
+  xy: 955, 255
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+UI/ui-support
+  rotate: false
+  xy: 955, 205
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+UI/ui-tab
+  rotate: false
+  xy: 1135, 1167
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+UI/ui-weapon-homing
+  rotate: false
+  xy: 971, 473
+  size: 56, 56
+  orig: 56, 56
+  offset: 0, 0
+  index: -1
+UI/ui-weapon-plasma
+  rotate: false
+  xy: 971, 415
+  size: 56, 56
+  orig: 56, 56
+  offset: 0, 0
+  index: -1
+UI/ui-weapon-pulse
+  rotate: false
+  xy: 971, 357
+  size: 56, 56
+  orig: 56, 56
+  offset: 0, 0
+  index: -1
+VFX/attack-telegraphs
+  rotate: false
+  xy: 923, 9
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+VFX/beam-energy
+  rotate: false
+  xy: 259, 7
+  size: 128, 32
+  orig: 128, 32
+  offset: 0, 0
+  index: -1
+VFX/boss-armor-fragment-0
+  rotate: false
+  xy: 389, 7
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+VFX/boss-armor-fragment-1
+  rotate: false
+  xy: 1933, 1412
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+VFX/boss-armor-rupture-sheet
+  rotate: false
+  xy: 771, 1403
+  size: 256, 128
+  orig: 256, 128
+  offset: 0, 0
+  index: -1
+VFX/boss-blast-sheet
+  rotate: false
+  xy: 1, 1115
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+VFX/death-respawn-sheet
+  rotate: false
+  xy: 1029, 1401
+  size: 256, 64
+  orig: 256, 64
+  offset: 0, 0
+  index: -1
+VFX/shield-activate-break-sheet
+  rotate: false
+  xy: 1029, 1401
+  size: 256, 64
+  orig: 256, 64
+  offset: 0, 0
+  index: -1
+VFX/debris-heavy-sheet
+  rotate: false
+  xy: 1545, 1399
+  size: 256, 64
+  orig: 256, 64
+  offset: 0, 0
+  index: -1
+VFX/elite-accent
+  rotate: false
+  xy: 955, 75
+  size: 28, 28
+  orig: 28, 28
+  offset: 0, 0
+  index: -1
+VFX/enemy-telegraph
+  rotate: false
+  xy: 1993, 1919
+  size: 28, 28
+  orig: 28, 28
+  offset: 0, 0
+  index: -1
+VFX/engine-loop-sheet
+  rotate: false
+  xy: 647, 1021
+  size: 128, 40
+  orig: 128, 40
+  offset: 0, 0
+  index: -1
+VFX/explosion-sheet
+  rotate: false
+  xy: 1029, 1467
+  size: 256, 128
+  orig: 256, 128
+  offset: 0, 0
+  index: -1
+VFX/focus-gun-sheet
+  rotate: false
+  xy: 517, 591
+  size: 256, 64
+  orig: 256, 64
+  offset: 0, 0
+  index: -1
+VFX/focus-missile-sheet
+  rotate: false
+  xy: 517, 525
+  size: 256, 64
+  orig: 256, 64
+  offset: 0, 0
+  index: -1
+VFX/focus-sniper-sheet
+  rotate: false
+  xy: 517, 459
+  size: 256, 64
+  orig: 256, 64
+  offset: 0, 0
+  index: -1
+VFX/focus-strike-sheet
+  rotate: false
+  xy: 1, 533
+  size: 256, 128
+  orig: 256, 128
+  offset: 0, 0
+  index: -1
+VFX/heavy-burst-sheet
+  rotate: false
+  xy: 259, 951
+  size: 256, 128
+  orig: 256, 128
+  offset: 0, 0
+  index: -1
+VFX/hit-homing-sheet
+  rotate: false
+  xy: 1287, 1531
+  size: 256, 128
+  orig: 256, 128
+  offset: 0, 0
+  index: -1
+VFX/hit-plasma-sheet
+  rotate: false
+  xy: 1545, 1725
+  size: 256, 128
+  orig: 256, 128
+  offset: 0, 0
+  index: -1
+VFX/hit-pulse-sheet
+  rotate: false
+  xy: 1, 403
+  size: 256, 128
+  orig: 256, 128
+  offset: 0, 0
+  index: -1
+VFX/hit-rock-sheet
+  rotate: false
+  xy: 259, 821
+  size: 256, 128
+  orig: 256, 128
+  offset: 0, 0
+  index: -1
+VFX/hit-shield-sheet
+  rotate: false
+  xy: 1545, 1595
+  size: 256, 128
+  orig: 256, 128
+  offset: 0, 0
+  index: -1
+VFX/ion-curtain
+  rotate: false
+  xy: 1531, 1219
+  size: 128, 64
+  orig: 128, 64
+  offset: 0, 0
+  index: -1
+VFX/missile-splash-sheet
+  rotate: false
+  xy: 1, 273
+  size: 256, 128
+  orig: 256, 128
+  offset: 0, 0
+  index: -1
+VFX/muzzle-missile-sheet
+  rotate: false
+  xy: 1017, 1225
+  size: 128, 32
+  orig: 128, 32
+  offset: 0, 0
+  index: -1
+VFX/muzzle-plasma-sheet
+  rotate: false
+  xy: 1005, 1191
+  size: 128, 32
+  orig: 128, 32
+  offset: 0, 0
+  index: -1
+VFX/muzzle-pulse-sheet
+  rotate: false
+  xy: 1005, 1157
+  size: 128, 32
+  orig: 128, 32
+  offset: 0, 0
+  index: -1
+VFX/pickup-coin-sheet
+  rotate: false
+  xy: 259, 691
+  size: 256, 128
+  orig: 256, 128
+  offset: 0, 0
+  index: -1
+VFX/pickup-collect-upgrade-sheet
+  rotate: false
+  xy: 1, 143
+  size: 256, 128
+  orig: 256, 128
+  offset: 0, 0
+  index: -1
+VFX/pickup-shield-sheet
+  rotate: false
+  xy: 259, 561
+  size: 256, 128
+  orig: 256, 128
+  offset: 0, 0
+  index: -1
+VFX/player-fragment-0
+  rotate: false
+  xy: 2023, 1560
+  size: 24, 28
+  orig: 24, 28
+  offset: 0, 0
+  index: -1
+VFX/player-fragment-1
+  rotate: false
+  xy: 491, 11
+  size: 24, 28
+  orig: 24, 28
+  offset: 0, 0
+  index: -1
+VFX/player-fragment-2
+  rotate: false
+  xy: 2023, 1919
+  size: 24, 28
+  orig: 24, 28
+  offset: 0, 0
+  index: -1
+VFX/player-fragment-3
+  rotate: false
+  xy: 1169, 1171
+  size: 24, 28
+  orig: 24, 28
+  offset: 0, 0
+  index: -1
+VFX/rock-shatter-sheet
+  rotate: false
+  xy: 1803, 1918
+  size: 188, 129
+  orig: 188, 129
+  offset: 0, 0
+  index: -1
+VFX/smoke-debris-sheet
+  rotate: false
+  xy: 759, 1303
+  size: 256, 64
+  orig: 256, 64
+  offset: 0, 0
+  index: -1
+VFX/speed-streak
+  rotate: false
+  xy: 2043, 1999
+  size: 4, 48
+  orig: 4, 48
+  offset: 0, 0
+  index: -1
+VFX/strike-launch-sheet
+  rotate: false
+  xy: 1, 13
+  size: 256, 128
+  orig: 256, 128
+  offset: 0, 0
+  index: -1
+VFX/supply-burst-polished-sheet
+  rotate: false
+  xy: 259, 431
+  size: 256, 128
+  orig: 256, 128
+  offset: 0, 0
+  index: -1
+VFX/thermal-vent-sheet
+  rotate: false
+  xy: 259, 301
+  size: 256, 128
+  orig: 256, 128
+  offset: 0, 0
+  index: -1
+VFX/trail-ion-sheet
+  rotate: false
+  xy: 1205, 1177
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+VFX/trail-rainbow-sheet
+  rotate: false
+  xy: 971, 663
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+VFX/vanguard-curtain-cue-sheet
+  rotate: false
+  xy: 259, 171
+  size: 256, 128
+  orig: 256, 128
+  offset: 0, 0
+  index: -1
+VFX/vanguard-curtain-pulse-sheet
+  rotate: false
+  xy: 259, 41
+  size: 256, 128
+  orig: 256, 128
+  offset: 0, 0
+  index: -1
+VFX/vanguard-lane-beam-cue-sheet
+  rotate: false
+  xy: 1287, 1401
+  size: 256, 128
+  orig: 256, 128
+  offset: 0, 0
+  index: -1
+VFX/warden-beam-sweep-cue-sheet
+  rotate: false
+  xy: 1545, 1465
+  size: 256, 128
+  orig: 256, 128
+  offset: 0, 0
+  index: -1
+VFX/warden-core-loop-sheet
+  rotate: false
+  xy: 259, 1275
+  size: 384, 96
+  orig: 384, 96
+  offset: 0, 0
+  index: -1
+VFX/warden-ion-shelter-cue-sheet
+  rotate: false
+  xy: 517, 885
+  size: 256, 128
+  orig: 256, 128
+  offset: 0, 0
+  index: -1
+VFX/warden-shelter-pulse-sheet
+  rotate: false
+  xy: 1029, 1791
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+VFX/warden-shield-phase
+  rotate: false
+  xy: 971, 597
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+VFX/warden-sweep-arrow
+  rotate: false
+  xy: 971, 531
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+VFX/warden-sweep-pulse-sheet
+  rotate: false
+  xy: 1, 857
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1

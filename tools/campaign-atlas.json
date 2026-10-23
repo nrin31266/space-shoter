@@ -1,0 +1,14 @@
+{
+  "maxWidth": 2048,
+  "maxHeight": 2048,
+  "rotation": false,
+  "stripWhitespaceX": false,
+  "stripWhitespaceY": false,
+  "useIndexes": false,
+  "paddingX": 2,
+  "paddingY": 2,
+  "duplicatePadding": true,
+  "filterMin": "Nearest",
+  "filterMag": "Nearest",
+  "combineSubdirectories": true
+}
