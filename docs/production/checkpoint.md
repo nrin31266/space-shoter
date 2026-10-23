@@ -162,3 +162,24 @@ không lấy mặc định C# khi scene override (planet scale .8 → 1.03).
 - Còn đối chiếu UI settings/focus, HUD transient icons/heat vent, projectile shape/
   trail và chuyển cảnh trên emulator sau nhóm cuối. Không coi aggregate simulation
   là nghiệm thu hình ảnh, nghe audio hoặc cân bằng chơi tay.
+
+## Hoàn thiện cổng kiểm chứng gameplay và đồng bộ trên thiết bị
+
+- Đã xóa toàn bộ tài nguyên legacy cũ ngoài `assets/campaign/` theo chỉ thị.
+- Đã khắc phục lỗi tương thích `Drawable` trong `CampaignUi.java`, chuẩn hóa
+  serialize `JsonWriter.OutputType.json` và căn chỉnh phạm vi clamp player trong
+  `CampaignGoldCheck.java`.
+- Tự động hóa phát hiện môi trường Android API 34 và JDK 17 trong `tools/android_env.sh`.
+- Toàn bộ 11 test suites của `:core:checkCampaign` pass 100% (store, flight math,
+  combat, gold physics/drops, hazards, 8 missions/21 encounters, parity, flow).
+- Build Android `:android:assembleDebug` pass.
+- Đã cài đặt và kiểm chứng trực tiếp trên emulator-5554 qua `./build_run_spaceshooter.sh --custom`:
+  - Main Menu: preview tàu hoạt họa, hệ thống nút tương tác.
+  - Xưởng & Cửa hàng: duyệt thẻ tàu/sơn/vệt, mua tàu Ưng Kích và trang bị thành công.
+  - Cài đặt: điều chỉnh thanh trượt âm lượng và công tắc rung.
+  - Nhiệm vụ: giao diện 8 màn phân vùng Khu vực A và B, hiển thị kỷ lục, chơi lại.
+  - Chiến đấu: dòng sự kiện tiếp cận hành tinh (Astra), vệt sao tốc độ cao,
+    điều khiển vuốt/bắn liên tục, hệ thống nhiệt, thanh boss Vanguard và Warden
+    (hướng bay ngang), đạn chùm/laser directed beam và modal kết thúc lượt/thử lại.
+- Mã nguồn và tài nguyên đã được commit vào nhánh `main`. Tiếp tục bám sát gameplay
+  chuẩn cho tới khi đạt độ tương đương hoàn toàn.
