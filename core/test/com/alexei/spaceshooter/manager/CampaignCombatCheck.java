@@ -8,6 +8,7 @@ public final class CampaignCombatCheck {
     public static void main(String[] args) {
         CampaignCatalog catalog = new CampaignCatalog(new FileHandle(args[0]));
         int bosses = 0, directed = 0;
+        boolean sweepArrowSeen = false;
         boolean[] bossMissions = new boolean[8];
         for (int mission = 1; mission <= 8; mission++) {
             for (int encounter = 0; encounter < catalog.missions[mission - 1].get("Encounters").size; encounter++) {
@@ -30,6 +31,8 @@ public final class CampaignCombatCheck {
                     }
                     for (CampaignWorld.Enemy enemy : world.enemies) {
                         assert Float.isFinite(enemy.x) && Float.isFinite(enemy.y);
+                        if (enemy.boss != null) for (BossCombat.Beam beam : enemy.boss.beams)
+                            if (beam.warning && beam.arrow != null && beam.arrowSign != 0) sweepArrowSeen = true;
                         if (enemy.boss != null) { bossSeen = true; boss = enemy; if (enemy.boss.busy()) bossAttack = true; }
                         if (enemy.directed != null) {
                             directedSeen = true;
@@ -51,6 +54,7 @@ public final class CampaignCombatCheck {
                 if (directedSeen) { directed++; assert directedAttack : "Directed attack never became active: " + mission + "/" + encounter; }
             }
         }
+        assert sweepArrowSeen : "Authored Warden sweep arrow is wired to its warning phase";
         assert bosses == 2 && directed > 0 : "Production combat coverage: bosses=" + bosses + ", directed=" + directed;
         CampaignStore.State cleared = new CampaignStore.State(); cleared.missionCleared = true;
         CampaignWorld resumed = new CampaignWorld(catalog, cleared, false, new CampaignWorld.Listener() {

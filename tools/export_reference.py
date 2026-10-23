@@ -114,9 +114,15 @@ def prune_runtime(catalog):
     for key, sprite in sorted(sprites.items(), key=lambda pair: pair[1]['name']):
         if sprite['path'].endswith('-sheet.png'):
             first_frames.setdefault(sprite['path'].replace('-sheet.png', '.png'), key)
+    defaults = {'art/UI/ui-boss-warning.png': 'art/Environments/asteroid-small.png',
+                'art/Projectiles/enemy-bolt.png': 'art/Projectiles/hostile-coral.png',
+                'art/Projectiles/player-pulse.png': 'art/Projectiles/pulse-bolt.png'}
     replacements = {}
     for key, sprite in sprites.items():
-        if sprite['path'] in first_frames:
+        if sprite['path'] in defaults:
+            target_path = defaults[sprite['path']]
+            replacements[key] = next(k for k, item in sprites.items() if item['path'] == target_path)
+        elif sprite['path'] in first_frames:
             replacements[key] = first_frames[sprite['path']]
         elif sprite['path'].endswith('/legacy-crate.png'):
             replacements[key] = None

@@ -269,3 +269,23 @@ HUD resolve đúng hierarchy nguồn; sao lớn nhẹ, ribbon gradient theo Unit
 - Tách toàn bộ 4 commit local cùng các sửa tiếp theo sang `codex/campaign-custom`.
   `codex/old-custom` giữ remote main ban đầu `ff38f3f`; local main trở về mốc đó.
   Không rewrite remote main hoặc force-push; tích hợp qua pull request.
+
+## Nối audio UI và chốt asset trước merge — 2026-10-24
+
+- CampaignUi phát Confirm/Back cho button/toggle/keyboard, dropdown có feedback;
+  disabled im lặng, invalid Dev route dùng Error. Bỏ screen calls trùng và giữ
+  UI tail qua đổi màn. UiFeedbackCheck kiểm thứ tự sound trước action, back,
+  toggle, disabled. Đã thu riêng stream qemu qua Pulse monitor: hai lần bấm tạo
+  xung RMS khoảng 2932/2238 so với nền lân cận 273–638, peak 7213/32768.
+  WAV local `build/verification/ui-feedback.wav`; đây là output signal evidence,
+  không phải nghiệm thu chất lượng mix bằng tai trên thiết bị thật.
+- Bổ sung render scene debris (pose/tint/drift), modifier accent và Warden sweep
+  arrow ở warning; actual combat sweep kiểm arrow được kích hoạt, spec test kiểm accent.
+- Audit từng PNG/WAV: 166 PNG, 41 SFX + 3 BGM có tham chiếu, 444 sprite IDs,
+  216 records/215 resources. Bỏ thêm 3 default-only prefab PNG bị override khi chạy;
+  exporter chuẩn hóa và repack không tái đưa ảnh đó trở lại.
+- `:core:checkCampaign` PASS toàn campaign; Android assemble PASS. Fix ordering
+  của offline pack/mergeAssets để gọi pack + build cùng lượt không lỗi Gradle.
+  27 Python tooling tests, audit assets, docs checker, diff whitespace PASS.
+- Save trước/sau smoke không đổi. Handoff còn lại: merge PR rồi checkout old-custom
+  và kiểm script/build/menu của bản cũ; chưa thay gameplay bản cũ.

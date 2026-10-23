@@ -40,7 +40,7 @@ public final class MainMenuScreen extends ScreenAdapter {
     public MainMenuScreen(MainGame game) {
         this.game = game;
         game.audio.clearGameplay();
-        ui = new CampaignUi(game.assets);
+        ui = new CampaignUi(game.assets, game.audio::cue);
         backdrop = new Image(ui.icon("Environments/background.png"));
         backdrop.setScaling(Scaling.fill);
         backdrop.setTouchable(Touchable.disabled);
@@ -165,10 +165,10 @@ public final class MainMenuScreen extends ScreenAdapter {
         state.activeWeapon = 0; state.weaponLevels = new int[]{1, 0, 0};
         state.score = 0; state.missionCleared = state.completed = state.regionReady = false;
         state.hasCampaign = true; CampaignStore.resetMissionStats(state);
-        game.audio.cue(32); game.setScreen(new GamePlayScreen(game, state, false, true));
+        game.setScreen(new GamePlayScreen(game, state, false, true));
     }
     private void start(CampaignStore.State state, boolean replay) {
-        game.audio.cue(32); game.setScreen(new GamePlayScreen(game, state, replay, replay));
+        game.setScreen(new GamePlayScreen(game, state, replay, replay));
     }
 
     private static String time(float seconds) {

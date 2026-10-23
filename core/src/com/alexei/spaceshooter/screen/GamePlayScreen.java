@@ -59,7 +59,7 @@ public final class GamePlayScreen extends ScreenAdapter {
         this.game = game;
         game.audio.clearGameplay();
         initial = game.copy(state);
-        ui = new CampaignUi(game.assets);
+        ui = new CampaignUi(game.assets, game.audio::cue);
         world = new CampaignWorld(game.assets.catalog, state, replay, new CampaignWorld.Listener() {
             public void sound(int cue) { game.audio.cue(cue); }
             public void checkpoint(CampaignStore.State checkpoint) { game.checkpoint(checkpoint); }
@@ -150,7 +150,7 @@ public final class GamePlayScreen extends ScreenAdapter {
         missileButton.add(missileButton.getLabel()); missileButton.getLabel().setFontScale(.8f);
         controls.add(missileButton).size(122, 67).padBottom(10).row();
         weaponButton = ui.button("", () -> {
-            if (!paused && world.gameplayInput() && world.player.cycle()) { world.revision++; game.audio.cue(32); }
+            if (!paused && world.gameplayInput() && world.player.cycle()) { world.revision++; }
         });
         weaponIcon = new Image(ui.icon("UI/ui-weapon-pulse.png"));
         weaponButton.clearChildren(); weaponButton.pad(0); weaponButton.add(weaponIcon).size(57.6f).padRight(0);
@@ -196,7 +196,7 @@ public final class GamePlayScreen extends ScreenAdapter {
 
     private void menu() {
         if (!game.flushPending()) { refreshOverlay(); return; }
-        game.audio.cue(33); game.setScreen(new MainMenuScreen(game));
+        game.setScreen(new MainMenuScreen(game));
     }
 
     private void refreshOverlay() {

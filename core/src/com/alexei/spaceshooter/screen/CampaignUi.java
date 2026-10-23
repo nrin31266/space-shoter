@@ -17,12 +17,13 @@ import com.badlogic.gdx.utils.JsonValue;
 
 final class CampaignUi {
     final CampaignAssets assets;
+    private final java.util.function.IntConsumer feedback;
     final TextButton.TextButtonStyle buttonStyle;
     private final TextButton.TextButtonStyle secondaryStyle, cardStyle, tabStyle;
     final NinePatchDrawable panel, modal;
 
-    CampaignUi(CampaignAssets assets) {
-        this.assets = assets;
+    CampaignUi(CampaignAssets assets, java.util.function.IntConsumer feedback) {
+        this.assets = assets; this.feedback = feedback;
         buttonStyle = style("UI/ui-button.png");
         secondaryStyle = style("UI/ui-button-secondary.png");
         cardStyle = style("UI/ui-card.png");
@@ -129,9 +130,16 @@ final class CampaignUi {
             }
         };
         box.setItems(items); box.setSelectedIndex(Math.max(0, Math.min(selected, items.length - 1)));
+        box.addListener(new com.badlogic.gdx.scenes.scene2d.utils.ChangeListener() {
+            @Override public void changed(ChangeEvent event, com.badlogic.gdx.scenes.scene2d.Actor actor) {
+                if (box.getStage() != null && !box.isDisabled()) feedback.accept(32);
+            }
+        });
         box.setMaxListCount(7); box.setAlignment(com.badlogic.gdx.utils.Align.center);
         return box;
     }
+
+    void error() { feedback.accept(34); }
 
     Slider slider(float value) {
         Slider.SliderStyle style = new Slider.SliderStyle();
@@ -177,14 +185,14 @@ final class CampaignUi {
             @Override public void clicked(InputEvent event, float x, float y) {
                 if (button.isDisabled()) return;
                 if (button.getStage() != null) button.getStage().setKeyboardFocus(button);
-                if (action != null) action.run();
+                UiFeedback.activate(text, !button.isDisabled(), feedback, action);
             }
         });
         button.addListener(new InputListener() {
             @Override public boolean keyDown(InputEvent event, int key) {
                 if (button.isDisabled() || (key != com.badlogic.gdx.Input.Keys.ENTER && key != com.badlogic.gdx.Input.Keys.SPACE)) return false;
                 if (toggle) button.setChecked(!button.isChecked());
-                if (action != null) action.run();
+                UiFeedback.activate(text, !button.isDisabled(), feedback, action);
                 return true;
             }
         });

@@ -96,3 +96,10 @@ tasks.register('run', Exec) {
 }
 
 eclipse.project.name = appName + "-android"
+
+// Repack là bước offline tùy chọn; nếu gọi cùng build thì đóng gói sau repack.
+tasks.configureEach {
+    if (name.startsWith('merge') && name.endsWith('Assets')) {
+        mustRunAfter ':core:packCampaignAtlas'
+    }
+}

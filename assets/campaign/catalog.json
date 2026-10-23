@@ -57777,8 +57777,8 @@
             "m_SortingOrder": 8,
             "m_MaskInteraction": 0,
             "m_Sprite": {
+              "guid": "04f6b8ca188115c548f67e88052cbf4e",
               "fileID": "21300000",
-              "guid": "d53aae57f65abe0568b52f5945cea69c",
               "type": 3
             },
             "m_Color": {
@@ -64881,8 +64881,8 @@
             "m_SortingOrder": 8,
             "m_MaskInteraction": 0,
             "m_Sprite": {
+              "guid": "04f6b8ca188115c548f67e88052cbf4e",
               "fileID": "21300000",
-              "guid": "d53aae57f65abe0568b52f5945cea69c",
               "type": 3
             },
             "m_Color": {
@@ -85341,8 +85341,8 @@
             "m_SortingOrder": 21,
             "m_MaskInteraction": 0,
             "m_Sprite": {
+              "guid": "89885cc3c14d215119df9e6af8fe66aa",
               "fileID": "21300000",
-              "guid": "90f95b35aded169968dd4f3cca1bf957",
               "type": 3
             },
             "m_Color": {
@@ -86323,8 +86323,8 @@
             "m_SortingOrder": 20,
             "m_MaskInteraction": 0,
             "m_Sprite": {
+              "guid": "2c332e1ed1ff13f3a91895f93abdd45b",
               "fileID": "21300000",
-              "guid": "c55a823144dcf136094f969890d58bd3",
               "type": 3
             },
             "m_Color": {
@@ -178353,21 +178353,6 @@
       },
       "ppu": 56.25
     },
-    "90f95b35aded169968dd4f3cca1bf957:21300000": {
-      "path": "art/Projectiles/enemy-bolt.png",
-      "name": "enemy-bolt",
-      "rect": {
-        "x": 0,
-        "y": 0,
-        "width": 20,
-        "height": 24
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      },
-      "ppu": 56.25
-    },
     "89885cc3c14d215119df9e6af8fe66aa:21300000": {
       "path": "art/Projectiles/hostile-coral.png",
       "name": "hostile-coral",
@@ -178436,21 +178421,6 @@
         "y": 0,
         "width": 20,
         "height": 36
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      },
-      "ppu": 56.25
-    },
-    "c55a823144dcf136094f969890d58bd3:21300000": {
-      "path": "art/Projectiles/player-pulse.png",
-      "name": "player-pulse",
-      "rect": {
-        "x": 0,
-        "y": 0,
-        "width": 12,
-        "height": 32
       },
       "pivot": {
         "x": 0.5,
@@ -179119,21 +179089,6 @@
         "y": 0,
         "width": 56,
         "height": 56
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      },
-      "ppu": 100
-    },
-    "d53aae57f65abe0568b52f5945cea69c:21300000": {
-      "path": "art/UI/ui-boss-warning.png",
-      "name": "ui-boss-warning",
-      "rect": {
-        "x": 0,
-        "y": 0,
-        "width": 48,
-        "height": 48
       },
       "pivot": {
         "x": 0.5,
@@ -184340,13 +184295,11 @@
     "art/Pickups/shield-cell-sheet.png",
     "art/Pickups/stellar-shard-sheet.png",
     "art/Pickups/support-drone-sheet.png",
-    "art/Projectiles/enemy-bolt.png",
     "art/Projectiles/hostile-coral.png",
     "art/Projectiles/hostile-lemon.png",
     "art/Projectiles/hostile-special.png",
     "art/Projectiles/plasma-orb.png",
     "art/Projectiles/player-homing.png",
-    "art/Projectiles/player-pulse.png",
     "art/Projectiles/pulse-bolt.png",
     "art/Projectiles/reserve-missile.png",
     "art/Projectiles/vanguard-curtain-bolt-sheet.png",
@@ -184385,7 +184338,6 @@
     "art/Ships/warden-drone-node.png",
     "art/Ships/warden-drone.png",
     "art/UI/ui-ammo.png",
-    "art/UI/ui-boss-warning.png",
     "art/UI/ui-button-secondary.png",
     "art/UI/ui-button.png",
     "art/UI/ui-card.png",
@@ -184560,13 +184512,11 @@
     "art/Pickups/shield-cell-sheet.png": "800fc42b57628c7b9dc1d53e12bcc55c49ac60482146186c33b1c4bfd3daaed4",
     "art/Pickups/stellar-shard-sheet.png": "809683596e1a7bdd976fb1eaf26dec77454c20b9de2acb8819a0b654d65eb149",
     "art/Pickups/support-drone-sheet.png": "a90f67d3aa01ba1892ef1c903f4a2168580a95625af0490bc85b86f80e03ea34",
-    "art/Projectiles/enemy-bolt.png": "b2f83ef1ccb2a063e828960b039e2fc689586b683351fccf37c4024e5786b6d9",
     "art/Projectiles/hostile-coral.png": "1887000067e883f173296a1a473b1fc9912d8505dc272fcec65f561cb7255444",
     "art/Projectiles/hostile-lemon.png": "1619d993452059953cfe207c9d9fd2b59b56a2b651392b946c560bc9ab14edfb",
     "art/Projectiles/hostile-special.png": "b086e6abc80f25f2d42caa233aeffa1053608f9ce1a49c2dc3bb44acfe770013",
     "art/Projectiles/plasma-orb.png": "dd8939e087c48b9bb7f2447ee94d54adb57e99cbf2ffa67a838dbb7d77828a3c",
     "art/Projectiles/player-homing.png": "1e525a5ccb01e45f6d634cfd15fd263b51fdc4ba458c2f84dcf4bfd84ccff2a9",
-    "art/Projectiles/player-pulse.png": "ff06f840467197f2718ce36ee3f1370c629991af501a60a320c2e25e1eae8a22",
     "art/Projectiles/pulse-bolt.png": "a67e4b8f004cff6987fc9bec3fde24afdda21e426086a3b3d026737ca197f452",
     "art/Projectiles/reserve-missile.png": "1e525a5ccb01e45f6d634cfd15fd263b51fdc4ba458c2f84dcf4bfd84ccff2a9",
     "art/Projectiles/vanguard-curtain-bolt-sheet.png": "4c94a29d0b8b108802f956d79240a9126b8bc8ca55d45f0786db6d6cf0309438",
@@ -184605,7 +184555,6 @@
     "art/Ships/warden-drone-node.png": "93923c5e6bb8ed07bf0ab745d1366804651de11c523b2eaddfd5d1d8a4015f1d",
     "art/Ships/warden-drone.png": "d5a67ba95706f833fc0270ed5ada40feec59b0399a24a87eb7794ce980f189a3",
     "art/UI/ui-ammo.png": "5dd02bb91cca917ef4363f166e8f997b58d3fd227e90fbf2c9d14c34ae4bfe17",
-    "art/UI/ui-boss-warning.png": "4acb0a63b983ca208f9dadf6af2d632c113de85197866b7c0b202921f664d7dc",
     "art/UI/ui-button-secondary.png": "ae74a921c42f6572c696ab0d89369a001af2d376ca4c925e8264c6922cbdeca3",
     "art/UI/ui-button.png": "75f64db99ff1663349fb446fbf470b2fe67d973bc92f6fcc2292d940d55b649d",
     "art/UI/ui-card.png": "e0fe8e8f7ebe5a06ebea72d1a1e3ce708f55f7e30e09c257b5b73892ee63d3e3",
@@ -184780,13 +184729,11 @@
     "19d808d38dabf07e896e350f6d8e2c85": "art/Pickups/shield-cell-sheet.png",
     "a9a0ce0d33c81a3e2bb988465c6ff937": "art/Pickups/stellar-shard-sheet.png",
     "cce2a11c5ef47f6499b442ab6b560a90": "art/Pickups/support-drone-sheet.png",
-    "90f95b35aded169968dd4f3cca1bf957": "art/Projectiles/enemy-bolt.png",
     "89885cc3c14d215119df9e6af8fe66aa": "art/Projectiles/hostile-coral.png",
     "9af81ce4e99d81249bb4914cc398683e": "art/Projectiles/hostile-lemon.png",
     "f89831a90a8536ff38edd12fd53307de": "art/Projectiles/hostile-special.png",
     "662679dfc6fd3e429a32777f10454838": "art/Projectiles/plasma-orb.png",
     "fafa55db053b3fa53993a49af6b5e5b6": "art/Projectiles/player-homing.png",
-    "c55a823144dcf136094f969890d58bd3": "art/Projectiles/player-pulse.png",
     "2c332e1ed1ff13f3a91895f93abdd45b": "art/Projectiles/pulse-bolt.png",
     "f1ac53e937564627db163456d6efcc91": "art/Projectiles/reserve-missile.png",
     "25a0ab503bc538da091b20bcb2d63536": "art/Projectiles/vanguard-curtain-bolt-sheet.png",
@@ -184825,7 +184772,6 @@
     "01b2883b8adef2697a8f932ff7e2d0eb": "art/Ships/warden-drone-node.png",
     "5024f2c4584a485a2988148937338ef4": "art/Ships/warden-drone.png",
     "3eabcdc83a4318c2c98ce933d89088c1": "art/UI/ui-ammo.png",
-    "d53aae57f65abe0568b52f5945cea69c": "art/UI/ui-boss-warning.png",
     "ebbdfb724b66a035abf445529f206373": "art/UI/ui-button-secondary.png",
     "5d904a1af8cfc428e867187725f877da": "art/UI/ui-button.png",
     "a8d4d8ee929a2beea940a196a02ecbee": "art/UI/ui-card.png",

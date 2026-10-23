@@ -35,3 +35,14 @@ cần nghe trực tiếp trên thiết bị.
 
 [Nguồn asset](../production/assets.md) sở hữu credit/license;
 [checkpoint](../production/checkpoint.md) giữ kết quả đã chạy.
+
+## Nối UI và phần ảnh còn thiếu
+
+CampaignUi phát Confirm (32) hoặc Back (33) trước callback điều hướng cho click
+và keyboard; disabled không phát. Toggle vẫn phát Confirm; dropdown phát khi
+đổi giá trị ở Stage. Invalid Dev route và missile không dùng được phát Error (34).
+Bỏ lời gọi Confirm/Back trùng ở screen; pool UI giữ tail khi đổi màn.
+
+Renderer lấy hai mảnh nền từ scene (pose/tint/alpha và journey drift), bật accent
+của elite theo modifier và vẽ mũi tên hướng quét Warden trong warning phase.
+Các field này trước đây có tham chiếu asset nhưng thiếu đường render runtime.

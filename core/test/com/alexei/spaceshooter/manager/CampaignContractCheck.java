@@ -40,6 +40,7 @@ public final class CampaignContractCheck {
         assert beam.hit(-4, -5, -4, 5, .2f, -2, 0, .1f) : "Sweep must catch moving beam across stationary player";
         CampaignCatalog catalog = new CampaignCatalog(new FileHandle(args[0]));
         DevRunCheck.run(catalog);
+        com.alexei.spaceshooter.screen.UiFeedbackCheck.run();
         MovementTrail trail = new MovementTrail();
         trail.update(0, 0, 0, .16f, true);
         trail.update(1, 1, .02f, .16f, true);

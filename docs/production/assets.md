@@ -2,9 +2,9 @@
 
 ## Runtime campaign
 
-Bộ `assets/campaign` đang được runtime custom dùng: catalog, atlas, 169 PNG nguồn,
-44 WAV và 3 TTF đã export. Có 447 sprite IDs và 216 dependency records production;
-22 records không được dùng và 17 ảnh tĩnh thay bằng sheet đã bị loại.
+Bộ `assets/campaign` đang được runtime custom dùng: catalog, atlas, 166 PNG nguồn,
+44 WAV và 3 TTF đã export. Có 444 sprite IDs và 216 dependency records production;
+22 records không được dùng và 20 ảnh tĩnh thay bằng sheet đã bị loại.
 Art nguồn được giữ để tái pack, atlas giữ rect/pivot/PPU qua loader.
 
 | Nhóm | Ghi nhận và bằng chứng |
@@ -25,3 +25,13 @@ Các PNG, music/sounds và font legacy ngoài `campaign/` đã được dọn s�
 
 Chi tiết đối chiếu nội bộ ở [nguồn tham khảo](reference-source.md),
 quy trình ở [asset pipeline](asset-pipeline.md).
+
+## Kiểm tra tham chiếu
+
+`python3 tools/audit_runtime_assets.py` kiểm từng PNG/WAV với các field catalog
+và đường Java trực tiếp; xuất `build/verification/asset-references.json`.
+Hiện có 166 PNG, 41 SFX cue và 3 BGM, không có file PNG/WAV thiếu tham chiếu.
+Ba ảnh default chỉ xuất hiện trong SpriteRenderer prefab trước khi bị runtime
+thay (boss-warning/asteroid, enemy-bolt, player-pulse) được chuẩn hóa về sprite
+đang dùng và bỏ bản dư. Đây là bằng chứng cấu hình, không là draw/play coverage
+cho mọi sự kiện và mọi frame khi chơi.

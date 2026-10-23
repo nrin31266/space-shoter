@@ -68,7 +68,7 @@ final class DevPanel extends Table {
     private void launch() {
         CampaignStore.State state = game.copy(game.profile);
         try { config.prepare(state, game.assets.catalog); }
-        catch (IllegalArgumentException error) { message.setText(error.getMessage()); message.setColor(1, .5f, .3f, 1); return; }
+        catch (IllegalArgumentException error) { ui.error(); message.setText(error.getMessage()); message.setColor(1, .5f, .3f, 1); return; }
         GamePlayScreen screen = new GamePlayScreen(game, state, true, !config.skipIntro && config.route == 0);
         if (config.god) screen.world.devGodModeToggle();
         screen.world.devFakeShots = config.fakeShots;

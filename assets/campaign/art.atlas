@@ -368,13 +368,6 @@ Pickups/support-drone-sheet
   orig: 256, 64
   offset: 0, 0
   index: -1
-Projectiles/enemy-bolt
-  rotate: false
-  xy: 2023, 1534
-  size: 20, 24
-  orig: 20, 24
-  offset: 0, 0
-  index: -1
 Projectiles/hostile-coral
   rotate: false
   xy: 2031, 1893
@@ -405,23 +398,16 @@ Projectiles/plasma-orb
   index: -1
 Projectiles/player-homing
   rotate: false
-  xy: 971, 951
+  xy: 1005, 269
   size: 20, 36
   orig: 20, 36
   offset: 0, 0
   index: -1
 Projectiles/reserve-missile
   rotate: false
-  xy: 971, 951
+  xy: 1005, 269
   size: 20, 36
   orig: 20, 36
-  offset: 0, 0
-  index: -1
-Projectiles/player-pulse
-  rotate: false
-  xy: 745, 1241
-  size: 12, 32
-  orig: 12, 32
   offset: 0, 0
   index: -1
 Projectiles/pulse-bolt
@@ -650,21 +636,21 @@ Ships/support-companion
   index: -1
 Ships/warden-drone
   rotate: false
-  xy: 955, 105
+  xy: 955, 155
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 Ships/warden-drone-critical
   rotate: false
-  xy: 973, 1039
+  xy: 955, 105
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 Ships/warden-drone-damaged
   rotate: false
-  xy: 973, 989
+  xy: 973, 1039
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
@@ -683,13 +669,6 @@ UI/ui-ammo
   orig: 56, 56
   offset: 0, 0
   index: -1
-UI/ui-boss-warning
-  rotate: false
-  xy: 1993, 1949
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
 UI/ui-button
   rotate: false
   xy: 457, 7
@@ -699,14 +678,14 @@ UI/ui-button
   index: -1
 UI/ui-button-secondary
   rotate: false
-  xy: 1023, 1057
+  xy: 973, 1005
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 UI/ui-card
   rotate: false
-  xy: 1057, 1057
+  xy: 1023, 1057
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
@@ -727,14 +706,14 @@ UI/ui-heat-housing
   index: -1
 UI/ui-heat-notch
   rotate: false
-  xy: 2045, 1552
+  xy: 857, 893
   size: 2, 6
   orig: 2, 6
   offset: 0, 0
   index: -1
 UI/ui-icon-pause
   rotate: false
-  xy: 971, 307
+  xy: 1993, 1949
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
@@ -748,14 +727,14 @@ UI/ui-life
   index: -1
 UI/ui-modal
   rotate: false
-  xy: 1023, 1023
+  xy: 1057, 1057
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 UI/ui-overdrive
   rotate: false
-  xy: 955, 255
+  xy: 971, 307
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
@@ -776,21 +755,21 @@ UI/ui-shard
   index: -1
 UI/ui-shield
   rotate: false
-  xy: 955, 205
+  xy: 955, 255
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 UI/ui-support
   rotate: false
-  xy: 955, 155
+  xy: 955, 205
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 UI/ui-tab
   rotate: false
-  xy: 1057, 1023
+  xy: 1135, 1167
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
@@ -1056,7 +1035,7 @@ VFX/player-fragment-2
   index: -1
 VFX/player-fragment-3
   rotate: false
-  xy: 1023, 993
+  xy: 1169, 1171
   size: 24, 28
   orig: 24, 28
   offset: 0, 0

@@ -8,8 +8,8 @@ Routing/ownership theo [nguồn tham khảo](reference-source.md); kết quả p
 ở [checkpoint](checkpoint.md). Không nâng `[PROVISIONAL]`/`[TUNABLE]` thành locked.
 
 Fresh export vào thư mục tạm, áp cùng pruning recipe rồi so dictionary: **216 records,
-447 sprite IDs, 218 file resources** khớp toàn bộ trường/config/pose với source.
-169 PNG có trong atlas, 44 WAV giữ hash. Đây là kiểm tra data đầy đủ; không suy
+444 sprite IDs, 215 file resources** khớp toàn bộ trường/config/pose với source.
+166 PNG có trong atlas, 44 WAV giữ hash. Đây là kiểm tra data đầy đủ; không suy
 mọi cơ chế runtime đúng chỉ vì config/asset được copy đúng.
 
 ## Cơ chế đã đọc và xử lý
@@ -40,7 +40,7 @@ mọi cơ chế runtime đúng chỉ vì config/asset được copy đúng.
 - Xóa 59 Java legacy classes không reachable từ MainGame hoặc adapter/tests.
   Giữ nguyên checkout original và save/Preferences cũ của người dùng.
 - Bỏ 22 records fixture/đường bay không nằm trong graph production.
-- Thay placeholder tĩnh bằng first frame của sheet đang bind; bỏ 17 PNG cũ,
+- Thay placeholder tĩnh bằng first frame của sheet đang bind; bỏ 20 PNG cũ,
   gồm legacy crate và các ảnh tĩnh đã có sheet. Giữ PNG nguồn đang dùng để repack.
 - Exporter áp cùng pruning khi chạy lại; atlas-input được xóa trước repack để
   không tái đóng ảnh cũ. Unit test kiểm dependency, material trực tiếp và idempotency.

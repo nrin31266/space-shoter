@@ -40,6 +40,9 @@ public class CampaignRenderer implements Disposable {
     private String planetAstraKey;
     private String planetCrimsonKey;
     private String debrisKey;
+    private final Array<JsonValue> debrisRenderers = new Array<>();
+    private final Array<CampaignCatalog.Pose> debrisPoses = new Array<>();
+    private float debrisX, debrisY;
     private String shieldKey;
     private String beamKey;
     private String reserveMissileKey;
@@ -58,6 +61,14 @@ public class CampaignRenderer implements Disposable {
         missileSplashFrames = CampaignWorld.framesByName(assets.catalog, "missile-splash_");
         if (reserveMissileKey == null) reserveMissileKey = world.reserveMissileKey;
         JsonValue scene = assets.catalog.record("Scenes/02_Gameplay.unity");
+        for (JsonValue doc : scene.get("documents")) if (doc.getString("type").equals("SpriteRenderer")) {
+            JsonValue data = doc.get("data");
+            if (data.getInt("m_Enabled", 1) != 0 && data.get("m_Sprite").has("guid")
+                    && CampaignCatalog.spriteKey(data.get("m_Sprite")).equals(debrisKey)) {
+                debrisRenderers.add(data);
+                debrisPoses.add(CampaignCatalog.pose(scene, data.get("m_GameObject").getString("fileID")));
+            }
+        }
         introPresentation = assets.catalog.component(scene, "MissionIntroPresentation");
         boundaryHint = assets.catalog.component(scene, "PlayableAreaPresentation");
         JsonValue stars = local(scene, introPresentation.get("stars"));
@@ -194,6 +205,19 @@ public class CampaignRenderer implements Disposable {
         float palette = journey ? world.journeyPalette : world.direction() == 1 ? 1 : 0;
         drawBackgroundTile(bgBaseKey, 1);
         if (palette > 0) drawBackgroundTile(bgAltKey, palette);
+        if (journey) { debrisX -= MathUtils.sinDeg(heading) * speed * delta * 2; debrisY -= MathUtils.cosDeg(heading) * speed * delta * 2; }
+        else if (!world.cinematic()) { debrisX = debrisY = 0; }
+        float debrisAlpha = journey || !world.cinematic() ? 1 : world.stage == CampaignWorld.Stage.BRAKE ? t : 0;
+        for (int i = 0; i < debrisRenderers.size; i++) {
+            JsonValue color = debrisRenderers.get(i).get("m_Color"); CampaignCatalog.Pose p = debrisPoses.get(i);
+            CampaignAssets.Sprite sprite = assets.sprite(debrisKey);
+            batch.setColor(MathUtils.lerp(color.getFloat("r"), .45f, palette), MathUtils.lerp(color.getFloat("g"), .2f, palette),
+                    MathUtils.lerp(color.getFloat("b"), .32f, palette), color.getFloat("a") * debrisAlpha);
+            batch.draw(sprite.region, world.width * .5f + p.x + debrisX - sprite.pivotX,
+                    world.height * .5f + p.y + debrisY - sprite.pivotY, sprite.pivotX, sprite.pivotY,
+                    sprite.width, sprite.height, p.sx, p.sy, p.rotation);
+        }
+        batch.setColor(1, 1, 1, 1);
         boolean planetVisible = world.stage == CampaignWorld.Stage.BRIEFING || world.stage == CampaignWorld.Stage.APPROACH || world.stage == CampaignWorld.Stage.TRAVEL;
         float start = introPresentation.getFloat("planetStartScale"), end = introPresentation.getFloat("planetEndScale");
         if (journey && world.journeyReveal > 0) {
@@ -361,6 +385,17 @@ public class CampaignRenderer implements Disposable {
                 assets.draw(batch, asteroidSprite, enemy.x, enemy.y, 1, rotation);
                 batch.setColor(1, 1, 1, 1);
             } else visual.draw(batch, enemy.x, enemy.y, enemy.scale, rotation, world.clock, hpFraction, alpha);
+            if (enemy.elite != null && enemy.spec.accent != null) {
+                CampaignCatalog.Pose p = enemy.spec.accentPose;
+                JsonValue tint = enemy.elite.get("Accent");
+                CampaignAssets.Sprite sprite = assets.sprite(enemy.spec.accent);
+                float cos = MathUtils.cosDeg(rotation), sin = MathUtils.sinDeg(rotation);
+                batch.setColor(tint.getFloat("r"), tint.getFloat("g"), tint.getFloat("b"), tint.getFloat("a") * alpha);
+                batch.draw(sprite.region, enemy.x + (p.x * cos - p.y * sin) * enemy.scale - sprite.pivotX,
+                        enemy.y + (p.x * sin + p.y * cos) * enemy.scale - sprite.pivotY, sprite.pivotX, sprite.pivotY,
+                        sprite.width, sprite.height, p.sx * enemy.scale, p.sy * enemy.scale, rotation + p.rotation);
+                batch.setColor(1, 1, 1, 1);
+            }
             if (enemy.charge > 0 && enemy.spec.chargeFrames.length > 0) {
                 float age = enemy.spec.fire.getFloat("telegraphDuration") - enemy.charge;
                 String frame = enemy.spec.chargeFrames[Math.min(enemy.spec.chargeFrames.length - 1, Math.max(0, (int)(age / .07f)))];
@@ -441,6 +476,18 @@ public class CampaignRenderer implements Disposable {
                 beam(enemy.directed.fromX, enemy.directed.fromY, enemy.directed.toX, enemy.directed.toY, enemy.directed.width, enemy.directed.active);
             if (enemy.boss != null) for (BossCombat.Beam beam : enemy.boss.beams) {
                 if (beam.active || beam.warning) beam(beam.fromX, beam.fromY, beam.toX, beam.toY, beam.width, beam.active, beam.field);
+                if (beam.warning && beam.arrow != null && beam.arrowSign != 0) {
+                    float dx = beam.toX - beam.fromX, dy = beam.toY - beam.fromY;
+                    float length = (float)Math.sqrt(dx * dx + dy * dy);
+                    if (length > .001f) {
+                        float x = beam.fromX + dx / length * .65f + (world.direction() == 0 ? .7f * beam.arrowSign : 0);
+                        float y = beam.fromY + dy / length * .65f + (world.direction() == 1 ? .7f * beam.arrowSign : 0);
+                        CampaignAssets.Sprite sprite = assets.sprite(beam.arrow);
+                        batch.setColor(1, 1, 1, 1);
+                        assets.draw(batch, beam.arrow, x, y, world.height / 900 * 48 / sprite.width,
+                                world.direction() == 0 ? (beam.arrowSign > 0 ? -90 : 90) : (beam.arrowSign > 0 ? 0 : 180));
+                    }
+                }
             }
         }
     }

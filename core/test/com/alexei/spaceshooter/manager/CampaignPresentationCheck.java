@@ -28,6 +28,8 @@ public final class CampaignPresentationCheck {
             public void checkpoint(CampaignStore.State state) { throw new AssertionError("Preview wrote save"); }
         });
         while (world.stage == CampaignWorld.Stage.INTRO) world.update(1f / 60);
+        CampaignWorld.Spec elite = world.spec(catalog.record("Prefabs/Enemies/Raider.prefab"));
+        assert elite.accent != null && elite.accentPose != null : "Elite accent is bound to runtime spec";
         CampaignWorld.Spec rock = world.spec(catalog.record("Prefabs/Enemies/StormAsteroid.prefab"));
         for (int i = 0; i < 4; i++) {
             float scale = new float[]{.7f, 1, 1.5f, 2}[i];

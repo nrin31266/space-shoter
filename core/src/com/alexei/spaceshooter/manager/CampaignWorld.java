@@ -29,7 +29,8 @@ public final class CampaignWorld {
             int stage = hpFraction <= damage.getFloat("criticalHealthFraction", .33f) ? 2 : hpFraction <= damage.getFloat("damagedHealthFraction", .66f) ? 1 : 0;
             return asteroidFrames[stage][index];
         }
-        public String hull;
+        public String hull, accent;
+        public CampaignCatalog.Pose accentPose;
         public String[] deathFrames, hitFrames;
         public String[] chargeFrames, warningFrames, launchFrames;
         public float deathSeconds = .6f;
@@ -371,6 +372,12 @@ public final class CampaignWorld {
         if (s.damage != null && s.damage.has("hull")) {
             JsonValue hull = local(record, s.damage.get("hull"));
             if (hull != null) s.hull = CampaignCatalog.spriteKey(hull.get("m_Sprite"));
+        }
+        JsonValue modifierPresentation = catalog.component(record, "EnemyModifierPresentation");
+        if (modifierPresentation != null) {
+            JsonValue accent = local(record, modifierPresentation.get("accent"));
+            s.accent = CampaignCatalog.spriteKey(accent.get("m_Sprite"));
+            s.accentPose = CampaignCatalog.pose(record, accent.get("m_GameObject").getString("fileID"));
         }
         JsonValue fireFeedback = s.firePresentation = catalog.component(record, "EnemyFirePresentation");
         s.chargeFrames = frames(fireFeedback == null ? null : fireFeedback.get("chargeFrames"));

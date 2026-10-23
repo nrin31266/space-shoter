@@ -15,6 +15,8 @@ public final class BossCombat {
     public static final class Beam {
         public float fromX, fromY, toX, toY, width;
         public boolean active, warning, field;
+        public String arrow;
+        public float arrowSign;
         final BeamContact contact = new BeamContact();
     }
     public static final class SkillCue {
@@ -198,6 +200,9 @@ public final class BossCombat {
             for (EscortController controller : enemy.escorts) if (controller.component == spawner) found = controller;
             escorts = found;
             isBeam = !data.get("beam").getString("fileID").equals("0");
+            JsonValue beamPresentation = directedComponent == null ? null : CampaignWorld.local(enemy.spec.record, directedComponent.get("presentation"));
+            JsonValue arrow = beamPresentation == null ? null : CampaignWorld.local(enemy.spec.record, beamPresentation.get("sweepArrow"));
+            if (arrow != null) beam.arrow = CampaignCatalog.spriteKey(arrow.get("m_Sprite"));
             for (JsonValue ref : data.get("muzzles")) {
                 JsonValue transform = CampaignWorld.local(enemy.spec.record, ref);
                 muzzles.add(CampaignCatalog.pose(enemy.spec.record, transform.get("m_GameObject").getString("fileID")));
@@ -261,6 +266,7 @@ public final class BossCombat {
                 beam.fromX = directed.fromX; beam.fromY = directed.fromY;
                 beam.toX = directed.toX; beam.toY = directed.toY; beam.width = directed.width;
                 beam.active = directed.active; beam.warning = directed.warning;
+                beam.arrowSign = directed.sweep ? (directed.alternateSweep && directed.attackCount % 2 == 1 ? -1 : 1) : 0;
                 return;
             }
             if (barrage != null) { barrage(dt); if (busy) cuePhase(active ? 3 : timer < barrage.getFloat("ChargeSeconds") * .45f ? 2 : 1); return; }
