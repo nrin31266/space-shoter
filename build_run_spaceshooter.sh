@@ -3,14 +3,10 @@ set -Eeuo pipefail
 
 # Xác định thư mục gốc project
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-if [[ -x "$(pwd)/gradlew" ]]; then
-  PROJECT_ROOT="$(pwd)"
-elif [[ -x "$SCRIPT_DIR/gradlew" ]]; then
-  PROJECT_ROOT="$SCRIPT_DIR"
-else
-  echo "❌ Hãy chạy script tại thư mục project có ./gradlew."
-  exit 1
-fi
+PROJECT_ROOT="$SCRIPT_DIR"
+[[ -x "$PROJECT_ROOT/gradlew" ]] || { echo "Không tìm thấy gradlew cạnh script." >&2; exit 1; }
+source "$PROJECT_ROOT/tools/android_env.sh"
+space_android_env "$PROJECT_ROOT"
 
 # Cấu hình SDK
 SDK_ROOT="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-}}"
@@ -62,6 +58,7 @@ fi
 if [[ "$VERSION_CHOICE" == "2" ]]; then
   BUILD_DIR="$PROJECT_ROOT/space-shooter-original"
   APP_LABEL="Bản gốc (Original)"
+  PACKAGE="com.alexei.spaceshooter.original"
   [[ -d "$BUILD_DIR" ]] || fail "Không tìm thấy thư mục: $BUILD_DIR"
 else
   BUILD_DIR="$PROJECT_ROOT"
@@ -107,7 +104,7 @@ echo "Thư mục    : $BUILD_DIR"
 echo
 echo "=== 1. Building Android APK ($APP_LABEL) ==="
 cd "$BUILD_DIR"
-./gradlew :android:assembleDebug
+./gradlew :android:assembleDebug -Pandroid.builder.sdkDownload=false
 
 [[ -f "$APK" ]] || {
   echo "❌ Không tìm thấy APK sau khi build: $APK"
@@ -122,8 +119,11 @@ echo "=== 2. Cài đặt APK lên $SERIAL ==="
 
 echo
 echo "=== 3. Khởi chạy $PACKAGE/$ACTIVITY ==="
-"$ADB" -s "$SERIAL" shell am force-stop "$PACKAGE" || true
-START_OUTPUT="$("$ADB" -s "$SERIAL" shell am start -W -n "$PACKAGE/$ACTIVITY" 2>&1 || true)"
+"$ADB" -s "$SERIAL" shell am force-stop "$PACKAGE"
+if ! START_OUTPUT="$("$ADB" -s "$SERIAL" shell am start -W -n "$PACKAGE/$ACTIVITY" 2>&1)"; then
+  printf '%s\n' "$START_OUTPUT"
+  fail "Android không khởi chạy được activity."
+fi
 printf '%s\n' "$START_OUTPUT"
 
 if printf '%s\n' "$START_OUTPUT" | grep -qE 'Error|Exception|does not exist|Permission Denial'; then

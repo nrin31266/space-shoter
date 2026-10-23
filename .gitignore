@@ -121,3 +121,7 @@ Thumbs.db
 /ios/xcode/native/
 /ios/IOSLauncher.app
 /ios/IOSLauncher.app.dSYM
+
+## Python tooling cache giữa các nhánh
+__pycache__/
+*.pyc

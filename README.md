@@ -230,3 +230,24 @@ ffmpeg -framerate 12 -pattern_type glob -i '*.png' -filter_complex "[0:v]scale=6
 [<img src="assets/screenshots/space-shooter-04.png" width="200"/>](assets/screenshots/space-shooter-04.png)
 [<img src="assets/screenshots/space-shooter-05.png" width="200"/>](assets/screenshots/space-shooter-05.png)
 
+
+## Chạy nhánh custom cũ
+
+Nhánh `codex/old-custom` giữ gameplay custom cũ **màn dọc**. Campaign mới màn
+ngang nằm trên `main` sau PR #1; không dùng APK cũ trong README để thử code mới.
+
+Với emulator hoặc thiết bị ADB đã mở:
+
+```bash
+./build_run_spaceshooter.sh --custom
+```
+
+Script tìm SDK API 34 và JDK 17 đã cài (có thể đặt `ANDROID_SDK_ROOT` / `JAVA_HOME`),
+không còn đường JDK cố định của máy tác giả; dùng được khi gọi bằng đường dẫn tuyệt
+đối từ thư mục khác. Build lỗi thì dừng, không cài APK cũ. Nhánh này khóa portrait;
+không đổi gameplay hoặc chuyển save cũ sang campaign. `--original` dùng package
+`com.alexei.spaceshooter.original` của checkout original đã chuẩn bị riêng.
+
+Kiểm tra ngày 2026-10-24: shell syntax, Android assemble/install/launch PASS;
+menu và Continue vào Wave 19 ở portrait đã quan sát trên emulator-5554, không có
+AndroidRuntime/libgdx error của lượt smoke. Chưa kiểm toàn bộ wave hoặc iOS.
